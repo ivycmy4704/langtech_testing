@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Generate - ProGen AI</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="bg-pastel">
+  <nav class="navbar">
+    <div class="logo">ProGen AI</div>
+    <div>
+      <span id="creditDisplay">Credits: 20</span> |
+      <a href="support.html">Support</a> |
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <h2>Generate 2 Illustrations</h2>
+      <div id="creditWarning" class="alert" style="display:none;"></div>
+
+      <!-- Generator Choice -->
+      <div class="input-group">
+        <label>AI Generator</label>
+        <div class="radio-group">
+          <label><input type="radio" name="generator" value="flux" checked> Flux Pro</label>
+          <label><input type="radio" name="generator" value="pollination"> Pollination.ai</label>
+          <label><input type="radio" name="generator" value="stable"> Stable Diffusion XL</label>
+        </div>
+      </div>
+
+      <!-- Reference Image -->
+      <div class="input-group">
+        <label>Reference Image (Optional)</label>
+        <input type="file" id="refImage" accept="image/*" />
+        <div id="preview" class="image-preview"></div>
+      </div>
+
+      <!-- Text Prompt -->
+      <div class="input-group">
+        <label>Describe Your Image</label>
+        <textarea id="prompt" rows="4" placeholder="e.g., A minimalist skincare bottle with soft pastel background..."></textarea>
+      </div>
+
+      <button class="btn-primary" onclick="generateImages()">Generate Preview</button>
+
+      <!-- Preview Description (Free) -->
+      <div id="previewText" class="preview-box" style="display:none;"></div>
+
+      <!-- Confirm Generation -->
+      <div id="confirmSection" style="display:none;">
+        <button class="btn-success" onclick="confirmGeneration()">Generate (2 credits)</button>
+        <button class="btn-secondary" onclick="cancelGeneration()">Cancel</button>
+      </div>
+
+      <!-- Results -->
+      <div id="results" class="grid-2" style="display:none;"></div>
+    </div>
+  </div>
+
+  <script src="js/generate.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
