@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Account - ProGen AI</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Create Your Account</h1>
+      <p class="subtitle">Fill in your details – a unique **Industry Code** will be e-mailed to you.</p>
+
+      <form id="registerForm">
+        <!-- Company & Email -->
+        <div class="input-group">
+          <label for="company">Company Name *</label>
+          <input type="text" id="company" placeholder="e.g., Acme Corp" required />
+        </div>
+
+        <div class="input-group">
+          <label for="email">Email Address *</label>
+          <input type="email" id="email" placeholder="you@company.com" required />
+        </div>
+
+        <!-- Industry -->
+        <div class="input-group">
+          <label for="industry">Industry *</label>
+          <select id="industry" onchange="toggleCustomIndustry()">
+            <option value="Retail">Retail</option>
+            <option value="Food and Beverage">Food and Beverage</option>
+            <option value="E-commerce">E-commerce</option>
+            <option value="Beauty">Beauty</option>
+            <option value="Others">Others (Please specify)</option>
+          </select>
+          <input type="text" id="customIndustry" placeholder="Enter your industry"
+                 style="display:none; margin-top:8px;" />
+        </div>
+
+        <!-- Product -->
+        <div class="input-group">
+          <label for="productName">Product Name *</label>
+          <input type="text" id="productName" placeholder="e.g., Eco-Friendly Bottle" required />
+        </div>
+
+        <div class="input-group">
+          <label for="requirements">Company Requirements</label>
+          <textarea id="requirements" rows="3"
+                    placeholder="Branding, tone, target audience…"></textarea>
+        </div>
+
+        <!-- Value Prompts -->
+        <div class="input-group">
+          <label>Value Prompts (Optional – max 5)</label>
+          <p class="text-sm">e.g. “cartoon”, “3D render”, “minimalist”</p>
+          <div id="valuePrompts"></div>
+          <button type="button" class="btn-sm btn-secondary"
+                  onclick="addValuePrompt()">+ Add Value</button>
+        </div>
+
+        <!-- Image Specs (no scale) -->
+        <h2>Default Image Specifications</h2>
+        <div class="grid-2">
+          <div class="input-group">
+            <label for="format">Format</label>
+            <select id="format">
+              <option value="PNG">PNG</option>
+              <option value="JPEG">JPEG</option>
+              <option value="WEBP">WEBP</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label for="resolution">Resolution</label>
+            <select id="resolution">
+              <option value="1024x1024">1024 × 1024</option>
+              <option value="768x1152">768 × 1152 (Portrait)</option>
+              <option value="1152x768">1152 × 768 (Landscape)</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary btn-block">
+          Create Account & Send Code
+        </button>
+      </form>
+
+      <p class="text-center mt-4"><a href="index.html">Back to Login</a></p>
+    </div>
+  </div>
+
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/register.js"></script>
+</body>
+</html>

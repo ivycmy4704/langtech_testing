@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Support - ProGen AI</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">ProGen AI</div>
+    <div><a href="dashboard.html">← Dashboard</a></div>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <h2>Support Dropbox</h2>
+      <p class="subtitle">Submit issues for admin review.</p>
+
+      <form id="supportForm">
+        <div class="input-group">
+          <label for="subject">Subject *</label>
+          <input type="text" id="subject" required />
+        </div>
+        <div class="input-group">
+          <label for="message">Message *</label>
+          <textarea id="message" rows="6" required></textarea>
+        </div>
+        <button type="submit" class="btn-primary btn-block">Submit</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/support.js"></script>
+</body>
+</html>

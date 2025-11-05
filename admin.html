@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin - ProGen AI</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">Admin Panel</div>
+    <div><a href="index.html">Logout</a></div>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <h2>Manage Customers</h2>
+      <input type="text" id="search" placeholder="Search..." class="search-bar" oninput="renderUsers()" />
+
+      <table id="userTable" class="table">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Email</th>
+            <th>Industry</th>
+            <th>Credits</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Support Tickets</h2>
+      <div id="tickets"></div>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
