@@ -29,6 +29,51 @@
     </div>
   </div>
 
-  <script src="js/auth.js"></script>
+  <!-- LOGIN LOGIC (NO EXTERNAL FILE NEEDED) -->
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const enteredCode = document.getElementById('code').value.trim().toUpperCase();
+      const pendingCode = localStorage.getItem('pendingCode');
+      const tempUser = JSON.parse(localStorage.getItem('tempUser') || '{}');
+
+      // Fresh registration
+      if (pendingCode && enteredCode === pendingCode && tempUser.email) {
+        saveUserAndLogin(tempUser, enteredCode);
+        return;
+      }
+
+      // Returning user
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const existingUser = users.find(u => u.code === enteredCode);
+
+      if (existingUser) {
+        localStorage.setItem('currentUser', JSON.stringify(existingUser));
+        localStorage.removeItem('pendingCode');
+        localStorage.removeItem('tempUser');
+        window.location.href = 'questionnaire.html';
+        return;
+      }
+
+      alert('Invalid or expired code. Please register again.');
+    });
+
+    function saveUserAndLogin(tempUser, code) {
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      let user = users.find(u => u.email === tempUser.email);
+
+      if (!user) {
+        user = { ...tempUser, code, id: Date.now(), credits: 20 };
+        users.push(user);
+        localStorage.setItem('users', JSON.stringify(users));
+      }
+
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      localStorage.removeItem('pendingCode');
+      localStorage.removeItem('tempUser');
+      window.location.href = 'questionnaire.html';
+    }
+  </script>
 </body>
 </html>
