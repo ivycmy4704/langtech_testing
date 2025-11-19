@@ -5,18 +5,484 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Questionnaire - ProGen AI</title>
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .form-section {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      background: #f9f9f9;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    .btn-primary {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .product-form {
+      background: white;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      font-weight: normal;
+    }
+    .checkbox-group input {
+      width: auto;
+      margin-right: 0.5rem;
+    }
+    .button-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
     <div class="card">
-      <h1>Complete Your Profile</h1>
-      <p class="subtitle">Questionnaire coming soon. Proceed to dashboard.</p>
-      <div class="text-center">
-        <button class="btn-primary btn-block" onclick="window.location.href='dashboard.html'">Go to Dashboard</button>
-      </div>
+      <h1>Retail Brand & Product Questionnaire</h1>
+      <p class="subtitle">Please provide information about your brand and products</p>
+      
+      <form id="questionnaireForm">
+        <!-- Brand Information Section -->
+        <div class="form-section">
+          <h2>Basic Brand Information</h2>
+          
+          <div class="form-group">
+            <label for="brandName">Brand Name: *</label>
+            <input type="text" id="brandName" name="brandName" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="address">Address: *</label>
+            <input type="text" id="address" name="address" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="phone">Phone Number: *</label>
+            <input type="tel" id="phone" name="phone" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="openingHours">Opening Hours (e.g., 11:00-20:30 daily): *</label>
+            <input type="text" id="openingHours" name="openingHours" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="holidayHours">Opening Hours on Rest Days/Public Holidays:</label>
+            <input type="text" id="holidayHours" name="holidayHours">
+          </div>
+          
+          <div class="form-group">
+            <label for="advanceBooking">Advance Booking Required? *</label>
+            <select id="advanceBooking" name="advanceBooking" required>
+              <option value="">Select</option>
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Payment Methods:</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" name="paymentMethods" value="Cash"> Cash</label>
+              <label><input type="checkbox" name="paymentMethods" value="Credit Card"> Credit Card</label>
+              <label><input type="checkbox" name="paymentMethods" value="WeChat"> WeChat</label>
+              <label><input type="checkbox" name="paymentMethods" value="Alipay"> Alipay</label>
+              <label><input type="checkbox" name="paymentMethods" value="Octopus Card"> Octopus Card</label>
+              <label><input type="checkbox" name="paymentMethods" value="Vouchers"> Vouchers</label>
+              <label><input type="checkbox" name="paymentMethods" value="Other"> Other</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Brand Details Section -->
+        <div class="form-section">
+          <h2>Brand Information</h2>
+          
+          <div class="form-group">
+            <label for="companyProfile">Company Profile and Background:</label>
+            <textarea id="companyProfile" name="companyProfile" rows="3" placeholder="e.g., year of establishment"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="branches">Number and addresses of branches in Hong Kong and overseas:</label>
+            <textarea id="branches" name="branches" rows="3"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="awards">Awards/Awards and Industry Endorsement:</label>
+            <textarea id="awards" name="awards" rows="3"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="productCategories">Product Categories:</label>
+            <input type="text" id="productCategories" name="productCategories" placeholder="e.g., Cosmetics, Retail">
+          </div>
+          
+          <div class="form-group">
+            <label for="keyPromotedCategories">Key Promoted Product Categories:</label>
+            <input type="text" id="keyPromotedCategories" name="keyPromotedCategories">
+          </div>
+          
+          <div class="form-group">
+            <label for="brandAdvantages">Brand Advantages/Features:</label>
+            <textarea id="brandAdvantages" name="brandAdvantages" rows="3" placeholder="e.g., Authorized imported goods? Authorized merchant by the Consumer Council?"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="targetAudience">Target Audience:</label>
+            <textarea id="targetAudience" name="targetAudience" rows="3" placeholder="e.g., male? female? age? occupation? income? etc."></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="consumptionThreshold">General Consumption Threshold:</label>
+            <input type="text" id="consumptionThreshold" name="consumptionThreshold">
+          </div>
+          
+          <div class="form-group">
+            <label for="copywritingTheme">Ideal Copywriting Theme:</label>
+            <textarea id="copywritingTheme" name="copywritingTheme" rows="2"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="suitableAdjectives">Suitable/Must Included Adjectives for Copywriting:</label>
+            <textarea id="suitableAdjectives" name="suitableAdjectives" rows="2"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="otherNotes">Other Important Notes:</label>
+            <textarea id="otherNotes" name="otherNotes" rows="2"></textarea>
+          </div>
+        </div>
+
+        <!-- Products Section -->
+        <div class="form-section">
+          <h2>Product Information (Optional)</h2>
+          <p>If you don't need to specify any products to promote, you can skip this section.</p>
+          
+          <div id="productsContainer">
+            <div class="product-form">
+              <h3 style="margin-top: 0; color: #007bff;">Product 1</h3>
+              
+              <div class="form-group">
+                <label for="productName1">Product Name:</label>
+                <input type="text" id="productName1" name="productName1">
+              </div>
+              
+              <div class="form-group">
+                <label for="productCategory1">Product Categories:</label>
+                <input type="text" id="productCategory1" name="productCategory1" placeholder="e.g., cosmeceuticals, snacks">
+              </div>
+              
+              <div class="form-group">
+                <label for="productFeatures1">Product Features (list 7-10 features):</label>
+                <textarea id="productFeatures1" name="productFeatures1" rows="4" placeholder="e.g., imported from South Korea, awarded prizes"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label for="problemsSolved1">Problems the Products Can Help Solve:</label>
+                <textarea id="problemsSolved1" name="problemsSolved1" rows="3"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label for="advantages1">Advantages Over Other Products:</label>
+                <textarea id="advantages1" name="advantages1" rows="3"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label for="price1">Price:</label>
+                <input type="text" id="price1" name="price1">
+              </div>
+              
+              <div class="form-group">
+                <label for="discount1">Discount:</label>
+                <textarea id="discount1" name="discount1" rows="2" placeholder="e.g., Limited time offer, Special offer before [Date]"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label for="productAdjectives1">Suitable Adjectives for Copywriting:</label>
+                <textarea id="productAdjectives1" name="productAdjectives1" rows="2"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label for="unsuitableCrowd1">Unsuitable Crowd/Threshold:</label>
+                <textarea id="unsuitableCrowd1" name="unsuitableCrowd1" rows="2" placeholder="e.g., pregnant women, minors"></textarea>
+              </div>
+              
+              <div class="form-group">
+                <label for="productNotes1">Other Important Notes:</label>
+                <textarea id="productNotes1" name="productNotes1" rows="2"></textarea>
+              </div>
+            </div>
+          </div>
+          
+          <button type="button" class="btn-secondary" id="addProductBtn">Add Another Product</button>
+        </div>
+
+        <div class="button-group">
+          <button type="submit" class="btn-primary">Submit Questionnaire</button>
+          <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+        </div>
+      </form>
     </div>
   </div>
 
-  <script src="js/auth.js"></script>
+  <script>
+    // All JavaScript functionality in one place
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('Questionnaire page loaded successfully');
+      
+      let productCount = 1;
+
+      // Cancel button redirect
+      document.getElementById('cancelBtn').addEventListener('click', function() {
+        console.log('Cancel button clicked');
+        window.location.href = 'dashboard.html';
+      });
+
+      // Add product functionality
+      document.getElementById('addProductBtn').addEventListener('click', function() {
+        productCount++;
+        const productForm = document.createElement('div');
+        productForm.className = 'product-form';
+        productForm.innerHTML = `
+          <h3 style="margin-top: 0; color: #007bff;">Product ${productCount}</h3>
+          
+          <div class="form-group">
+            <label for="productName${productCount}">Product Name:</label>
+            <input type="text" id="productName${productCount}" name="productName${productCount}">
+          </div>
+          
+          <div class="form-group">
+            <label for="productCategory${productCount}">Product Categories:</label>
+            <input type="text" id="productCategory${productCount}" name="productCategory${productCount}" placeholder="e.g., cosmeceuticals, snacks">
+          </div>
+          
+          <div class="form-group">
+            <label for="productFeatures${productCount}">Product Features (list 7-10 features):</label>
+            <textarea id="productFeatures${productCount}" name="productFeatures${productCount}" rows="4" placeholder="e.g., imported from South Korea, awarded prizes"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="problemsSolved${productCount}">Problems the Products Can Help Solve:</label>
+            <textarea id="problemsSolved${productCount}" name="problemsSolved${productCount}" rows="3"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="advantages${productCount}">Advantages Over Other Products:</label>
+            <textarea id="advantages${productCount}" name="advantages${productCount}" rows="3"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="price${productCount}">Price:</label>
+            <input type="text" id="price${productCount}" name="price${productCount}">
+          </div>
+          
+          <div class="form-group">
+            <label for="discount${productCount}">Discount:</label>
+            <textarea id="discount${productCount}" name="discount${productCount}" rows="2" placeholder="e.g., Limited time offer, Special offer before [Date]"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="productAdjectives${productCount}">Suitable Adjectives for Copywriting:</label>
+            <textarea id="productAdjectives${productCount}" name="productAdjectives${productCount}" rows="2"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="unsuitableCrowd${productCount}">Unsuitable Crowd/Threshold:</label>
+            <textarea id="unsuitableCrowd${productCount}" name="unsuitableCrowd${productCount}" rows="2" placeholder="e.g., pregnant women, minors"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="productNotes${productCount}">Other Important Notes:</label>
+            <textarea id="productNotes${productCount}" name="productNotes${productCount}" rows="2"></textarea>
+          </div>
+          
+          <button type="button" onclick="this.parentElement.remove()" style="background: #dc3545; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">Remove Product</button>
+        `;
+        document.getElementById('productsContainer').appendChild(productForm);
+      });
+
+      // Form submission with all original functionality
+      document.getElementById('questionnaireForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        console.log('Form submission started');
+        
+        // Collect all form data
+        const formData = new FormData(this);
+        const data = {};
+        
+        // Convert FormData to object
+        for (let [key, value] of formData.entries()) {
+          if (key === 'paymentMethods') {
+            if (!data[key]) data[key] = [];
+            data[key].push(value);
+          } else {
+            data[key] = value;
+          }
+        }
+        
+        // Validate required fields
+        const requiredFields = ['brandName', 'address', 'phone', 'openingHours', 'advanceBooking'];
+        const missingFields = [];
+        
+        for (const field of requiredFields) {
+          if (!data[field] || data[field].toString().trim() === '') {
+            missingFields.push(field);
+          }
+        }
+        
+        if (missingFields.length > 0) {
+          alert('Please fill in all required fields: ' + missingFields.map(field => {
+            const fieldNames = {
+              'brandName': 'Brand Name',
+              'address': 'Address', 
+              'phone': 'Phone Number',
+              'openingHours': 'Opening Hours',
+              'advanceBooking': 'Advance Booking'
+            };
+            return fieldNames[field] || field;
+          }).join(', '));
+          return;
+        }
+        
+        // Process products data
+        const products = [];
+        for (let i = 1; i <= productCount; i++) {
+          const productName = data[`productName${i}`];
+          if (productName && productName.trim() !== '') {
+            products.push({
+              productName: productName,
+              productCategory: data[`productCategory${i}`],
+              productFeatures: data[`productFeatures${i}`],
+              problemsSolved: data[`problemsSolved${i}`],
+              advantages: data[`advantages${i}`],
+              price: data[`price${i}`],
+              discount: data[`discount${i}`],
+              productAdjectives: data[`productAdjectives${i}`],
+              unsuitableCrowd: data[`unsuitableCrowd${i}`],
+              productNotes: data[`productNotes${i}`]
+            });
+          }
+        }
+        
+        // Remove product fields from main data object
+        for (let i = 1; i <= productCount; i++) {
+          delete data[`productName${i}`];
+          delete data[`productCategory${i}`];
+          delete data[`productFeatures${i}`];
+          delete data[`problemsSolved${i}`];
+          delete data[`advantages${i}`];
+          delete data[`price${i}`];
+          delete data[`discount${i}`];
+          delete data[`productAdjectives${i}`];
+          delete data[`unsuitableCrowd${i}`];
+          delete data[`productNotes${i}`];
+        }
+        
+        // Add products array to data
+        data.products = products;
+        data.submittedAt = new Date().toISOString();
+        
+        // Save to localStorage
+        try {
+          localStorage.setItem('questionnaireData', JSON.stringify(data));
+          console.log('Questionnaire data saved successfully', data);
+          
+          // Show success message and redirect
+          alert('Questionnaire submitted successfully! Redirecting to dashboard...');
+          
+          // Redirect after a short delay to ensure everything is processed
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 100);
+          
+        } catch (error) {
+          console.error('Error saving data:', error);
+          alert('Error saving questionnaire data. Please try again.');
+        }
+      });
+
+      // Load saved data if exists
+      try {
+        const savedData = localStorage.getItem('questionnaireData');
+        if (savedData) {
+          const data = JSON.parse(savedData);
+          populateForm(data);
+          console.log('Loaded saved data');
+        }
+      } catch (error) {
+        console.error('Error loading saved data:', error);
+      }
+    });
+
+    // Function to populate form with saved data
+    function populateForm(data) {
+      for (const key in data) {
+        if (key === 'paymentMethods' && Array.isArray(data[key])) {
+          data[key].forEach(value => {
+            const checkbox = document.querySelector(`input[name="paymentMethods"][value="${value}"]`);
+            if (checkbox) checkbox.checked = true;
+          });
+        } else if (key === 'products') {
+          // Handle products separately - you can implement this if needed
+          console.log('Products data available:', data[key]);
+        } else {
+          const element = document.querySelector(`[name="${key}"]`);
+          if (element) {
+            if (element.type === 'checkbox' || element.type === 'radio') {
+              element.checked = data[key];
+            } else {
+              element.value = data[key] || '';
+            }
+          }
+        }
+      }
+    }
+
+    // Global function to test redirect
+    function testRedirect() {
+      window.location.href = 'dashboard.html';
+    }
+  </script>
 </body>
 </html>
