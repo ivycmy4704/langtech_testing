@@ -38,6 +38,20 @@
     .btn-accent { background: var(--accent); color: white; }
     .btn-secondary { background: #eee; color: #333; }
     .btn-sm { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
+    .btn-nav {
+      background: none;
+      border: none;
+      color: var(--primary);
+      text-decoration: none;
+      cursor: pointer;
+      font-size: inherit;
+      padding: 0;
+      margin: 0;
+      font-weight: 600;
+    }
+    .btn-nav:hover {
+      text-decoration: underline;
+    }
     .btn:hover { opacity: 0.9; transform: translateY(-1px); }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; }
@@ -60,9 +74,11 @@
   <nav class="navbar">
     <div class="logo">ProGen AI</div>
     <div style="display:flex; gap:20px; align-items:center;">
-     <span id="creditDisplay">Credits: 20</span>
-<a href="credit.html" class="btn-sm btn-primary" style="text-decoration:none; margin-left:10px;">Add Credits</a>
-<a href="support.html" class="btn-sm btn-secondary" style="text-decoration:none;">Support</a>
+      <span id="creditDisplay">Credits: 20</span>
+      <a href="credit.html" class="btn-sm btn-primary" style="text-decoration:none; margin-left:10px;">Add Credits</a>
+      <a href="support.html" class="btn-sm btn-secondary" style="text-decoration:none;">Support</a>
+      <button class="btn-nav" onclick="viewUserInfo()">My Brand Info</button>
+      <a href="#" onclick="logout()" class="btn-nav">Logout</a>
     </div>
   </nav>
   <div class="container">
@@ -244,6 +260,16 @@
       document.getElementById('refineModal').style.display = 'none';
       document.getElementById('refineInput').value = '';
       generateNow();
+    }
+
+    // New function for My Brand Info button
+    function viewUserInfo() {
+      window.location.href = 'user-info.html';
+    }
+
+    function logout() {
+      localStorage.removeItem('currentUser');
+      window.location.href = 'index.html';
     }
   </script>
 </body>
