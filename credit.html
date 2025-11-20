@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ProGen AI - Add Credits</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    :root { --primary: #4a90e2; --success: #7ed321; --accent: #ff9800; --gray: #f0f2f5; }
+    body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #f5f7ff 0%, #e8f0fe 100%); margin: 0; color: #333; min-height: 100vh; }
+    
+    /* Fixed Navbar */
+    .navbar {
+      background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); padding: 1.2rem 3rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center;
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    }
+    .logo { font-weight: 800; font-size: 1.8rem; color: var(--primary); letter-spacing: -0.5px; }
+    
+    .nav-right {
+      display: flex; gap: 1.8rem; align-items: center;
+    }
+    .nav-right a {
+      font-weight: 600; font-size: 1.05rem; text-decoration: none; padding: 0.6rem 1.3rem; border-radius: 12px; transition: all 0.3s;
+    }
+    .nav-right a:first-child { color: var(--primary); }
+    .nav-right a:last-child {
+      background: #f8f9fa; color: #555; border: 2px solid #e0e0e0;
+    }
+    .nav-right a:hover:first-child { background: rgba(74,144,226,0.1); }
+    .nav-right a:hover:last-child { background: #e9ecef; }
+
+    /* Rest of your styles remain unchanged */
+    .container { max-width: 1200px; margin: 0 auto; padding: 10rem 2rem 5rem; text-align: center; }
+    .header h1 { font-size: 3.2rem; color: #222; margin-bottom: 0.8rem; font-weight: 800; }
+    .header p { font-size: 1.3rem; color: #555; max-width: 700px; margin: 0 auto 4rem; line-height: 1.6; }
+
+    .plans {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .plan {
+      background: white;
+      border-radius: 24px;
+      padding: 3rem 2rem;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+      border: 4px solid transparent;
+    }
+    .plan:hover {
+      transform: translateY(-20px);
+      box-shadow: 0 25px 60px rgba(74,144,226,0.25);
+    }
+    .plan.popular {
+      border-color: var(--primary);
+      transform: scale(1.05);
+    }
+    .popular-badge {
+      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+      background: var(--primary); color: white; padding: 10px 28px; border-radius: 50px;
+      font-weight: bold; font-size: 0.95rem; box-shadow: 0 8px 20px rgba(74,144,226,0.4);
+    }
+
+    .plan h3 { font-size: 1.8rem; margin-bottom: 1rem; color: #222; }
+    .plan-price {
+      font-size: 4.2rem; font-weight: 900; color: var(--primary); margin: 1rem 0;
+      line-height: 1;
+    }
+    .plan-price small { font-size: 1.2rem; color: #888; font-weight: normal; }
+    .plan-credits {
+      font-size: 1.6rem; color: #444; margin: 1.2rem 0; font-weight: 600;
+    }
+    .plan-desc { color: #777; font-size: 1.05rem; margin-bottom: 2rem; line-height: 1.6; }
+    .savings { color: var(--success); font-weight: bold; font-size: 1.1rem; margin: 10px 0; }
+
+    .btn-buy {
+      background: var(--primary); color: white; border: none; padding: 1.2rem 2rem;
+      border-radius: 16px; font-size: 1.2rem; font-weight: bold; cursor: pointer;
+      width: 100%; transition: all 0.3s; margin-top: 1rem;
+    }
+    .btn-buy:hover { background: #357abd; transform: scale(1.05); }
+
+    .success-modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex;
+      align-items: center; justify-content: center; z-index: 2000; opacity: 0; pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    .success-modal.show { opacity: 1; pointer-events: all; }
+    .success-box {
+      background: white; padding: 4rem; border-radius: 28px; text-align: center; max-width: 480px;
+      animation: bounceIn 0.7s;
+    }
+    @keyframes bounceIn { 0% { transform: scale(0.3); opacity: 0; } 50% { transform: scale(1.05); } 70% { transform: scale(0.9); } 100% { transform: scale(1); opacity: 1; } }
+
+    .footer-note {
+      margin-top: 5rem; color: #888; font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="logo">ProGen AI</div>
+    <div class="nav-right">
+      <a href="dashboard.html">Back to Dashboard</a>
+      <a href="support.html">Support</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="header">
+      <h1>Add Credits</h1>
+      <p>Get instant credits to generate unlimited professional product photos. <strong>No real payment required</strong> — this is a demo.</p>
+    </div>
+
+    <div class="plans">
+      <!-- Try Out -->
+      <div class="plan" onclick="buyPlan(20, 5)">
+        <h3>Try Out</h3>
+        <div class="plan-price">$5<small>.00</small></div>
+        <div class="plan-credits">20 Credits</div>
+        <p class="plan-desc">Perfect for testing the AI with your product</p>
+        <button class="btn-buy">Get 20 Credits</button>
+      </div>
+
+      <!-- Pro Pack - Most Popular -->
+      <div class="plan popular" onclick="buyPlan(100, 19)">
+        <div class="popular-badge">MOST POPULAR</div>
+        <h3>Pro Pack</h3>
+        <div class="plan-price">$19<small>.00</small></div>
+        <div class="plan-credits">100 Credits</div>
+        <div class="savings">Save 75% vs Try Out plan!</div>
+        <p class="plan-desc">Best value • Generate 50+ stunning images</p>
+        <button class="btn-buy">Get 100 Credits</button>
+      </div>
+
+      <!-- Business -->
+      <div class="plan" onclick="buyPlan(300, 49)">
+        <h3>Business</h3>
+        <div class="plan-price">$49<small>.00</small></div>
+        <div class="plan-credits">300 Credits</div>
+        <div class="savings">Best deal • Only $0.16 per image!</div>
+        <p class="plan-desc">For heavy users • Unlimited creative freedom</p>
+        <button class="btn-buy">Get 300 Credits</button>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      <strong>Demo Mode:</strong> No real money is charged. Credits are added instantly to your account.
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="success-modal">
+    <div class="success-box">
+      <i class="fas fa-check-circle" style="font-size:5rem; color:var(--success); margin-bottom:1.5rem;"></i>
+      <h2>Payment Successful!</h2>
+      <p id="creditsAdded" style="font-size:1.4rem; font-weight:bold; color:var(--primary); margin:1rem 0;"></p>
+      <p>Your credits are ready to use!</p>
+      <button class="btn-buy" style="margin-top:1.5rem; padding:1.3rem 3rem; font-size:1.2rem;"
+              onclick="document.getElementById('successModal').classList.remove('show'); window.location.href='dashboard.html'">
+        Go to Dashboard
+      </button>
+    </div>
+  </div>
+
+  <script>
+    function buyPlan(creditsToAdd, fakePrice) {
+      const btn = event.target.closest('.plan').querySelector('.btn-buy');
+      const originalText = btn.textContent;
+      btn.textContent = "Processing Payment...";
+      btn.disabled = true;
+
+      setTimeout(() => {
+        let current = parseInt(localStorage.getItem('progen_credits')) || 20;
+        current += creditsToAdd;
+        localStorage.setItem('progen_credits', current);
+
+        document.getElementById('creditsAdded').textContent = `+${creditsToAdd} credits added! You now have ${current} credits.`;
+        document.getElementById('successModal').classList.add('show');
+
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }, 2000);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') document.getElementById('successModal').classList.remove('show');
+    });
+  </script>
+</body>
+</html>
