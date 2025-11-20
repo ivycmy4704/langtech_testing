@@ -3,64 +3,248 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Generate - ProGen AI</title>
-  <link rel="stylesheet" href="css/style.css" />
+  <title>ProGen AI - Your Product Images</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <style>
+    :root { --primary: #4a90e2; --success: #7ed321; --accent: #ff9800; --gray: #f0f2f5; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f8f9ff; margin: 0; color: #333; }
+    .navbar { background: #fff; padding: 1rem 2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-weight: bold; font-size: 1.6rem; color: var(--primary); }
+    .container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+    .card { background: #fff; border-radius: 16px; padding: 2.5rem; box-shadow: 0 8px 30px rgba(0,0,0,0.08); }
+    .locked-product {
+      background: #e6f3ff; padding: 1.2rem 1.5rem; border-radius: 12px;
+      border: 3px solid var(--primary); font-weight: bold; color: var(--primary);
+      text-align: center; font-size: 1.3rem; margin-bottom: 1.5rem;
+      box-shadow: 0 4px 15px rgba(74,144,226,0.2);
+    }
+    .input-group { margin-bottom: 1.8rem; }
+    label { display: block; margin-bottom: 0.6rem; font-weight: 600; color: #444; }
+    textarea { width: 100%; padding: 1rem; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 1rem; min-height: 130px; transition: border 0.3s; }
+    textarea:focus { outline: none; border-color: var(--primary); }
+    .quick-tags { margin: 2rem 0; padding: 1.5rem; background: var(--gray); border-radius: 12px; }
+    .tag-title { font-weight: 600; color: var(--primary); margin: 1rem 0 0.7rem 0; font-size: 1rem; }
+    .tags { display: flex; flex-wrap: wrap; gap: 10px; }
+    .tag {
+      background: white; color: var(--primary); padding: 8px 16px; border-radius: 30px;
+      font-size: 0.9rem; cursor: pointer; transition: all 0.2s; border: 1px solid #d0e4ff;
+    }
+    .tag:hover { background: var(--primary); color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(74,144,226,0.3); }
+    .btn-primary, .btn-success, .btn-accent, .btn-secondary {
+      padding: 0.9rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1.05rem; transition: all 0.2s;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-success { background: var(--success); color: white; }
+    .btn-accent { background: var(--accent); color: white; }
+    .btn-secondary { background: #eee; color: #333; }
+    .btn-sm { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; }
+    .result-card { background: #fafafa; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; position: relative; }
+    .image-container { width: 100%; height: 420px; background: #f0f2f5; position: relative; overflow: hidden; }
+    .result-card img { width: 100%; height: 100%; object-fit: cover; display: none; animation: fadeIn 0.6s; }
+    .loader-wrapper { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+    .spinner { width: 60px; height: 60px; border: 6px solid #e0e0e0; border-top: 6px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+    .timer-text { margin-top: 16px; font-family: monospace; font-weight: bold; font-size: 1.4rem; color: var(--primary); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .loading-text { text-align: center; margin: 1.5rem 0; color: #666; font-style: italic; display: none; }
+    #creditDisplay { font-weight: bold; color: var(--primary); font-size: 1.1rem; }
+    .preview-box { background: #f0f8ff; border: 2px solid #cce5ff; border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+    .editable-preview { background: white; padding: 1rem; border-radius: 8px; min-height: 80px; white-space: pre-wrap; margin: 0.5rem 0; border: 1px solid #ddd; }
+    .actions-area { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; text-align: center; display: none; }
+  </style>
 </head>
-<body class="bg-pastel">
+<body>
   <nav class="navbar">
     <div class="logo">ProGen AI</div>
-    <div>
-      <span id="creditDisplay">Credits: 20</span> |
-      <a href="support.html">Support</a> |
-      <a href="#" onclick="logout()">Logout</a>
+    <div style="display:flex; gap:20px; align-items:center;">
+     <span id="creditDisplay">Credits: 20</span>
+<a href="credit.html" class="btn-sm btn-primary" style="text-decoration:none; margin-left:10px;">Add Credits</a>
+<a href="support.html" class="btn-sm btn-secondary" style="text-decoration:none;">Support</a>
     </div>
   </nav>
-
   <div class="container">
     <div class="card">
-      <h2>Generate 2 Illustrations</h2>
-      <div id="creditWarning" class="alert" style="display:none;"></div>
-
-      <!-- Generator Choice -->
+      <h2 style="margin-top:0; text-align:center; color:#333;">
+        Beautiful Images for <span id="productNameDisplay" style="color:var(--primary);"></span>
+      </h2>
+      <p style="text-align:center; color:#666; margin-bottom:2rem;">
+        Your product name is locked — every image will feature it perfectly.
+      </p>
+      <div class="locked-product">
+        Product: <span id="lockedProductName">Loading...</span>
+      </div>
       <div class="input-group">
-        <label>AI Generator</label>
-        <div class="radio-group">
-          <label><input type="radio" name="generator" value="flux" checked> Flux Pro</label>
-          <label><input type="radio" name="generator" value="pollination"> Pollination.ai</label>
-          <label><input type="radio" name="generator" value="stable"> Stable Diffusion XL</label>
+        <label>Add Style (optional)</label>
+        <textarea id="prompt" placeholder="Click tags or type: on white background, luxury lighting, etc..."></textarea>
+      </div>
+      <div class="quick-tags">
+        <div class="tag-category">
+          <div class="tag-title">Background & Scene</div>
+          <div class="tags">
+            <span class="tag" onclick="addTag('on clean white background')">Clean White</span>
+            <span class="tag" onclick="addTag('on soft pastel background')">Pastel</span>
+            <span class="tag" onclick="addTag('floating with soft shadows')">Floating</span>
+            <span class="tag" onclick="addTag('on marble table')">Marble Table</span>
+            <span class="tag" onclick="addTag('in luxury bathroom')">Luxury Bathroom</span>
+            <span class="tag" onclick="addTag('on wooden table with plants')">Natural Wood</span>
+          </div>
+        </div>
+        <div class="tag-category">
+          <div class="tag-title">Lighting & Mood</div>
+          <div class="tags">
+            <span class="tag" onclick="addTag('soft natural light')">Soft Natural</span>
+            <span class="tag" onclick="addTag('golden hour glow')">Golden Hour</span>
+            <span class="tag" onclick="addTag('studio lighting')">Studio Light</span>
+            <span class="tag" onclick="addTag('dramatic shadows')">Dramatic</span>
+            <span class="tag" onclick="addTag('bright and clean')">Bright & Clean</span>
+          </div>
+        </div>
+        <div class="tag-category">
+          <div class="tag-title">Style</div>
+          <div class="tags">
+            <span class="tag" onclick="addTag('minimalist')">Minimalist</span>
+            <span class="tag" onclick="addTag('luxury editorial')">Luxury</span>
+            <span class="tag" onclick="addTag('e-commerce style')">E-commerce</span>
+            <span class="tag" onclick="addTag('flat lay')">Flat Lay</span>
+            <span class="tag" onclick="addTag('with water droplets')">Fresh Dew</span>
+          </div>
         </div>
       </div>
-
-      <!-- Reference Image -->
-      <div class="input-group">
-        <label>Reference Image (Optional)</label>
-        <input type="file" id="refImage" accept="image/*" />
-        <div id="preview" class="image-preview"></div>
-      </div>
-
-      <!-- Text Prompt -->
-      <div class="input-group">
-        <label>Describe Your Image</label>
-        <textarea id="prompt" rows="4" placeholder="e.g., A minimalist skincare bottle with soft pastel background..."></textarea>
-      </div>
-
-      <button class="btn-primary" onclick="generateImages()">Generate Preview</button>
-
-      <!-- Preview Description (Free) -->
-      <div id="previewText" class="preview-box" style="display:none;"></div>
-
-      <!-- Confirm Generation -->
-      <div id="confirmSection" style="display:none;">
-        <button class="btn-success" onclick="confirmGeneration()">Generate (2 credits)</button>
-        <button class="btn-secondary" onclick="cancelGeneration()">Cancel</button>
-      </div>
-
-      <!-- Results -->
+      <button class="btn-primary" id="previewBtn" onclick="generateNow()" style="width:100%; padding:1.2rem; font-size:1.1rem;">
+        Generate 2 Beautiful Photos
+      </button>
       <div id="results" class="grid-2" style="display:none;"></div>
+      <div id="regenSection" class="actions-area">
+        <h3>Want something different?</h3>
+        <p>Just tell us what to change — the AI learns from you!</p>
+        <button class="btn-accent" onclick="openRefineModal()">Refine & Regenerate</button>
+      </div>
     </div>
   </div>
 
-  <script src="js/generate.js"></script>
-  <script src="js/auth.js"></script>
+  <!-- Refine Modal -->
+  <div id="refineModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:1000;">
+    <div style="background:white; padding:2rem; border-radius:16px; width:90%; max-width:500px;">
+      <h3>Make it perfect</h3>
+      <p>What should we change?</p>
+      <input type="text" id="refineInput" placeholder="e.g. brighter background, add flowers..." style="width:100%; padding:12px; border:1px solid #ccc; border-radius:8px;">
+      <div style="margin-top:1.5rem; text-align:right; display:flex; gap:10px; justify-content:flex-end;">
+        <button class="btn-accent" onclick="applyRefinement()">Regenerate</button>
+        <button class="btn-secondary" onclick="document.getElementById('refineModal').style.display='none'">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const productName = localStorage.getItem('userProduct') || 'Your Product';
+    document.getElementById('productNameDisplay').textContent = productName;
+    document.getElementById('lockedProductName').textContent = productName;
+
+    let credits = parseInt(localStorage.getItem('progen_credits')) || 20;
+    let lastUsedPrompt = productName;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      updateCreditsUI();
+      document.getElementById('prompt').focus();
+    });
+
+    function updateCreditsUI() {
+      document.getElementById('creditDisplay').textContent = `Credits: ${credits}`;
+      localStorage.setItem('progen_credits', credits);
+    }
+
+    function getFullPrompt() {
+      const style = document.getElementById('prompt').value.trim();
+      return style ? `${productName}, ${style}` : productName;
+    }
+
+    function addTag(text) {
+      const textarea = document.getElementById('prompt');
+      const current = textarea.value.trim();
+      textarea.value = current ? current + ", " + text : text;
+      textarea.focus();
+    }
+
+    function generateNow() {
+      if (credits < 2) {
+        alert("Not enough credits! Contact support to get more.");
+        return;
+      }
+
+      const prompt = getFullPrompt();
+      lastUsedPrompt = prompt;
+      credits -= 2;
+      updateCreditsUI();
+
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+      resultsDiv.style.display = 'grid';
+      document.getElementById('regenSection').style.display = 'none';
+
+      const seeds = [Math.floor(Math.random() * 999999), Math.floor(Math.random() * 999999)];
+
+      seeds.forEach((seed, index) => {
+        const encodedPrompt = encodeURIComponent(prompt);
+        const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=960&height=960&seed=${seed}&nologo=true&model=flux-schnell`;
+
+        const card = document.createElement('div');
+        card.className = 'result-card';
+        card.innerHTML = `
+          <div class="image-container">
+            <div class="loader-wrapper">
+              <div class="spinner"></div>
+              <div class="timer-text">5.0s</div>
+            </div>
+            <img src="${imageUrl}" alt="Generated image" 
+                 onload="this.style.display='block'; this.previousElementSibling.style.display='none'; document.getElementById('regenSection').style.display='block';"
+                 onerror="this.previousElementSibling.innerHTML='<p style=\'color:red;\'>Failed to load</p>'">
+          </div>
+          <button class="btn-sm btn-primary" style="margin:1rem;" onclick="downloadImage('${imageUrl}', ${index+1})">Download</button>
+        `;
+        resultsDiv.appendChild(card);
+
+        // Countdown timer
+        let timeLeft = 5.0;
+        const timerEl = card.querySelector('.timer-text');
+        const timerInterval = setInterval(() => {
+          timeLeft -= 0.1;
+          if (timeLeft <= 0) {
+            timerEl.textContent = "Finishing...";
+            clearInterval(timerInterval);
+          } else {
+            timerEl.textContent = timeLeft.toFixed(1) + "s";
+          }
+        }, 100);
+      });
+    }
+
+    function downloadImage(url, num) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${productName.replace(/ /g, '_')}_${num}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function openRefineModal() {
+      document.getElementById('refineModal').style.display = 'flex';
+      document.getElementById('refineInput').focus();
+    }
+
+    function applyRefinement() {
+      const feedback = document.getElementById('refineInput').value.trim();
+      if (feedback) {
+        const current = document.getElementById('prompt').value.trim();
+        document.getElementById('prompt').value = current ? current + ", " + feedback : feedback;
+      }
+      document.getElementById('refineModal').style.display = 'none';
+      document.getElementById('refineInput').value = '';
+      generateNow();
+    }
+  </script>
 </body>
 </html>
