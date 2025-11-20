@@ -50,10 +50,10 @@
                  style="display:none; margin-top:8px;" />
         </div>
 
-        <!-- Product -->
+        <!-- Product Name (this is the one we lock in dashboard) -->
         <div class="input-group">
           <label for="productName">Product Name *</label>
-          <input type="text" id="productName" placeholder="e.g., Eco-Friendly Bottle" required />
+          <input type="text" id="productName" placeholder="e.g., Glow Serum, Eco Bottle" required />
         </div>
 
         <div class="input-group">
@@ -61,7 +61,7 @@
           <textarea id="requirements" rows="3" placeholder="Branding, tone, target audience…"></textarea>
         </div>
 
-        <!-- Value Prompts -->
+        <!-- Value Prompts (optional) -->
         <div class="input-group">
           <label>Value Prompts (Optional – max 5)</label>
           <p class="text-sm">e.g. "cartoon", "3D render", "minimalist"</p>
@@ -99,10 +99,7 @@
     </div>
   </div>
 
-  <!-- EmailJS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-
-  <!-- ALL JAVASCRIPT BELOW -->
   <script>
     console.log("=== PROGEN AI REGISTER PAGE LOADED ===");
     let valuePromptCount = 0;
@@ -152,11 +149,9 @@
       custom.required = select.value === "Others";
     }
 
-    /* ---------- FORM SUBMISSION ---------- */
     document.getElementById("registerForm").addEventListener("submit", async function (e) {
       e.preventDefault();
 
-      // ---- 1. Grab values ----
       const company   = document.getElementById("company").value.trim();
       const email     = document.getElementById("email").value.trim();
       const industrySelect = document.getElementById("industry").value;
@@ -164,44 +159,40 @@
       const product   = document.getElementById("productName").value.trim();
       const reqs      = document.getElementById("requirements").value.trim();
 
-      // ---- 2. REQUIRED FIELDS CHECK (fixed!) ----
       if (!company || !email || !product) {
         alert("Please fill all required fields (Company, Email, Product).");
         return;
       }
 
-      // ---- 3. Custom industry ----
       const industry = industrySelect === "Others" ? customIndustry : industrySelect;
       if (industrySelect === "Others" && !customIndustry) {
         alert("Please enter your custom industry.");
         return;
       }
 
-      // ---- 4. Value prompts ----
       const valuePrompts = Array.from(document.querySelectorAll("#valuePrompts .value-input"))
-                               .map(i => i.value.trim())
-                               .filter(v => v);
+                               .map(i => i.value.trim()).filter(v => v);
 
       const format     = document.getElementById("format").value;
       const resolution = document.getElementById("resolution").value;
 
-      // ---- 5. Generate code ----
+      // Generate code
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       let code = 'IND';
       for (let i = 0; i < 9; i++) {
         code += chars.charAt(Math.floor(Math.random() * chars.length));
       }
 
-      // ---- 6. Save locally ----
-      const userData = { company, email, industry, product, requirements: reqs,
-                         valuePrompts, format, resolution,
-                         createdAt: new Date().toISOString() };
-      localStorage.setItem("tempUser", JSON.stringify(userData));
+      // THIS IS THE KEY: Save product name so dashboard can lock it
+      localStorage.setItem("userProduct", product);  // Locked in dashboard
       localStorage.setItem("pendingCode", code);
 
-      // ---- 7. Prepare EmailJS ----
+      const userData = { company, email, industry, product, requirements: reqs,
+                         valuePrompts, format, resolution, createdAt: new Date().toISOString() };
+      localStorage.setItem("tempUser", JSON.stringify(userData));
+
       const templateParams = { company, email, product, industry, code };
-      emailjs.init("04haQDj1VizCiKBn4");   // <-- your public key
+      emailjs.init("04haQDj1VizCiKBn4");
 
       const submitBtn = e.target.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
@@ -209,7 +200,7 @@
 
       try {
         await emailjs.send("service_1vi3zyz", "template_y5dzqi9", templateParams);
-        alert(`Account created!\nYour Code: ${code}\nCheck your email!`);
+        alert(`Account created!\nYour Code: ${code}\nCheck your email and log in!`);
         window.location.href = "index.html";
       } catch (err) {
         console.error("EmailJS error:", err);
