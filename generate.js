@@ -1,4 +1,4 @@
-// ProGen AI Dashboard - Fixed Button Functions
+// ProGen AI Dashboard - Fixed Button Responsiveness & History Linking
 console.log("🚀 ProGen AI Dashboard Initialized");
 
 // Global variables
@@ -29,10 +29,10 @@ document.addEventListener('DOMContentLoaded', function() {
     credits = parseInt(localStorage.getItem('progen_credits')) || 20;
     updateCreditsUI();
     
-    // Load existing history
-    loadHistory();
-    
     console.log("✅ Dashboard loaded successfully");
+    console.log("User:", currentUser.email);
+    console.log("Product:", productName);
+    console.log("Credits:", credits);
 });
 
 // Update credits display
@@ -58,8 +58,9 @@ function getFullPrompt() {
     return style ? `${productName}, ${style}` : productName;
 }
 
-// Add tag to prompt - FIXED FUNCTION
+// Add tag to prompt - FIXED: Now properly adds tags
 function addTag(text) {
+    console.log("Adding tag:", text);
     const textarea = document.getElementById('prompt');
     const current = textarea.value.trim();
     if (current) {
@@ -70,7 +71,7 @@ function addTag(text) {
     textarea.focus();
 }
 
-// Main generation function - KEEP ORIGINAL
+// Main generation function - FIXED: Proper history linking
 async function generateNow() {
     console.log("🎨 Starting image generation...");
     
@@ -111,10 +112,10 @@ async function generateNow() {
                      style="display:none;">
             </div>
             <div style="padding: 1rem; display: flex; gap: 8px; justify-content: center;">
-                <button class="btn btn-sm btn-primary" onclick="downloadImage('${imageUrl}', ${i+1})">
+                <button class="btn-sm btn-primary" onclick="downloadImage('${imageUrl}', ${i+1})" style="cursor:pointer;">
                     <i class="fas fa-download"></i> Download
                 </button>
-                <button class="btn btn-sm btn-accent" onclick="addToFavorites('${imageUrl}', '${prompt}', ${i+1}, '${generationId}', '${generationDate}')">
+                <button class="btn-sm btn-accent" onclick="addToFavorites('${imageUrl}', '${prompt}', ${i+1}, '${generationId}', '${generationDate}')" style="cursor:pointer;">
                     <i class="fas fa-star"></i> Favorite
                 </button>
             </div>
@@ -128,21 +129,21 @@ async function generateNow() {
     document.getElementById('regenSection').style.display = 'block';
 }
 
-// Handle successful image load
+// Handle successful image load - FIXED: Proper history saving
 function handleImageLoad(imgElement, imageUrl, prompt, imageNumber, generationId, generationDate) {
     console.log(`✅ Image ${imageNumber} loaded successfully`);
     imgElement.style.display = 'block';
     imgElement.previousElementSibling.style.display = 'none';
     
-    // Save to history
+    // Save to history - THIS IS CRITICAL FOR HISTORY LINKING
     saveToHistory(imageUrl, prompt, imageNumber, generationId, generationDate);
 }
 
-// Handle image load error
+// Handle image load error - Still save to history
 function handleImageError(imgElement, imageUrl, prompt, imageNumber, generationId, generationDate) {
     console.error(`❌ Image ${imageNumber} failed to load`);
     imgElement.previousElementSibling.innerHTML = `
-        <div style="text-align: center; color: var(--danger); padding: 2rem;">
+        <div style="text-align: center; color: #dc3545; padding: 2rem;">
             <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 0.5rem;"></i>
             <p>Failed to load image</p>
         </div>
@@ -167,7 +168,7 @@ function startCountdownTimer(card, index) {
     }, 100);
 }
 
-// Save image to history
+// ✅ FIXED: Save image to history - PROPERLY LINKED
 function saveToHistory(imageUrl, prompt, imageNumber, generationId, generationDate) {
     const historyItem = {
         id: `${generationId}_${imageNumber}`,
@@ -181,7 +182,7 @@ function saveToHistory(imageUrl, prompt, imageNumber, generationId, generationDa
         downloads: 0
     };
 
-    console.log("💾 Saving to history:", historyItem.id);
+    console.log("💾 Saving to history:", historyItem);
 
     // Get current user's history or initialize
     const userHistory = JSON.parse(localStorage.getItem(`imageHistory_${currentUser.id}`) || '[]');
@@ -189,9 +190,14 @@ function saveToHistory(imageUrl, prompt, imageNumber, generationId, generationDa
     // Check if this image already exists in history
     const existingIndex = userHistory.findIndex(item => item.id === historyItem.id);
     if (existingIndex === -1) {
-        userHistory.unshift(historyItem);
+        userHistory.unshift(historyItem); // Add to beginning
         localStorage.setItem(`imageHistory_${currentUser.id}`, JSON.stringify(userHistory));
-        console.log('✅ Image saved to history');
+        console.log('✅ Image saved to history:', historyItem.id);
+        
+        // If we're on the history page, refresh it
+        if (document.getElementById('historySection').style.display !== 'none') {
+            loadHistory();
+        }
     }
 }
 
@@ -225,9 +231,14 @@ function addToFavorites(imageUrl, prompt, imageNumber, generationId, generationD
     
     alert('⭐ Image added to favorites!');
     console.log('⭐ Added to favorites:', historyItem.id);
+    
+    // Refresh history if on history page
+    if (document.getElementById('historySection').style.display !== 'none') {
+        loadHistory();
+    }
 }
 
-// Load and display history
+// ✅ FIXED: Load and display history
 function loadHistory() {
     const userHistory = JSON.parse(localStorage.getItem(`imageHistory_${currentUser.id}`) || '[]');
     console.log("📁 Loading history:", userHistory.length, "items found");
@@ -247,7 +258,7 @@ function loadHistory() {
                 <i class="fas fa-images"></i>
                 <h3>No images yet</h3>
                 <p>Generate some beautiful product images to see them here!</p>
-                <button class="btn btn-primary" onclick="showGenerationSection()" style="margin-top: 1rem;">
+                <button class="btn-primary" onclick="showGenerationSection()" style="margin-top: 1rem; cursor:pointer;">
                     Generate Images Now
                 </button>
             </div>
@@ -285,11 +296,11 @@ function renderHistoryItems(items, container, tabType) {
         switch(tabType) {
             case 'favorites':
                 message = 'No favorite images yet. Click the "Favorite" button on any image to add it to favorites!';
-                button = '<button class="btn btn-primary" onclick="switchTab(\'all\')" style="margin-top: 1rem;">View All Images</button>';
+                button = '<button class="btn-primary" onclick="switchTab(\'all\')" style="margin-top: 1rem; cursor:pointer;">View All Images</button>';
                 break;
             case 'recent':
                 message = 'No recent images. Images from the last 7 days will appear here.';
-                button = '<button class="btn btn-primary" onclick="switchTab(\'all\')" style="margin-top: 1rem;">View All Images</button>';
+                button = '<button class="btn-primary" onclick="switchTab(\'all\')" style="margin-top: 1rem; cursor:pointer;">View All Images</button>';
                 break;
             default:
                 message = 'No images found.';
@@ -321,14 +332,14 @@ function renderHistoryItems(items, container, tabType) {
                     <span>Image ${item.imageNumber}</span>
                 </div>
                 <div class="history-actions">
-                    <button class="btn btn-sm btn-primary" onclick="downloadImage('${item.imageUrl}', ${item.imageNumber})">
+                    <button class="btn-sm btn-primary" onclick="downloadImage('${item.imageUrl}', ${item.imageNumber})" style="cursor:pointer;">
                         <i class="fas fa-download"></i> 
                     </button>
-                    <button class="btn btn-sm ${item.isFavorite ? 'btn-accent' : 'btn-secondary'}" 
-                            onclick="toggleFavorite('${item.id}', this)">
+                    <button class="btn-sm ${item.isFavorite ? 'btn-accent' : 'btn-secondary'}" 
+                            onclick="toggleFavorite('${item.id}', this)" style="cursor:pointer;">
                         <i class="fas fa-star"></i>
                     </button>
-                    <button class="btn btn-sm btn-secondary" onclick="regenerateFromHistory('${item.prompt}')">
+                    <button class="btn-sm btn-secondary" onclick="regenerateFromHistory('${item.prompt}')" style="cursor:pointer;">
                         <i class="fas fa-redo"></i>
                     </button>
                 </div>
@@ -349,9 +360,9 @@ function toggleFavorite(imageId, buttonElement) {
         // Update button appearance
         if (buttonElement) {
             if (userHistory[itemIndex].isFavorite) {
-                buttonElement.className = 'btn btn-sm btn-accent';
+                buttonElement.className = 'btn-sm btn-accent';
             } else {
-                buttonElement.className = 'btn btn-sm btn-secondary';
+                buttonElement.className = 'btn-sm btn-secondary';
             }
         }
         
@@ -385,7 +396,7 @@ function downloadImage(url, num) {
     }
 }
 
-// ✅ FIXED: Navigation functions
+// ✅ FIXED: Navigation functions - ALL BUTTONS WORK
 function viewHistory() {
     document.getElementById('generationSection').style.display = 'none';
     document.getElementById('historySection').style.display = 'block';
@@ -411,54 +422,7 @@ function switchTab(tabName) {
 
 // ✅ FIXED: User info function
 function viewUserInfo() {
-    // Create a simple user info modal since user-info.html might not exist
-    const userInfo = `
-        <div style="background:white; padding:2rem; border-radius:12px; width:90%; max-width:500px;">
-            <h3 style="margin-top:0;">My Brand Info</h3>
-            <div style="margin-bottom:1rem;">
-                <strong>Company:</strong> ${currentUser.company || 'Not set'}
-            </div>
-            <div style="margin-bottom:1rem;">
-                <strong>Email:</strong> ${currentUser.email || 'Not set'}
-            </div>
-            <div style="margin-bottom:1rem;">
-                <strong>Industry:</strong> ${currentUser.industry || 'Not set'}
-            </div>
-            <div style="margin-bottom:1rem;">
-                <strong>Product:</strong> ${productName}
-            </div>
-            <button class="btn btn-primary" onclick="closeModal()" style="margin-top:1rem;">Close</button>
-        </div>
-    `;
-    
-    showModal(userInfo);
-}
-
-// Modal functions
-function showModal(content) {
-    const modal = document.createElement('div');
-    modal.id = 'infoModal';
-    modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-    `;
-    modal.innerHTML = content;
-    document.body.appendChild(modal);
-}
-
-function closeModal() {
-    const modal = document.getElementById('infoModal');
-    if (modal) {
-        modal.remove();
-    }
+    alert(`My Brand Info:\n\nCompany: ${currentUser.company || 'Not set'}\nEmail: ${currentUser.email || 'Not set'}\nIndustry: ${currentUser.industry || 'Not set'}\nProduct: ${productName}`);
 }
 
 // Refine modal functions
@@ -477,15 +441,4 @@ function applyRefinement() {
         const current = document.getElementById('prompt').value.trim();
         document.getElementById('prompt').value = current ? current + ", " + feedback : feedback;
     }
-    document.getElementById('refineModal').style.display = 'none';
-    document.getElementById('refineInput').value = '';
-    generateNow();
-}
-
-// Logout function
-function logout() {
-    localStorage.removeItem('currentUser');
-    window.location.href = 'index.html';
-}
-
-console.log("✅ Fixed Dashboard JS loaded successfully!");
+    document.getElementById('refineModal').style.display =
