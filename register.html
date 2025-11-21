@@ -5,24 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Create Account - ProGen AI</title>
   <link rel="stylesheet" href="css/style.css" />
-  <style>
-    .value-wrapper { margin-bottom: .5rem; }
-    .value-input { width:100%; padding:8px; border:1px solid #ddd; border-radius:4px; }
-    .grid-2 { display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; }
-    .btn-sm { padding:6px 12px; font-size:14px; white-space:nowrap; }
-    .btn-secondary { background:#6c757d; color:#fff; border:none; border-radius:4px; cursor:pointer; }
-    .btn-secondary:hover { background:#5a6268; }
-    .btn-secondary:disabled { background:#ccc; cursor:not-allowed; }
-    .text-sm { font-size:.875rem; color:#666; margin-bottom:8px; }
-    .btn-remove { background:#dc3545; color:#fff; border:none; border-radius:4px; padding:6px 12px; cursor:pointer; font-size:14px; }
-    .btn-remove:hover { background:#c82333; }
-  </style>
 </head>
 <body>
   <div class="container">
     <div class="card">
       <h1>Create Your Account</h1>
-      <p class="subtitle">Fill in your details – a unique <strong>Industry Code</strong> will be e-mailed to you.</p>
+      <p class="subtitle">
+        Fill in your details – a unique <strong>Industry Code</strong> will be e-mailed to you.
+      </p>
 
       <form id="registerForm">
         <!-- Company & Email -->
@@ -47,10 +37,10 @@
             <option value="Others">Others (Please specify)</option>
           </select>
           <input type="text" id="customIndustry" placeholder="Enter your industry"
-                 style="display:none; margin-top:8px;" />
+                 class="mt-4" style="display:none;" />
         </div>
 
-        <!-- Product Name (this is the one we lock in dashboard) -->
+        <!-- Product Name (locked in dashboard) -->
         <div class="input-group">
           <label for="productName">Product Name *</label>
           <input type="text" id="productName" placeholder="e.g., Glow Serum, Eco Bottle" required />
@@ -61,15 +51,17 @@
           <textarea id="requirements" rows="3" placeholder="Branding, tone, target audience…"></textarea>
         </div>
 
-        <!-- Value Prompts (optional) -->
+        <!-- Value Prompts (optional – max 5) -->
         <div class="input-group">
           <label>Value Prompts (Optional – max 5)</label>
-          <p class="text-sm">e.g. "cartoon", "3D render", "minimalist"</p>
-          <div id="valuePrompts"></div>
-          <button type="button" class="btn-sm btn-secondary" id="addValueBtn">+ Add Value</button>
+          <p class="text-sm" style="color:var(--gray); margin-bottom: .5rem;">
+            e.g. "cartoon", "3D render", "minimalist"
+          </p>
+          <div id="valuePrompts" class="mb-3"></div>
+          <button type="button" class="btn btn-sm btn-secondary" id="addValueBtn">+ Add Value</button>
         </div>
 
-        <!-- Image Specs -->
+        <!-- Default Image Specifications -->
         <h2>Default Image Specifications</h2>
         <div class="grid-2">
           <div class="input-group">
@@ -90,7 +82,7 @@
           </div>
         </div>
 
-        <button type="submit" class="btn-primary btn-block">
+        <button type="submit" class="btn btn-primary btn-block mt-4">
           Create Account & Send Code
         </button>
       </form>
@@ -99,6 +91,7 @@
     </div>
   </div>
 
+  <!-- EmailJS -->
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   <script>
     console.log("=== PROGEN AI REGISTER PAGE LOADED ===");
@@ -110,23 +103,31 @@
     });
 
     function addValuePrompt() {
-      if (valuePromptCount >= 5) { alert("Maximum 5 value prompts allowed."); return; }
+      if (valuePromptCount >= 5) {
+        alert("Maximum 5 value prompts allowed.");
+        return;
+      }
       valuePromptCount++;
+
       const container = document.getElementById("valuePrompts");
       const wrapper = document.createElement("div");
-      wrapper.className = "value-wrapper";
+      wrapper.className = "input-group";
+      wrapper.style.marginBottom = "0.75rem";
+
       wrapper.innerHTML = `
-        <div class="grid-2">
-          <input type="text" placeholder="e.g. cartoon, 3D render..." class="value-input" />
-          <button type="button" class="btn-remove" onclick="removeValuePrompt(this)">Remove</button>
-        </div>`;
+        <div class="d-flex gap-1 align-center">
+          <input type="text" placeholder="e.g. cartoon, 3D render..." class="flex-grow" style="margin:0;" />
+          <button type="button" class="btn btn-danger btn-sm" onclick="removeValuePrompt(this)">Remove</button>
+        </div>
+      `;
+
       container.appendChild(wrapper);
+      wrapper.querySelector('input').focus();
       updateAddButtonState();
-      wrapper.querySelector('.value-input').focus();
     }
 
     function removeValuePrompt(btn) {
-      btn.closest(".value-wrapper").remove();
+      btn.closest(".input-group").remove();
       valuePromptCount--;
       updateAddButtonState();
     }
@@ -135,20 +136,31 @@
       const btn = document.getElementById('addValueBtn');
       if (valuePromptCount >= 5) {
         btn.disabled = true;
-        btn.textContent = 'Max 5 reached';
+        btn.textContent = "Max 5 reached";
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn');
+        btn.style.background = '#ccc';
       } else {
         btn.disabled = false;
-        btn.textContent = '+ Add Value';
+        btn.textContent = "+ Add Value";
+        btn.classList.add('btn-secondary');
+        btn.style.background = '';
       }
     }
 
     function toggleCustomIndustry() {
       const select = document.getElementById("industry");
       const custom = document.getElementById("customIndustry");
-      custom.style.display = select.value === "Others" ? "block" : "none";
-      custom.required = select.value === "Others";
+      if (select.value === "Others") {
+        custom.style.display = "block";
+        custom.required = true;
+      } else {
+        custom.style.display = "none";
+        custom.required = false;
+      }
     }
 
+    // Form Submit
     document.getElementById("registerForm").addEventListener("submit", async function (e) {
       e.preventDefault();
 
@@ -170,21 +182,22 @@
         return;
       }
 
-      const valuePrompts = Array.from(document.querySelectorAll("#valuePrompts .value-input"))
-                               .map(i => i.value.trim()).filter(v => v);
+      const valuePrompts = Array.from(document.querySelectorAll("#valuePrompts input"))
+                               .map(i => i.value.trim())
+                               .filter(v => v);
 
       const format     = document.getElementById("format").value;
       const resolution = document.getElementById("resolution").value;
 
-      // Generate code
+      // Generate Industry Code
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
       let code = 'IND';
       for (let i = 0; i < 9; i++) {
         code += chars.charAt(Math.floor(Math.random() * chars.length));
       }
 
-      // THIS IS THE KEY: Save product name so dashboard can lock it
-      localStorage.setItem("userProduct", product);  // Locked in dashboard
+      // Store product name (locked in dashboard) + pending code
+      localStorage.setItem("userProduct", product);
       localStorage.setItem("pendingCode", code);
 
       const userData = { company, email, industry, product, requirements: reqs,
