@@ -6,74 +6,301 @@
   <title>ProGen AI - Your Product Images</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <style>
-    :root { --primary: #4a90e2; --success: #7ed321; --accent: #ff9800; --gray: #f0f2f5; }
-    body { font-family: 'Segoe UI', sans-serif; background: #f8f9ff; margin: 0; color: #333; }
-    .navbar { background: #fff; padding: 1rem 2rem; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
-    .logo { font-weight: bold; font-size: 1.6rem; color: var(--primary); }
-    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
-    .card { background: #fff; border-radius: 16px; padding: 2.5rem; box-shadow: 0 8px 30px rgba(0,0,0,0.08); margin-bottom: 2rem; }
+    :root { 
+      --primary: #4a90e2; 
+      --success: #7ed321; 
+      --accent: #ff9800; 
+      --gray: #f0f2f5; 
+      --danger: #dc3545;
+    }
+    
+    * {
+      box-sizing: border-box;
+    }
+    
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+      background: #f8f9ff; 
+      margin: 0; 
+      color: #333;
+      line-height: 1.6;
+    }
+    
+    .navbar { 
+      background: #fff; 
+      padding: 1rem 2rem; 
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+    
+    .logo { 
+      font-weight: bold; 
+      font-size: 1.6rem; 
+      color: var(--primary); 
+    }
+    
+    .container { 
+      max-width: 1200px; 
+      margin: 2rem auto; 
+      padding: 0 1rem; 
+    }
+    
+    .card { 
+      background: #fff; 
+      border-radius: 16px; 
+      padding: 2rem; 
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08); 
+      margin-bottom: 2rem; 
+    }
+    
     .locked-product {
-      background: #e6f3ff; padding: 1.2rem 1.5rem; border-radius: 12px;
-      border: 3px solid var(--primary); font-weight: bold; color: var(--primary);
-      text-align: center; font-size: 1.3rem; margin-bottom: 1.5rem;
+      background: #e6f3ff; 
+      padding: 1.2rem 1.5rem; 
+      border-radius: 12px;
+      border: 3px solid var(--primary); 
+      font-weight: bold; 
+      color: var(--primary);
+      text-align: center; 
+      font-size: 1.3rem; 
+      margin-bottom: 1.5rem;
       box-shadow: 0 4px 15px rgba(74,144,226,0.2);
     }
-    .input-group { margin-bottom: 1.8rem; }
-    label { display: block; margin-bottom: 0.6rem; font-weight: 600; color: #444; }
-    textarea { width: 100%; padding: 1rem; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 1rem; min-height: 130px; transition: border 0.3s; }
-    textarea:focus { outline: none; border-color: var(--primary); }
-    .quick-tags { margin: 2rem 0; padding: 1.5rem; background: var(--gray); border-radius: 12px; }
-    .tag-title { font-weight: 600; color: var(--primary); margin: 1rem 0 0.7rem 0; font-size: 1rem; }
-    .tags { display: flex; flex-wrap: wrap; gap: 10px; }
+    
+    .input-group { 
+      margin-bottom: 1.5rem; 
+    }
+    
+    label { 
+      display: block; 
+      margin-bottom: 0.5rem; 
+      font-weight: 600; 
+      color: #444; 
+    }
+    
+    textarea { 
+      width: 100%; 
+      padding: 1rem; 
+      border: 2px solid #e0e0e0; 
+      border-radius: 12px; 
+      font-size: 1rem; 
+      min-height: 120px; 
+      transition: border 0.3s; 
+      font-family: inherit;
+      resize: vertical;
+    }
+    
+    textarea:focus { 
+      outline: none; 
+      border-color: var(--primary); 
+      box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    }
+    
+    .quick-tags { 
+      margin: 2rem 0; 
+      padding: 1.5rem; 
+      background: var(--gray); 
+      border-radius: 12px; 
+    }
+    
+    .tag-title { 
+      font-weight: 600; 
+      color: var(--primary); 
+      margin: 1rem 0 0.7rem 0; 
+      font-size: 1rem; 
+    }
+    
+    .tags { 
+      display: flex; 
+      flex-wrap: wrap; 
+      gap: 8px; 
+    }
+    
     .tag {
-      background: white; color: var(--primary); padding: 8px 16px; border-radius: 30px;
-      font-size: 0.9rem; cursor: pointer; transition: all 0.2s; border: 1px solid #d0e4ff;
+      background: white; 
+      color: var(--primary); 
+      padding: 6px 12px; 
+      border-radius: 20px;
+      font-size: 0.85rem; 
+      cursor: pointer; 
+      transition: all 0.2s; 
+      border: 1px solid #d0e4ff;
     }
-    .tag:hover { background: var(--primary); color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(74,144,226,0.3); }
-    .btn-primary, .btn-success, .btn-accent, .btn-secondary {
-      padding: 0.9rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1.05rem; transition: all 0.2s;
+    
+    .tag:hover { 
+      background: var(--primary); 
+      color: white; 
+      transform: translateY(-1px); 
     }
-    .btn-primary { background: var(--primary); color: white; }
-    .btn-success { background: var(--success); color: white; }
-    .btn-accent { background: var(--accent); color: white; }
-    .btn-secondary { background: #eee; color: #333; }
-    .btn-sm { padding: 0.6rem 1.2rem; font-size: 0.9rem; }
-    .btn-nav {
-      background: none;
-      border: none;
-      color: var(--primary);
+    
+    .btn {
+      padding: 0.8rem 1.5rem; 
+      border: none; 
+      border-radius: 8px; 
+      cursor: pointer; 
+      font-weight: 600; 
+      font-size: 1rem; 
+      transition: all 0.2s;
       text-decoration: none;
-      cursor: pointer;
-      font-size: inherit;
-      padding: 0;
-      margin: 0;
-      font-weight: 600;
+      display: inline-block;
+      text-align: center;
     }
-    .btn-nav:hover {
-      text-decoration: underline;
+    
+    .btn-primary { 
+      background: var(--primary); 
+      color: white; 
     }
-    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; }
-    .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
-    .result-card { background: #fafafa; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; position: relative; }
-    .image-container { width: 100%; height: 420px; background: #f0f2f5; position: relative; overflow: hidden; }
-    .history-image-container { width: 100%; height: 250px; background: #f0f2f5; position: relative; overflow: hidden; }
-    .result-card img { width: 100%; height: 100%; object-fit: cover; display: none; animation: fadeIn 0.6s; }
-    .history-card img { width: 100%; height: 100%; object-fit: cover; animation: fadeIn 0.6s; }
-    .loader-wrapper { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
-    .spinner { width: 60px; height: 60px; border: 6px solid #e0e0e0; border-top: 6px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
-    .timer-text { margin-top: 16px; font-family: monospace; font-weight: bold; font-size: 1.4rem; color: var(--primary); }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    .loading-text { text-align: center; margin: 1.5rem 0; color: #666; font-style: italic; display: none; }
-    #creditDisplay { font-weight: bold; color: var(--primary); font-size: 1.1rem; }
-    .preview-box { background: #f0f8ff; border: 2px solid #cce5ff; border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
-    .editable-preview { background: white; padding: 1rem; border-radius: 8px; min-height: 80px; white-space: pre-wrap; margin: 0.5rem 0; border: 1px solid #ddd; }
-    .actions-area { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; text-align: center; display: none; }
+    
+    .btn-success { 
+      background: var(--success); 
+      color: white; 
+    }
+    
+    .btn-accent { 
+      background: var(--accent); 
+      color: white; 
+    }
+    
+    .btn-secondary { 
+      background: #e9ecef; 
+      color: #495057; 
+      border: 1px solid #ced4da;
+    }
+    
+    .btn-danger { 
+      background: var(--danger); 
+      color: white; 
+    }
+    
+    .btn-sm { 
+      padding: 0.5rem 1rem; 
+      font-size: 0.85rem; 
+    }
+    
+    .btn-block {
+      width: 100%;
+      display: block;
+    }
+    
+    .btn:hover { 
+      opacity: 0.9; 
+      transform: translateY(-1px); 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    
+    .btn:disabled { 
+      opacity: 0.6; 
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .grid-2 { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      gap: 1.5rem; 
+      margin-top: 2rem; 
+    }
+    
+    .grid-3 { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+      gap: 1.5rem; 
+      margin-top: 1rem; 
+    }
+    
+    .result-card { 
+      background: #fafafa; 
+      border-radius: 12px; 
+      overflow: hidden; 
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05); 
+      text-align: center; 
+      position: relative;
+      transition: transform 0.2s;
+    }
+    
+    .result-card:hover {
+      transform: translateY(-2px);
+    }
+    
+    .image-container { 
+      width: 100%; 
+      height: 300px; 
+      background: #f0f2f5; 
+      position: relative; 
+      overflow: hidden; 
+    }
+    
+    .history-image-container { 
+      width: 100%; 
+      height: 200px; 
+      background: #f0f2f5; 
+      position: relative; 
+      overflow: hidden; 
+    }
+    
+    .result-card img, .history-card img { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      display: block;
+    }
+    
+    .loader-wrapper { 
+      position: absolute; 
+      top: 50%; 
+      left: 50%; 
+      transform: translate(-50%, -50%); 
+      text-align: center; 
+    }
+    
+    .spinner { 
+      width: 40px; 
+      height: 40px; 
+      border: 4px solid #e0e0e0; 
+      border-top: 4px solid var(--primary); 
+      border-radius: 50%; 
+      animation: spin 1s linear infinite; 
+      margin: 0 auto;
+    }
+    
+    .timer-text { 
+      margin-top: 10px; 
+      font-family: monospace; 
+      font-weight: bold; 
+      font-size: 1rem; 
+      color: var(--primary); 
+    }
+    
+    @keyframes spin { 
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes fadeIn { 
+      from { opacity: 0; } 
+      to { opacity: 1; } 
+    }
+    
+    #creditDisplay { 
+      font-weight: bold; 
+      color: var(--primary); 
+      font-size: 1rem; 
+    }
+    
+    .actions-area { 
+      margin-top: 2rem; 
+      padding-top: 1.5rem; 
+      border-top: 1px solid #eee; 
+      text-align: center; 
+    }
     
     /* History Section Styles */
-    .history-section { margin-top: 3rem; }
+    .history-section { 
+      margin-top: 2rem; 
+    }
+    
     .history-header { 
       display: flex; 
       justify-content: space-between; 
@@ -82,44 +309,58 @@
       padding-bottom: 0.5rem;
       border-bottom: 2px solid var(--primary);
     }
+    
     .history-card {
       background: #fff;
-      border-radius: 12px;
+      border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
       transition: all 0.3s ease;
-      border: 1px solid #e0e0e0;
+      border: 1px solid #e9ecef;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
+    
     .history-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
     }
+    
     .history-info {
       padding: 1rem;
       background: #f8f9fa;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
     }
+    
     .history-prompt {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #555;
       margin-bottom: 0.5rem;
       line-height: 1.4;
+      flex-grow: 1;
     }
+    
     .history-date {
-      font-size: 0.8rem;
-      color: #888;
+      font-size: 0.75rem;
+      color: #6c757d;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-bottom: 0.5rem;
     }
+    
     .history-actions {
       display: flex;
       gap: 0.5rem;
-      margin-top: 0.5rem;
     }
+    
     .history-actions button {
       flex: 1;
-      padding: 0.4rem 0.8rem;
-      font-size: 0.8rem;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.75rem;
       white-space: nowrap;
     }
     
@@ -127,26 +368,32 @@
     .tabs {
       display: flex;
       background: #f0f2f5;
-      border-radius: 12px;
+      border-radius: 10px;
       padding: 0.5rem;
       margin-bottom: 1.5rem;
+      gap: 0.5rem;
     }
+    
     .tab {
       flex: 1;
-      padding: 0.8rem 1rem;
+      padding: 0.7rem 1rem;
       text-align: center;
       cursor: pointer;
       border-radius: 8px;
       font-weight: 600;
       transition: all 0.3s ease;
+      font-size: 0.9rem;
     }
+    
     .tab.active {
       background: var(--primary);
       color: white;
     }
+    
     .tab-content {
       display: none;
     }
+    
     .tab-content.active {
       display: block;
     }
@@ -154,69 +401,90 @@
     /* Empty state */
     .empty-state {
       text-align: center;
-      padding: 3rem;
-      color: #666;
+      padding: 3rem 1rem;
+      color: #6c757d;
       grid-column: 1 / -1;
     }
+    
     .empty-state i {
       font-size: 3rem;
-      color: #ccc;
+      color: #dee2e6;
       margin-bottom: 1rem;
     }
-
-    /* Favorite button styles */
-    .favorite-btn {
-      background: var(--accent);
-      color: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      transition: all 0.3s ease;
+    
+    .empty-state h3 {
+      margin: 0 0 0.5rem 0;
+      color: #495057;
     }
-    .favorite-btn:hover {
-      background: #e68900;
-      transform: translateY(-1px);
+    
+    .empty-state p {
+      margin: 0 0 1.5rem 0;
+      color: #6c757d;
     }
-
-    /* Result card actions */
-    .result-actions {
-      padding: 1rem;
-      display: flex;
-      gap: 10px;
-      justify-content: center;
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 0 0.5rem;
+      }
+      
+      .card {
+        padding: 1.5rem;
+      }
+      
+      .grid-2 {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+      
+      .navbar {
+        padding: 1rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      
+      .tabs {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
   <nav class="navbar">
     <div class="logo">ProGen AI</div>
-    <div style="display:flex; gap:20px; align-items:center;">
+    <div style="display:flex; gap:15px; align-items:center; flex-wrap: wrap;">
       <span id="creditDisplay">Credits: 20</span>
-      <a href="credit.html" class="btn-sm btn-primary" style="text-decoration:none; margin-left:10px;">Add Credits</a>
-      <a href="support.html" class="btn-sm btn-secondary" style="text-decoration:none;">Support</a>
-      <button class="btn-nav" onclick="viewUserInfo()">My Brand Info</button>
-      <button class="btn-nav" onclick="viewHistory()">📁 Image History</button>
-      <a href="#" onclick="logout()" class="btn-nav">Logout</a>
+      <a href="credit.html" class="btn btn-sm btn-primary" style="text-decoration:none;">Add Credits</a>
+      <a href="support.html" class="btn btn-sm btn-secondary" style="text-decoration:none;">Support</a>
+      <button class="btn btn-sm btn-secondary" onclick="viewUserInfo()">My Brand Info</button>
+      <button class="btn btn-sm btn-accent" onclick="viewHistory()">📁 Image History</button>
+      <button class="btn btn-sm btn-secondary" onclick="logout()">Logout</button>
     </div>
   </nav>
+  
   <div class="container">
     <!-- Generation Section -->
     <div class="card" id="generationSection">
       <h2 style="margin-top:0; text-align:center; color:#333;">
         Beautiful Images for <span id="productNameDisplay" style="color:var(--primary);"></span>
       </h2>
-      <p style="text-align:center; color:#666; margin-bottom:2rem;">
+      <p style="text-align:center; color:#666; margin-bottom:1.5rem;">
         Your product name is locked — every image will feature it perfectly.
       </p>
+      
       <div class="locked-product">
         Product: <span id="lockedProductName">Loading...</span>
       </div>
+      
       <div class="input-group">
-        <label>Add Style (optional)</label>
+        <label for="prompt">Add Style (optional)</label>
         <textarea id="prompt" placeholder="Click tags or type: on white background, luxury lighting, etc..."></textarea>
       </div>
+      
       <div class="quick-tags">
         <div class="tag-category">
           <div class="tag-title">Background & Scene</div>
@@ -226,9 +494,9 @@
             <span class="tag" onclick="addTag('floating with soft shadows')">Floating</span>
             <span class="tag" onclick="addTag('on marble table')">Marble Table</span>
             <span class="tag" onclick="addTag('in luxury bathroom')">Luxury Bathroom</span>
-            <span class="tag" onclick="addTag('on wooden table with plants')">Natural Wood</span>
           </div>
         </div>
+        
         <div class="tag-category">
           <div class="tag-title">Lighting & Mood</div>
           <div class="tags">
@@ -239,6 +507,7 @@
             <span class="tag" onclick="addTag('bright and clean')">Bright & Clean</span>
           </div>
         </div>
+        
         <div class="tag-category">
           <div class="tag-title">Style</div>
           <div class="tags">
@@ -250,14 +519,17 @@
           </div>
         </div>
       </div>
-      <button class="btn-primary" id="previewBtn" onclick="generateNow()" style="width:100%; padding:1.2rem; font-size:1.1rem;">
+      
+      <button class="btn btn-primary btn-block" onclick="generateNow()" style="padding:1rem; font-size:1.1rem; margin-top:1rem;">
         Generate 2 Beautiful Photos
       </button>
+      
       <div id="results" class="grid-2" style="display:none;"></div>
-      <div id="regenSection" class="actions-area">
-        <h3>Want something different?</h3>
-        <p>Just tell us what to change — the AI learns from you!</p>
-        <button class="btn-accent" onclick="openRefineModal()">Refine & Regenerate</button>
+      
+      <div id="regenSection" class="actions-area" style="display:none;">
+        <h3 style="margin-top:0;">Want something different?</h3>
+        <p style="margin-bottom:1rem;">Just tell us what to change — the AI learns from you!</p>
+        <button class="btn btn-accent" onclick="openRefineModal()">Refine & Regenerate</button>
       </div>
     </div>
 
@@ -265,7 +537,7 @@
     <div class="card history-section" id="historySection" style="display: none;">
       <div class="history-header">
         <h2 style="margin:0; color:#333;">📁 Your Image History</h2>
-        <button class="btn-secondary" onclick="showGenerationSection()">
+        <button class="btn btn-secondary" onclick="showGenerationSection()">
           ← Back to Generator
         </button>
       </div>
@@ -297,19 +569,18 @@
   </div>
 
   <!-- Refine Modal -->
-  <div id="refineModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:1000;">
-    <div style="background:white; padding:2rem; border-radius:16px; width:90%; max-width:500px;">
-      <h3>Make it perfect</h3>
+  <div id="refineModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1000;">
+    <div style="background:white; padding:2rem; border-radius:12px; width:90%; max-width:500px; margin:1rem;">
+      <h3 style="margin-top:0;">Make it perfect</h3>
       <p>What should we change?</p>
-      <input type="text" id="refineInput" placeholder="e.g. brighter background, add flowers..." style="width:100%; padding:12px; border:1px solid #ccc; border-radius:8px;">
-      <div style="margin-top:1.5rem; text-align:right; display:flex; gap:10px; justify-content:flex-end;">
-        <button class="btn-accent" onclick="applyRefinement()">Regenerate</button>
-        <button class="btn-secondary" onclick="document.getElementById('refineModal').style.display='none'">Cancel</button>
+      <input type="text" id="refineInput" placeholder="e.g. brighter background, add flowers..." style="width:100%; padding:12px; border:1px solid #ccc; border-radius:8px; margin-bottom:1rem;">
+      <div style="display:flex; gap:10px; justify-content:flex-end;">
+        <button class="btn btn-accent" onclick="applyRefinement()">Regenerate</button>
+        <button class="btn btn-secondary" onclick="closeRefineModal()">Cancel</button>
       </div>
     </div>
   </div>
 
-  <!-- Include the fixed JavaScript -->
   <script src="dashboard.js"></script>
 </body>
 </html>
