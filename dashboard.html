@@ -28,10 +28,13 @@
     .tag {
       background: white; color: var(--primary); padding: 8px 16px; border-radius: 30px;
       font-size: 0.9rem; cursor: pointer; transition: all 0.2s; border: 1px solid #d0e4ff;
+      user-select: none;
     }
     .tag:hover { background: var(--primary); color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(74,144,226,0.3); }
+    .tag:active { transform: translateY(0); }
     .btn-primary, .btn-success, .btn-accent, .btn-secondary {
       padding: 0.9rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1.05rem; transition: all 0.2s;
+      user-select: none;
     }
     .btn-primary { background: var(--primary); color: white; }
     .btn-success { background: var(--success); color: white; }
@@ -45,14 +48,19 @@
       text-decoration: none;
       cursor: pointer;
       font-size: inherit;
-      padding: 0;
+      padding: 8px 12px;
       margin: 0;
       font-weight: 600;
+      border-radius: 6px;
+      transition: all 0.2s;
+      user-select: none;
     }
     .btn-nav:hover {
-      text-decoration: underline;
+      background: #f0f8ff;
+      text-decoration: none;
     }
     .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
     .btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; }
     .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
@@ -121,6 +129,7 @@
       padding: 0.4rem 0.8rem;
       font-size: 0.8rem;
       white-space: nowrap;
+      cursor: pointer;
     }
     
     /* Tabs for History */
@@ -139,6 +148,7 @@
       border-radius: 8px;
       font-weight: 600;
       transition: all 0.3s ease;
+      user-select: none;
     }
     .tab.active {
       background: var(--primary);
@@ -168,16 +178,16 @@
 <body>
   <nav class="navbar">
     <div class="logo">ProGen AI</div>
-    <div style="display:flex; gap:20px; align-items:center;">
+    <div style="display:flex; gap:15px; align-items:center;">
       <span id="creditDisplay">Credits: 20</span>
-      <a href="credit.html" class="btn-sm btn-primary" style="text-decoration:none; margin-left:10px;">Add Credits</a>
+      <a href="credit.html" class="btn-sm btn-primary" style="text-decoration:none;">Add Credits</a>
       <a href="support.html" class="btn-sm btn-secondary" style="text-decoration:none;">Support</a>
-      <!-- FIXED: Proper button elements for navigation -->
       <button class="btn-nav" onclick="viewUserInfo()">My Brand Info</button>
       <button class="btn-nav" onclick="viewHistory()">📁 Image History</button>
-      <a href="#" onclick="logout()" class="btn-nav">Logout</a>
+      <button class="btn-nav" onclick="logout()">Logout</button>
     </div>
   </nav>
+  
   <div class="container">
     <!-- Generation Section -->
     <div class="card" id="generationSection">
@@ -187,18 +197,20 @@
       <p style="text-align:center; color:#666; margin-bottom:2rem;">
         Your product name is locked — every image will feature it perfectly.
       </p>
+      
       <div class="locked-product">
         Product: <span id="lockedProductName">Loading...</span>
       </div>
+      
       <div class="input-group">
         <label>Add Style (optional)</label>
         <textarea id="prompt" placeholder="Click tags or type: on white background, luxury lighting, etc..."></textarea>
       </div>
+      
       <div class="quick-tags">
         <div class="tag-category">
           <div class="tag-title">Background & Scene</div>
           <div class="tags">
-            <!-- FIXED: All tags have proper onclick handlers -->
             <span class="tag" onclick="addTag('on clean white background')">Clean White</span>
             <span class="tag" onclick="addTag('on soft pastel background')">Pastel</span>
             <span class="tag" onclick="addTag('floating with soft shadows')">Floating</span>
@@ -207,6 +219,7 @@
             <span class="tag" onclick="addTag('on wooden table with plants')">Natural Wood</span>
           </div>
         </div>
+        
         <div class="tag-category">
           <div class="tag-title">Lighting & Mood</div>
           <div class="tags">
@@ -217,6 +230,7 @@
             <span class="tag" onclick="addTag('bright and clean')">Bright & Clean</span>
           </div>
         </div>
+        
         <div class="tag-category">
           <div class="tag-title">Style</div>
           <div class="tags">
@@ -228,11 +242,14 @@
           </div>
         </div>
       </div>
-      <button class="btn-primary" id="previewBtn" onclick="generateNow()" style="width:100%; padding:1.2rem; font-size:1.1rem;">
+      
+      <button class="btn-primary" onclick="generateNow()" style="width:100%; padding:1.2rem; font-size:1.1rem; cursor:pointer;">
         Generate 2 Beautiful Photos
       </button>
+      
       <div id="results" class="grid-2" style="display:none;"></div>
-      <div id="regenSection" class="actions-area">
+      
+      <div id="regenSection" class="actions-area" style="display:none;">
         <h3>Want something different?</h3>
         <p>Just tell us what to change — the AI learns from you!</p>
         <button class="btn-accent" onclick="openRefineModal()">Refine & Regenerate</button>
@@ -243,7 +260,7 @@
     <div class="card history-section" id="historySection" style="display: none;">
       <div class="history-header">
         <h2 style="margin:0; color:#333;">📁 Your Image History</h2>
-        <button class="btn-secondary" onclick="showGenerationSection()">
+        <button class="btn-secondary" onclick="showGenerationSection()" style="cursor:pointer;">
           ← Back to Generator
         </button>
       </div>
@@ -281,13 +298,12 @@
       <p>What should we change?</p>
       <input type="text" id="refineInput" placeholder="e.g. brighter background, add flowers..." style="width:100%; padding:12px; border:1px solid #ccc; border-radius:8px;">
       <div style="margin-top:1.5rem; text-align:right; display:flex; gap:10px; justify-content:flex-end;">
-        <button class="btn-accent" onclick="applyRefinement()">Regenerate</button>
-        <button class="btn-secondary" onclick="closeRefineModal()">Cancel</button>
+        <button class="btn-accent" onclick="applyRefinement()" style="cursor:pointer;">Regenerate</button>
+        <button class="btn-secondary" onclick="closeRefineModal()" style="cursor:pointer;">Cancel</button>
       </div>
     </div>
   </div>
 
-  <!-- Use the fixed JavaScript -->
   <script src="dashboard.js"></script>
 </body>
 </html>
