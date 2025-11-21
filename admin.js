@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (typeof renderUsers === 'function') renderUsers();
             if (typeof renderLoginHistory === 'function') renderLoginHistory();
             if (typeof renderTickets === 'function') renderTickets();
+            if (typeof renderQuestionnaires === 'function') renderQuestionnaires(); // NEW: Load questionnaires
         }, 300);
     }
 });
@@ -257,8 +258,11 @@ function renderUserStats() {
     const totalCredits = users.reduce((sum, user) => sum + (user.credits || 0), 0);
     const openTickets = tickets.filter(t => t.status === 'open').length;
     const closedTickets = tickets.filter(t => t.status === 'closed').length;
+    
+    // NEW: Count questionnaires
+    const questionnaireCount = countQuestionnaires();
 
-    console.log(`📊 Stats - Users: ${users.length}, Logins: ${loginHistory.length}, Tickets: ${tickets.length}`);
+    console.log(`📊 Stats - Users: ${users.length}, Logins: ${loginHistory.length}, Tickets: ${tickets.length}, Questionnaires: ${questionnaireCount}`);
 
     const gradientColors = [
         'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -281,16 +285,34 @@ function renderUserStats() {
             <span class="stat-label">Total Credits Available</span>
         </div>
         <div class="stat-card" style="background: ${gradientColors[3]};">
-            <span class="stat-number">🎫 ${tickets.length}</span>
-            <span class="stat-label">Total Support Tickets</span>
-            <div style="font-size: 0.9rem; margin-top: 8px; opacity: 0.9;">
-                <span style="color: #d4edda;">✅ ${openTickets} Open</span> | 
-                <span style="color: #f8d7da;">❌ ${closedTickets} Closed</span>
-            </div>
+            <span class="stat-number">📝 ${questionnaireCount}</span>
+            <span class="stat-label">Questionnaires Submitted</span>
         </div>
     `;
 
     console.log("✅ User statistics rendered successfully with colorful cards");
+}
+
+// NEW: Function to count questionnaires
+function countQuestionnaires() {
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    let count = 0;
+
+    users.forEach(user => {
+        const userQuestionnaireKey = `questionnaireData_${user.id}`;
+        const questionnaireData = localStorage.getItem(userQuestionnaireKey);
+        if (questionnaireData) {
+            count++;
+        }
+    });
+
+    // Also check global questionnaireData
+    const globalQuestionnaireData = localStorage.getItem('questionnaireData');
+    if (globalQuestionnaireData) {
+        count = Math.max(count, 1); // At least one questionnaire exists
+    }
+
+    return count;
 }
 
 /* ========== LOGIN HISTORY FUNCTIONS ========== */
@@ -479,6 +501,280 @@ function deleteTicket(ticketId) {
     if (typeof renderUserStats === 'function') renderUserStats();
 }
 
+/* ========== QUESTIONNAIRE FUNCTIONS ========== */
+
+function renderQuestionnaires() {
+    console.log("📝 Rendering questionnaires from admin.js...");
+    
+    const questionnairesContainer = document.getElementById('questionnaires');
+    if (!questionnairesContainer) {
+        console.error("❌ Questionnaires container not found!");
+        return;
+    }
+
+    // Get all users
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    console.log(`👥 Total users: ${users.length}`);
+
+    let allQuestionnaires = [];
+
+    // Collect questionnaire data from all users
+    users.forEach(user => {
+        // Try to get questionnaire data from user's storage
+        const userQuestionnaireKey = `questionnaireData_${user.id}`;
+        const questionnaireData = localStorage.getItem(userQuestionnaireKey);
+        
+        if (questionnaireData) {
+            try {
+                const data = JSON.parse(questionnaireData);
+                allQuestionnaires.push({
+                    ...data,
+                    userEmail: user.email,
+                    userCompany: user.company,
+                    userId: user.id,
+                    submittedAt: data.submittedAt || new Date().toISOString()
+                });
+            } catch (error) {
+                console.error('Error parsing questionnaire data for user:', user.email, error);
+            }
+        }
+        
+        // Also check the global questionnaireData (for backward compatibility)
+        if (user.id === JSON.parse(localStorage.getItem('currentUser') || '{}').id) {
+            const globalQuestionnaireData = localStorage.getItem('questionnaireData');
+            if (globalQuestionnaireData) {
+                try {
+                    const data = JSON.parse(globalQuestionnaireData);
+                    // Check if we already have this user's data
+                    const existingQuestionnaire = allQuestionnaires.find(q => q.userId === user.id);
+                    if (!existingQuestionnaire) {
+                        allQuestionnaires.push({
+                            ...data,
+                            userEmail: user.email,
+                            userCompany: user.company,
+                            userId: user.id,
+                            submittedAt: data.submittedAt || new Date().toISOString()
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error parsing global questionnaire data:', error);
+                }
+            }
+        }
+    });
+
+    console.log(`📋 Total questionnaires found: ${allQuestionnaires.length}`);
+    console.log("📝 Questionnaires data:", allQuestionnaires);
+
+    if (allQuestionnaires.length === 0) {
+        questionnairesContainer.innerHTML = `
+            <div class="no-questionnaires">
+                <p style="font-size: 1.2rem; margin-bottom: 1rem;">📭 No questionnaires submitted yet</p>
+                <p style="font-size: 0.9rem;">Questionnaires will appear here when users complete the questionnaire form.</p>
+                <p style="font-size: 0.8rem; margin-top: 2rem; color: #999;">
+                    💡 Users can access the questionnaire from their dashboard after logging in.
+                </p>
+            </div>
+        `;
+        return;
+    }
+
+    // Sort by most recent first
+    allQuestionnaires.sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+
+    questionnairesContainer.innerHTML = allQuestionnaires.map((questionnaire, index) => `
+        <div class="questionnaire-item">
+            <div class="questionnaire-header">
+                <div class="questionnaire-company">
+                    🏢 ${questionnaire.userCompany || questionnaire.brandName || 'Unknown Company'}
+                </div>
+                <div class="questionnaire-date">
+                    📅 ${new Date(questionnaire.submittedAt).toLocaleString()}
+                </div>
+            </div>
+            
+            <div class="questionnaire-field">
+                <strong>📧 User Email:</strong>
+                <span>${questionnaire.userEmail || 'N/A'}</span>
+            </div>
+            
+            <!-- Basic Brand Information -->
+            <div class="questionnaire-section">
+                <h4>🏷️ Basic Brand Information</h4>
+                <div class="questionnaire-field">
+                    <strong>Brand Name:</strong>
+                    <span>${questionnaire.brandName || 'N/A'}</span>
+                </div>
+                <div class="questionnaire-field">
+                    <strong>Address:</strong>
+                    <span>${questionnaire.address || 'N/A'}</span>
+                </div>
+                <div class="questionnaire-field">
+                    <strong>Phone:</strong>
+                    <span>${questionnaire.phone || 'N/A'}</span>
+                </div>
+                <div class="questionnaire-field">
+                    <strong>Opening Hours:</strong>
+                    <span>${questionnaire.openingHours || 'N/A'}</span>
+                </div>
+                <div class="questionnaire-field">
+                    <strong>Holiday Hours:</strong>
+                    <span>${questionnaire.holidayHours || 'N/A'}</span>
+                </div>
+                <div class="questionnaire-field">
+                    <strong>Advance Booking:</strong>
+                    <span>${questionnaire.advanceBooking || 'N/A'}</span>
+                </div>
+                <div class="questionnaire-field">
+                    <strong>Payment Methods:</strong>
+                    <span>${Array.isArray(questionnaire.paymentMethods) ? questionnaire.paymentMethods.join(', ') : questionnaire.paymentMethods || 'N/A'}</span>
+                </div>
+            </div>
+            
+            <!-- Brand Details -->
+            <div class="questionnaire-section">
+                <h4>📊 Brand Details</h4>
+                <div class="questionnaire-field">
+                    <strong>Company Profile:</strong>
+                    <span>${questionnaire.companyProfile || 'N/A'}</span>
+                </div>
+                <div class="questionnaire-field">
+                    <strong>Branches:</strong>
+                    <span>${questionnaire.branches || 'N/A'}</span>
+                </div>
+                <div class="questionnaire-field">
+                    <strong>Awards:</strong>
+                    <span>${questionnaire.awards || 'N/A'}</span>
+                </div>
+                <div class="questionnaire-field">
+                    <strong>Product Categories:</strong>
+                    <span>${questionnaire.productCategories || 'N/A'}</span>
+                </div>
+                <div class="questionnaire-field">
+                    <strong>Key Promoted Categories:</strong>
+                    <span>${questionnaire.keyPromotedCategories || 'N/A'}</span>
+                </div>
+                <div class="questionnaire-field">
+                    <strong>Brand Advantages:</strong>
+                    <span>${questionnaire.brandAdvantages || 'N/A'}</span>
+                </div>
+                <div class="questionnaire-field">
+                    <strong>Target Audience:</strong>
+                    <span>${questionnaire.targetAudience || 'N/A'}</span>
+                </div>
+                <div class="questionnaire-field">
+                    <strong>Consumption Threshold:</strong>
+                    <span>${questionnaire.consumptionThreshold || 'N/A'}</span>
+                </div>
+                <div class="questionnaire-field">
+                    <strong>Copywriting Theme:</strong>
+                    <span>${questionnaire.copywritingTheme || 'N/A'}</span>
+                </div>
+                <div class="questionnaire-field">
+                    <strong>Suitable Adjectives:</strong>
+                    <span>${questionnaire.suitableAdjectives || 'N/A'}</span>
+                </div>
+                <div class="questionnaire-field">
+                    <strong>Other Notes:</strong>
+                    <span>${questionnaire.otherNotes || 'N/A'}</span>
+                </div>
+            </div>
+            
+            <!-- Products -->
+            ${questionnaire.products && questionnaire.products.length > 0 ? `
+                <div class="questionnaire-section">
+                    <h4>📦 Products (${questionnaire.products.length})</h4>
+                    <div class="products-grid">
+                        ${questionnaire.products.map((product, productIndex) => `
+                            <div class="product-card">
+                                <h5>${productIndex + 1}. ${product.productName || 'Unnamed Product'}</h5>
+                                <div class="questionnaire-field">
+                                    <strong>Category:</strong>
+                                    <span>${product.productCategory || 'N/A'}</span>
+                                </div>
+                                <div class="questionnaire-field">
+                                    <strong>Features:</strong>
+                                    <span>${product.productFeatures || 'N/A'}</span>
+                                </div>
+                                <div class="questionnaire-field">
+                                    <strong>Problems Solved:</strong>
+                                    <span>${product.problemsSolved || 'N/A'}</span>
+                                </div>
+                                <div class="questionnaire-field">
+                                    <strong>Advantages:</strong>
+                                    <span>${product.advantages || 'N/A'}</span>
+                                </div>
+                                <div class="questionnaire-field">
+                                    <strong>Price:</strong>
+                                    <span>${product.price || 'N/A'}</span>
+                                </div>
+                                <div class="questionnaire-field">
+                                    <strong>Discount:</strong>
+                                    <span>${product.discount || 'N/A'}</span>
+                                </div>
+                                <div class="questionnaire-field">
+                                    <strong>Adjectives:</strong>
+                                    <span>${product.productAdjectives || 'N/A'}</span>
+                                </div>
+                                <div class="questionnaire-field">
+                                    <strong>Unsuitable Crowd:</strong>
+                                    <span>${product.unsuitableCrowd || 'N/A'}</span>
+                                </div>
+                                <div class="questionnaire-field">
+                                    <strong>Notes:</strong>
+                                    <span>${product.productNotes || 'N/A'}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            ` : `
+                <div class="questionnaire-section">
+                    <h4>📦 Products</h4>
+                    <p style="color: #666; font-style: italic; margin: 0;">No products specified</p>
+                </div>
+            `}
+            
+            <div style="display: flex; justify-content: flex-end; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e1e5e9;">
+                <button class="btn-sm btn-danger" onclick="deleteQuestionnaire('${questionnaire.userId}')"
+                        style="background: linear-gradient(135deg, #dc3545, #c82333); border: none; padding: 8px 16px; border-radius: 6px; color: white; cursor: pointer; transition: all 0.3s ease;"
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(220, 53, 69, 0.3)';"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
+                    🗑️ Delete Questionnaire
+                </button>
+            </div>
+        </div>
+    `).join('');
+
+    console.log("✅ Questionnaires rendered successfully from admin.js");
+}
+
+function deleteQuestionnaire(userId) {
+    console.log(`🗑️ Deleting questionnaire from admin.js for user: ${userId}`);
+    
+    const confirmDelete = confirm(`⚠️ Are you sure you want to delete this questionnaire?\n\nThis action cannot be undone!`);
+    
+    if (!confirmDelete) {
+        console.log('❌ Questionnaire deletion cancelled');
+        return;
+    }
+
+    // Delete user-specific questionnaire data
+    localStorage.removeItem(`questionnaireData_${userId}`);
+    
+    // Also check and delete from global questionnaireData if it belongs to this user
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    if (currentUser.id === userId) {
+        localStorage.removeItem('questionnaireData');
+    }
+    
+    showNotification('✅ Questionnaire deleted successfully!', 'success');
+    console.log(`🗑️ Questionnaire deleted for user: ${userId}`);
+    
+    renderQuestionnaires();
+    if (typeof renderUserStats === 'function') renderUserStats();
+}
+
 /* ========== UTILITY FUNCTIONS ========== */
 
 // Beautiful notification system
@@ -525,6 +821,7 @@ function refreshAdminData() {
     if (typeof renderUsers === 'function') renderUsers();
     if (typeof renderLoginHistory === 'function') renderLoginHistory();
     if (typeof renderTickets === 'function') renderTickets();
+    if (typeof renderQuestionnaires === 'function') renderQuestionnaires(); // NEW: Refresh questionnaires
     
     showNotification('🔄 Admin data refreshed successfully!', 'success');
 }
@@ -538,6 +835,7 @@ setInterval(() => {
         console.log("🔄 Auto-refreshing admin data...");
         if (typeof renderUserStats === 'function') renderUserStats();
         if (typeof renderTickets === 'function') renderTickets();
+        if (typeof renderQuestionnaires === 'function') renderQuestionnaires(); // NEW: Auto-refresh questionnaires
     }
 }, 30000);
 
@@ -553,6 +851,8 @@ if (typeof window !== 'undefined') {
     window.renderTickets = renderTickets;
     window.updateTicketStatus = updateTicketStatus;
     window.deleteTicket = deleteTicket;
+    window.renderQuestionnaires = renderQuestionnaires;
+    window.deleteQuestionnaire = deleteQuestionnaire;
     window.refreshAdminData = refreshAdminData;
     window.showNotification = showNotification;
 }
