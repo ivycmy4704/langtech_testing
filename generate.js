@@ -1,4 +1,4 @@
-// ProGen AI Dashboard - Working Version
+// ProGen AI Dashboard - Fixed Button Functions
 console.log("🚀 ProGen AI Dashboard Initialized");
 
 // Global variables
@@ -33,9 +33,6 @@ document.addEventListener('DOMContentLoaded', function() {
     loadHistory();
     
     console.log("✅ Dashboard loaded successfully");
-    console.log("User:", currentUser.email);
-    console.log("Product:", productName);
-    console.log("Credits:", credits);
 });
 
 // Update credits display
@@ -61,15 +58,19 @@ function getFullPrompt() {
     return style ? `${productName}, ${style}` : productName;
 }
 
-// Add tag to prompt
+// Add tag to prompt - FIXED FUNCTION
 function addTag(text) {
     const textarea = document.getElementById('prompt');
     const current = textarea.value.trim();
-    textarea.value = current ? current + ", " + text : text;
+    if (current) {
+        textarea.value = current + ", " + text;
+    } else {
+        textarea.value = text;
+    }
     textarea.focus();
 }
 
-// Main generation function
+// Main generation function - KEEP ORIGINAL
 async function generateNow() {
     console.log("🎨 Starting image generation...");
     
@@ -384,11 +385,107 @@ function downloadImage(url, num) {
     }
 }
 
-// Navigation functions
+// ✅ FIXED: Navigation functions
 function viewHistory() {
     document.getElementById('generationSection').style.display = 'none';
     document.getElementById('historySection').style.display = 'block';
     loadHistory();
 }
 
-function showGenerationSection()
+function showGenerationSection() {
+    document.getElementById('generationSection').style.display = 'block';
+    document.getElementById('historySection').style.display = 'none';
+}
+
+function switchTab(tabName) {
+    // Update active tab
+    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    
+    event.target.classList.add('active');
+    document.getElementById(tabName + 'Tab').classList.add('active');
+    
+    // Reload history for the selected tab
+    loadHistory();
+}
+
+// ✅ FIXED: User info function
+function viewUserInfo() {
+    // Create a simple user info modal since user-info.html might not exist
+    const userInfo = `
+        <div style="background:white; padding:2rem; border-radius:12px; width:90%; max-width:500px;">
+            <h3 style="margin-top:0;">My Brand Info</h3>
+            <div style="margin-bottom:1rem;">
+                <strong>Company:</strong> ${currentUser.company || 'Not set'}
+            </div>
+            <div style="margin-bottom:1rem;">
+                <strong>Email:</strong> ${currentUser.email || 'Not set'}
+            </div>
+            <div style="margin-bottom:1rem;">
+                <strong>Industry:</strong> ${currentUser.industry || 'Not set'}
+            </div>
+            <div style="margin-bottom:1rem;">
+                <strong>Product:</strong> ${productName}
+            </div>
+            <button class="btn btn-primary" onclick="closeModal()" style="margin-top:1rem;">Close</button>
+        </div>
+    `;
+    
+    showModal(userInfo);
+}
+
+// Modal functions
+function showModal(content) {
+    const modal = document.createElement('div');
+    modal.id = 'infoModal';
+    modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    `;
+    modal.innerHTML = content;
+    document.body.appendChild(modal);
+}
+
+function closeModal() {
+    const modal = document.getElementById('infoModal');
+    if (modal) {
+        modal.remove();
+    }
+}
+
+// Refine modal functions
+function openRefineModal() {
+    document.getElementById('refineModal').style.display = 'flex';
+    document.getElementById('refineInput').focus();
+}
+
+function closeRefineModal() {
+    document.getElementById('refineModal').style.display = 'none';
+}
+
+function applyRefinement() {
+    const feedback = document.getElementById('refineInput').value.trim();
+    if (feedback) {
+        const current = document.getElementById('prompt').value.trim();
+        document.getElementById('prompt').value = current ? current + ", " + feedback : feedback;
+    }
+    document.getElementById('refineModal').style.display = 'none';
+    document.getElementById('refineInput').value = '';
+    generateNow();
+}
+
+// Logout function
+function logout() {
+    localStorage.removeItem('currentUser');
+    window.location.href = 'index.html';
+}
+
+console.log("✅ Fixed Dashboard JS loaded successfully!");
