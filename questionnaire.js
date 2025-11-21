@@ -151,9 +151,19 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Add products array to data
         data.products = products;
+        data.submittedAt = new Date().toISOString();
         
         // Save to localStorage
         try {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            
+            // Save questionnaire data with user ID for better organization
+            if (currentUser && currentUser.id) {
+                localStorage.setItem(`questionnaireData_${currentUser.id}`, JSON.stringify(data));
+                console.log('Questionnaire data saved with user ID:', currentUser.id);
+            }
+            
+            // Also save to global for backward compatibility
             localStorage.setItem('questionnaireData', JSON.stringify(data));
             console.log('Data saved to localStorage');
             
