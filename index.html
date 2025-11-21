@@ -14,14 +14,23 @@
 
       <form id="loginForm">
         <div class="input-group">
-          <label for="code">Industry Code</label>
-          <input type="text" id="code" placeholder="Enter your unique code" required />
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="Enter your email" required />
         </div>
+        
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter your password" required />
+        </div>
+        
         <button type="submit" class="btn-primary btn-block">Log In</button>
       </form>
 
       <p class="text-center mt-4">
-        Don't have a code? <a href="register.html">Create Account</a>
+        Don't have an account? <a href="register.html">Create Account</a>
+      </p>
+      <p class="text-center">
+        <a href="forgot-password.html" class="text-sm">Forgot Password?</a>
       </p>
       <p class="text-center">
         <a href="admin.html" class="text-sm">Admin Login</a>
@@ -29,50 +38,39 @@
     </div>
   </div>
 
-  <!-- LOGIN LOGIC (NO EXTERNAL FILE NEEDED) -->
+  <!-- LOGIN LOGIC -->
   <script>
     document.getElementById('loginForm').addEventListener('submit', (e) => {
       e.preventDefault();
 
-      const enteredCode = document.getElementById('code').value.trim().toUpperCase();
-      const pendingCode = localStorage.getItem('pendingCode');
-      const tempUser = JSON.parse(localStorage.getItem('tempUser') || '{}');
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
 
-      // Fresh registration
-      if (pendingCode && enteredCode === pendingCode && tempUser.email) {
-        saveUserAndLogin(tempUser, enteredCode);
-        return;
-      }
-
-      // Returning user
+      // Get users from localStorage
       const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const existingUser = users.find(u => u.code === enteredCode);
+      const user = users.find(u => u.email === email && u.password === password && u.verified);
 
-      if (existingUser) {
-        localStorage.setItem('currentUser', JSON.stringify(existingUser));
-        localStorage.removeItem('pendingCode');
-        localStorage.removeItem('tempUser');
+      if (user) {
+        localStorage.setItem('currentUser', JSON.stringify(user));
         window.location.href = 'questionnaire.html';
-        return;
+      } else {
+        // Check if user exists but isn't verified
+        const unverifiedUser = users.find(u => u.email === email && u.password === password && !u.verified);
+        if (unverifiedUser) {
+          alert('Please verify your email first. Check your inbox for the verification code.');
+          window.location.href = 'verify-email.html?email=' + encodeURIComponent(email);
+        } else {
+          alert('Invalid email or password. Please try again.');
+        }
       }
-
-      alert('Invalid or expired code. Please register again.');
     });
 
-    function saveUserAndLogin(tempUser, code) {
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      let user = users.find(u => u.email === tempUser.email);
-
-      if (!user) {
-        user = { ...tempUser, code, id: Date.now(), credits: 20 };
-        users.push(user);
-        localStorage.setItem('users', JSON.stringify(users));
-      }
-
-      localStorage.setItem('currentUser', JSON.stringify(user));
-      localStorage.removeItem('pendingCode');
-      localStorage.removeItem('tempUser');
-      window.location.href = 'questionnaire.html';
+    // Check if user is coming from successful verification
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('verified') === 'true') {
+      alert('Email verified successfully! You can now log in.');
+      // Clean URL
+      window.history.replaceState({}, document.title, window.location.pathname);
     }
   </script>
 </body>
