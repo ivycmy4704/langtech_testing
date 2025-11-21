@@ -1,4 +1,4 @@
-// ProGen AI Dashboard - Fixed Button Responsiveness & History Linking
+// ProGen AI Dashboard - COMPLETELY FIXED VERSION
 console.log("🚀 ProGen AI Dashboard Initialized");
 
 // Global variables
@@ -441,4 +441,15 @@ function applyRefinement() {
         const current = document.getElementById('prompt').value.trim();
         document.getElementById('prompt').value = current ? current + ", " + feedback : feedback;
     }
-    document.getElementById('refineModal').style.display =
+    document.getElementById('refineModal').style.display = 'none';
+    document.getElementById('refineInput').value = '';
+    generateNow();
+}
+
+// Logout function
+function logout() {
+    localStorage.removeItem('currentUser');
+    window.location.href = 'index.html';
+}
+
+console.log("✅ COMPLETELY FIXED Dashboard JS loaded successfully!");
