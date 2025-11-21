@@ -11,7 +11,7 @@
     <div class="card">
       <h1>Create Your Account</h1>
       <p class="subtitle">
-        Fill in your details – a unique <strong>Industry Code</strong> will be e-mailed to you.
+        Fill in your details – we'll send a verification code to your email.
       </p>
 
       <form id="registerForm">
@@ -24,6 +24,17 @@
         <div class="input-group">
           <label for="email">Email Address *</label>
           <input type="email" id="email" placeholder="you@company.com" required />
+        </div>
+
+        <!-- Password -->
+        <div class="input-group">
+          <label for="password">Password *</label>
+          <input type="password" id="password" placeholder="Create a password" required minlength="6" />
+        </div>
+
+        <div class="input-group">
+          <label for="confirmPassword">Confirm Password *</label>
+          <input type="password" id="confirmPassword" placeholder="Confirm your password" required />
         </div>
 
         <!-- Industry -->
@@ -40,7 +51,7 @@
                  class="mt-4" style="display:none;" />
         </div>
 
-        <!-- Product Name (locked in dashboard) -->
+        <!-- Product Name -->
         <div class="input-group">
           <label for="productName">Product Name *</label>
           <input type="text" id="productName" placeholder="e.g., Glow Serum, Eco Bottle" required />
@@ -83,7 +94,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary btn-block mt-4">
-          Create Account & Send Code
+          Create Account & Send Verification Code
         </button>
       </form>
 
@@ -165,14 +176,27 @@
       e.preventDefault();
 
       const company   = document.getElementById("company").value.trim();
-      const email     = document.getElementById("email").value.trim();
+      const email     = document.getElementById("email").value.trim().toLowerCase();
+      const password  = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
       const industrySelect = document.getElementById("industry").value;
       const customIndustry = document.getElementById("customIndustry").value.trim();
       const product   = document.getElementById("productName").value.trim();
       const reqs      = document.getElementById("requirements").value.trim();
 
-      if (!company || !email || !product) {
-        alert("Please fill all required fields (Company, Email, Product).");
+      // Validation
+      if (!company || !email || !product || !password) {
+        alert("Please fill all required fields.");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
+
+      if (password.length < 6) {
+        alert("Password must be at least 6 characters long.");
         return;
       }
 
@@ -182,6 +206,22 @@
         return;
       }
 
+      // Check if email already exists
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const existingUser = users.find(u => u.email === email);
+      if (existingUser) {
+        if (existingUser.verified) {
+          alert("An account with this email already exists. Please log in instead.");
+          window.location.href = "index.html";
+          return;
+        } else {
+          // User exists but isn't verified - allow re-registration (will overwrite)
+          const index = users.findIndex(u => u.email === email);
+          users.splice(index, 1);
+          localStorage.setItem('users', JSON.stringify(users));
+        }
+      }
+
       const valuePrompts = Array.from(document.querySelectorAll("#valuePrompts input"))
                                .map(i => i.value.trim())
                                .filter(v => v);
@@ -189,39 +229,54 @@
       const format     = document.getElementById("format").value;
       const resolution = document.getElementById("resolution").value;
 
-      // Generate Industry Code
-      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-      let code = 'IND';
-      for (let i = 0; i < 9; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
+      // Generate verification code (6 digits)
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-      // Store product name (locked in dashboard) + pending code
-      localStorage.setItem("userProduct", product);
-      localStorage.setItem("pendingCode", code);
+      // Store user data temporarily with verification code
+      const tempUser = { 
+        company, 
+        email, 
+        password, 
+        industry, 
+        product, 
+        requirements: reqs,
+        valuePrompts, 
+        format, 
+        resolution, 
+        verificationCode,
+        createdAt: new Date().toISOString(),
+        verified: false,
+        credits: 20
+      };
 
-      const userData = { company, email, industry, product, requirements: reqs,
-                         valuePrompts, format, resolution, createdAt: new Date().toISOString() };
-      localStorage.setItem("tempUser", JSON.stringify(userData));
+      // Store in pending verification
+      localStorage.setItem("pendingVerification", JSON.stringify(tempUser));
 
-      const templateParams = { company, email, product, industry, code };
+      const templateParams = { 
+        company, 
+        email, 
+        product, 
+        industry, 
+        code: verificationCode 
+      };
+
       emailjs.init("04haQDj1VizCiKBn4");
 
       const submitBtn = e.target.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
-      submitBtn.textContent = "Sending Code...";
+      submitBtn.textContent = "Sending Verification Code...";
 
       try {
         await emailjs.send("service_1vi3zyz", "template_y5dzqi9", templateParams);
-        alert(`Account created!\nYour Code: ${code}\nCheck your email and log in!`);
-        window.location.href = "index.html";
+        alert(`Verification code sent to ${email}! Please check your inbox.`);
+        window.location.href = `verify-email.html?email=${encodeURIComponent(email)}`;
       } catch (err) {
         console.error("EmailJS error:", err);
-        alert(`Account created, but email failed.\nYour Code: ${code}\nSAVE IT NOW!`);
-        window.location.href = "index.html";
+        alert(`Account created, but email failed.\nYour verification code: ${verificationCode}\nPlease save it!`);
+        window.location.href = `verify-email.html?email=${encodeURIComponent(email)}`;
       } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = "Create Account & Send Code";
+        submitBtn.textContent = "Create Account & Send Verification Code";
       }
     });
   </script>
