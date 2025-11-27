@@ -15,23 +15,9 @@
     .locked-product {
       background: #e6f3ff; padding: 1.2rem 1.5rem; border-radius: 12px;
       border: 3px solid var(--primary); font-weight: bold; color: var(--primary);
-      text-align: center; font-size: 1.3rem; margin-bottom: 1.5rem;
+      text-align: center; font-size: 1.3rem; margin-bottom: 2.5rem;
       box-shadow: 0 4px 15px rgba(74,144,226,0.2);
     }
-    .input-group { margin-bottom: 1.8rem; }
-    label { display: block; margin-bottom: 0.6rem; font-weight: 600; color: #444; }
-    textarea { width: 100%; padding: 1rem; border: 2px solid #e0e0e0; border-radius: 12px; font-size: 1rem; min-height: 130px; transition: border 0.3s; }
-    textarea:focus { outline: none; border-color: var(--primary); }
-    .quick-tags { margin: 2rem 0; padding: 1.5rem; background: var(--gray); border-radius: 12px; }
-    .tag-title { font-weight: 600; color: var(--primary); margin: 1rem 0 0.7rem 0; font-size: 1rem; }
-    .tags { display: flex; flex-wrap: wrap; gap: 10px; }
-    .tag {
-      background: white; color: var(--primary); padding: 8px 16px; border-radius: 30px;
-      font-size: 0.9rem; cursor: pointer; transition: all 0.2s; border: 1px solid #d0e4ff;
-      user-select: none;
-    }
-    .tag:hover { background: var(--primary); color: white; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(74,144,226,0.3); }
-    .tag:active { transform: translateY(0); }
     .btn-primary, .btn-success, .btn-accent, .btn-secondary {
       padding: 0.9rem 2rem; border: none; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: 1.05rem; transition: all 0.2s;
       user-select: none;
@@ -76,8 +62,6 @@
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     .loading-text { text-align: center; margin: 1.5rem 0; color: #666; font-style: italic; display: none; }
     #creditDisplay { font-weight: bold; color: var(--primary); font-size: 1.1rem; }
-    .preview-box { background: #f0f8ff; border: 2px solid #cce5ff; border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
-    .editable-preview { background: white; padding: 1rem; border-radius: 8px; min-height: 80px; white-space: pre-wrap; margin: 0.5rem 0; border: 1px solid #ddd; }
     .actions-area { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid #eee; text-align: center; display: none; }
     
     /* History Section Styles */
@@ -173,6 +157,104 @@
       color: #ccc;
       margin-bottom: 1rem;
     }
+
+    .info-note {
+      text-align: center;
+      color: #666;
+      font-size: 0.9rem;
+      margin: 1.5rem 0;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary);
+    }
+
+    /* Brand Info Modal Styles */
+    .brand-info-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 2rem;
+      box-sizing: border-box;
+    }
+    .brand-info-content {
+      background: white;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 2rem;
+      position: relative;
+    }
+    .brand-info-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--primary);
+    }
+    .brand-info-section {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      background: #f9f9f9;
+    }
+    .brand-info-section h3 {
+      color: var(--primary);
+      margin-top: 0;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 0.5rem;
+    }
+    .info-row {
+      display: flex;
+      margin-bottom: 0.8rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .info-label {
+      font-weight: 600;
+      min-width: 200px;
+      color: #555;
+    }
+    .info-value {
+      flex: 1;
+      color: #333;
+    }
+    .style-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+    .style-tag {
+      background: var(--primary);
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #666;
+      padding: 0.5rem;
+    }
+    .close-btn:hover {
+      color: #333;
+    }
   </style>
 </head>
 <body>
@@ -182,7 +264,7 @@
       <span id="creditDisplay">Credits: 20</span>
       <a href="credit.html" class="btn-sm btn-primary" style="text-decoration:none;">Add Credits</a>
       <a href="support.html" class="btn-sm btn-secondary" style="text-decoration:none;">Support</a>
-      <button class="btn-nav" onclick="viewUserInfo()">My Brand Info</button>
+      <button class="btn-nav" onclick="viewBrandInfo()">My Brand Info</button>
       <button class="btn-nav" onclick="viewHistory()">📁 Image History</button>
       <button class="btn-nav" onclick="logout()">Logout</button>
     </div>
@@ -195,52 +277,16 @@
         Beautiful Images for <span id="productNameDisplay" style="color:var(--primary);"></span>
       </h2>
       <p style="text-align:center; color:#666; margin-bottom:2rem;">
-        Your product name is locked — every image will feature it perfectly.
+        Your product name is locked — every image will feature it perfectly with your predefined styles.
       </p>
       
       <div class="locked-product">
         Product: <span id="lockedProductName">Loading...</span>
       </div>
-      
-      <div class="input-group">
-        <label>Add Style (optional)</label>
-        <textarea id="prompt" placeholder="Click tags or type: on white background, luxury lighting, etc..."></textarea>
-      </div>
-      
-      <div class="quick-tags">
-        <div class="tag-category">
-          <div class="tag-title">Background & Scene</div>
-          <div class="tags">
-            <span class="tag" onclick="addTag('on clean white background')">Clean White</span>
-            <span class="tag" onclick="addTag('on soft pastel background')">Pastel</span>
-            <span class="tag" onclick="addTag('floating with soft shadows')">Floating</span>
-            <span class="tag" onclick="addTag('on marble table')">Marble Table</span>
-            <span class="tag" onclick="addTag('in luxury bathroom')">Luxury Bathroom</span>
-            <span class="tag" onclick="addTag('on wooden table with plants')">Natural Wood</span>
-          </div>
-        </div>
-        
-        <div class="tag-category">
-          <div class="tag-title">Lighting & Mood</div>
-          <div class="tags">
-            <span class="tag" onclick="addTag('soft natural light')">Soft Natural</span>
-            <span class="tag" onclick="addTag('golden hour glow')">Golden Hour</span>
-            <span class="tag" onclick="addTag('studio lighting')">Studio Light</span>
-            <span class="tag" onclick="addTag('dramatic shadows')">Dramatic</span>
-            <span class="tag" onclick="addTag('bright and clean')">Bright & Clean</span>
-          </div>
-        </div>
-        
-        <div class="tag-category">
-          <div class="tag-title">Style</div>
-          <div class="tags">
-            <span class="tag" onclick="addTag('minimalist')">Minimalist</span>
-            <span class="tag" onclick="addTag('luxury editorial')">Luxury</span>
-            <span class="tag" onclick="addTag('e-commerce style')">E-commerce</span>
-            <span class="tag" onclick="addTag('flat lay')">Flat Lay</span>
-            <span class="tag" onclick="addTag('with water droplets')">Fresh Dew</span>
-          </div>
-        </div>
+
+      <div class="info-note">
+        <i class="fas fa-info-circle" style="color: var(--primary); margin-right: 8px;"></i>
+        Your predefined styles from the questionnaire will be automatically applied to all generated images.
       </div>
       
       <button class="btn-primary" onclick="generateNow()" style="width:100%; padding:1.2rem; font-size:1.1rem; cursor:pointer;">
@@ -291,6 +337,19 @@
     </div>
   </div>
 
+  <!-- Brand Info Modal -->
+  <div id="brandInfoModal" class="brand-info-modal">
+    <div class="brand-info-content">
+      <div class="brand-info-header">
+        <h2 style="margin:0; color:#333;">My Brand Information</h2>
+        <button class="close-btn" onclick="closeBrandInfo()">&times;</button>
+      </div>
+      <div id="brandInfoContent">
+        <!-- Brand information will be populated here -->
+      </div>
+    </div>
+  </div>
+
   <!-- Refine Modal -->
   <div id="refineModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); align-items:center; justify-content:center; z-index:1000;">
     <div style="background:white; padding:2rem; border-radius:16px; width:90%; max-width:500px;">
@@ -305,7 +364,7 @@
   </div>
 
   <script>
-    // ProGen AI Dashboard - COMPLETELY FIXED VERSION
+    // ProGen AI Dashboard - SIMPLIFIED VERSION
     console.log("🚀 ProGen AI Dashboard Initialized");
 
     // Global variables
@@ -318,10 +377,50 @@
         console.log("📦 Loading dashboard...");
         
         // Get current user
-        currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-        if (!currentUser.id) {
-            alert("Please log in to access the dashboard.");
-            window.location.href = 'index.html';
+        try {
+            const userData = localStorage.getItem('currentUser');
+            console.log("Raw user data from localStorage:", userData);
+            
+            if (userData) {
+                currentUser = JSON.parse(userData);
+                console.log("Parsed user data:", currentUser);
+                
+                // Check if user is logged in using multiple possible indicators
+                const isLoggedIn = currentUser && (
+                    currentUser.id || 
+                    currentUser.email || 
+                    currentUser.userId || 
+                    currentUser.username ||
+                    Object.keys(currentUser).length > 0
+                );
+                
+                if (!isLoggedIn) {
+                    console.warn("User data exists but no valid login indicators found");
+                    redirectToLogin();
+                    return;
+                }
+                
+                console.log("✅ User is logged in:", currentUser);
+                
+                // CHECK IF QUESTIONNAIRE IS COMPLETED
+                const userId = getUserId();
+                const hasCompletedQuestionnaire = localStorage.getItem(`questionnaireData_${userId}`) || localStorage.getItem('questionnaireData');
+                
+                if (!hasCompletedQuestionnaire) {
+                    console.log("User has not completed questionnaire - redirecting to questionnaire");
+                    alert("Please complete the questionnaire first.");
+                    window.location.href = 'questionnaire.html';
+                    return;
+                }
+                
+            } else {
+                console.warn("No user data found in localStorage");
+                redirectToLogin();
+                return;
+            }
+        } catch (error) {
+            console.error("Error parsing user data:", error);
+            redirectToLogin();
             return;
         }
         
@@ -337,10 +436,220 @@
         updateCreditsUI();
         
         console.log("✅ Dashboard loaded successfully");
-        console.log("User:", currentUser.email);
+        console.log("User:", currentUser.email || currentUser.username || 'Unknown');
         console.log("Product:", productName);
         console.log("Credits:", credits);
     });
+
+    // Redirect to login page
+    function redirectToLogin() {
+        alert("Please log in to access the dashboard.");
+        window.location.href = 'index.html';
+    }
+
+    // Get user ID for storage
+    function getUserId() {
+        if (!currentUser) return 'anonymous';
+        
+        // Try different possible user identifier fields
+        return currentUser.id || 
+               currentUser.userId || 
+               currentUser.email || 
+               currentUser.username || 
+               'default_user';
+    }
+
+    // View Brand Info - NEW FUNCTION
+    function viewBrandInfo() {
+        const userId = getUserId();
+        const questionnaireData = JSON.parse(localStorage.getItem(`questionnaireData_${userId}`) || localStorage.getItem('questionnaireData') || '{}');
+        
+        if (!questionnaireData || Object.keys(questionnaireData).length === 0) {
+            alert('No brand information found. Please complete the questionnaire first.');
+            return;
+        }
+
+        let brandInfoHTML = '';
+
+        // Basic Brand Information
+        brandInfoHTML += `
+            <div class="brand-info-section">
+                <h3>Basic Brand Information</h3>
+                <div class="info-row">
+                    <div class="info-label">Brand Name:</div>
+                    <div class="info-value">${questionnaireData.brandName || 'Not provided'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Address:</div>
+                    <div class="info-value">${questionnaireData.address || 'Not provided'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Phone Number:</div>
+                    <div class="info-value">${questionnaireData.phone || 'Not provided'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Opening Hours:</div>
+                    <div class="info-value">${questionnaireData.openingHours || 'Not provided'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Holiday Hours:</div>
+                    <div class="info-value">${questionnaireData.holidayHours || 'Not provided'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Advance Booking Required:</div>
+                    <div class="info-value">${questionnaireData.advanceBooking || 'Not provided'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Payment Methods:</div>
+                    <div class="info-value">${questionnaireData.paymentMethods ? questionnaireData.paymentMethods.join(', ') : 'Not provided'}</div>
+                </div>
+            </div>
+        `;
+
+        // Brand Details
+        brandInfoHTML += `
+            <div class="brand-info-section">
+                <h3>Brand Details</h3>
+                <div class="info-row">
+                    <div class="info-label">Company Profile:</div>
+                    <div class="info-value">${questionnaireData.companyProfile || 'Not provided'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Branches:</div>
+                    <div class="info-value">${questionnaireData.branches || 'Not provided'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Awards:</div>
+                    <div class="info-value">${questionnaireData.awards || 'Not provided'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Product Categories:</div>
+                    <div class="info-value">${questionnaireData.productCategories || 'Not provided'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Key Promoted Categories:</div>
+                    <div class="info-value">${questionnaireData.keyPromotedCategories || 'Not provided'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Brand Advantages:</div>
+                    <div class="info-value">${questionnaireData.brandAdvantages || 'Not provided'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Target Audience:</div>
+                    <div class="info-value">${questionnaireData.targetAudience || 'Not provided'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Consumption Threshold:</div>
+                    <div class="info-value">${questionnaireData.consumptionThreshold || 'Not provided'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Copywriting Theme:</div>
+                    <div class="info-value">${questionnaireData.copywritingTheme || 'Not provided'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Suitable Adjectives:</div>
+                    <div class="info-value">${questionnaireData.suitableAdjectives || 'Not provided'}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Other Notes:</div>
+                    <div class="info-value">${questionnaireData.otherNotes || 'Not provided'}</div>
+                </div>
+            </div>
+        `;
+
+        // Image Style Preferences
+        brandInfoHTML += `
+            <div class="brand-info-section">
+                <h3>Image Style Preferences</h3>
+                <div class="info-row">
+                    <div class="info-label">Background & Scene:</div>
+                    <div class="info-value">
+                        ${questionnaireData.backgroundScene && questionnaireData.backgroundScene.length > 0 ? 
+                            `<div class="style-tags">${questionnaireData.backgroundScene.map(style => `<span class="style-tag">${style}</span>`).join('')}</div>` : 
+                            'Not provided'}
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Lighting & Mood:</div>
+                    <div class="info-value">
+                        ${questionnaireData.lightingMood && questionnaireData.lightingMood.length > 0 ? 
+                            `<div class="style-tags">${questionnaireData.lightingMood.map(style => `<span class="style-tag">${style}</span>`).join('')}</div>` : 
+                            'Not provided'}
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Style:</div>
+                    <div class="info-value">
+                        ${questionnaireData.style && questionnaireData.style.length > 0 ? 
+                            `<div class="style-tags">${questionnaireData.style.map(style => `<span class="style-tag">${style}</span>`).join('')}</div>` : 
+                            'Not provided'}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Products Information
+        if (questionnaireData.products && questionnaireData.products.length > 0) {
+            brandInfoHTML += `
+                <div class="brand-info-section">
+                    <h3>Products Information</h3>
+            `;
+            
+            questionnaireData.products.forEach((product, index) => {
+                brandInfoHTML += `
+                    <div style="margin-bottom: 2rem; padding: 1rem; background: white; border-radius: 8px; border: 1px solid #e0e0e0;">
+                        <h4 style="color: var(--primary); margin-top: 0;">Product ${index + 1}: ${product.productName || 'Unnamed Product'}</h4>
+                        <div class="info-row">
+                            <div class="info-label">Category:</div>
+                            <div class="info-value">${product.productCategory || 'Not provided'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Features:</div>
+                            <div class="info-value">${product.productFeatures || 'Not provided'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Problems Solved:</div>
+                            <div class="info-value">${product.problemsSolved || 'Not provided'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Advantages:</div>
+                            <div class="info-value">${product.advantages || 'Not provided'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Price:</div>
+                            <div class="info-value">${product.price || 'Not provided'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Discount:</div>
+                            <div class="info-value">${product.discount || 'Not provided'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Suitable Adjectives:</div>
+                            <div class="info-value">${product.productAdjectives || 'Not provided'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Unsuitable Crowd:</div>
+                            <div class="info-value">${product.unsuitableCrowd || 'Not provided'}</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Other Notes:</div>
+                            <div class="info-value">${product.productNotes || 'Not provided'}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            brandInfoHTML += `</div>`;
+        }
+
+        document.getElementById('brandInfoContent').innerHTML = brandInfoHTML;
+        document.getElementById('brandInfoModal').style.display = 'flex';
+    }
+
+    // Close Brand Info Modal
+    function closeBrandInfo() {
+        document.getElementById('brandInfoModal').style.display = 'none';
+    }
 
     // Update credits display
     function updateCreditsUI() {
@@ -359,26 +668,30 @@
         return true;
     }
 
-    // Get full prompt including product name
+    // Get full prompt including product name and predefined styles
     function getFullPrompt() {
-        const style = document.getElementById('prompt').value.trim();
-        return style ? `${productName}, ${style}` : productName;
-    }
-
-    // Add tag to prompt - FIXED
-    function addTag(text) {
-        console.log("Adding tag:", text);
-        const textarea = document.getElementById('prompt');
-        const current = textarea.value.trim();
-        if (current) {
-            textarea.value = current + ", " + text;
-        } else {
-            textarea.value = text;
+        const userId = getUserId();
+        const questionnaireData = JSON.parse(localStorage.getItem(`questionnaireData_${userId}`) || localStorage.getItem('questionnaireData') || '{}');
+        
+        let styleParts = [];
+        
+        if (questionnaireData.backgroundScene && questionnaireData.backgroundScene.length > 0) {
+            styleParts = styleParts.concat(questionnaireData.backgroundScene);
         }
-        textarea.focus();
+        
+        if (questionnaireData.lightingMood && questionnaireData.lightingMood.length > 0) {
+            styleParts = styleParts.concat(questionnaireData.lightingMood);
+        }
+        
+        if (questionnaireData.style && questionnaireData.style.length > 0) {
+            styleParts = styleParts.concat(questionnaireData.style);
+        }
+        
+        const styleString = styleParts.join(', ');
+        return styleString ? `${productName}, ${styleString}` : productName;
     }
 
-    // Main generation function - FIXED: Proper history linking
+    // Main generation function
     async function generateNow() {
         console.log("🎨 Starting image generation...");
         
@@ -436,13 +749,13 @@
         document.getElementById('regenSection').style.display = 'block';
     }
 
-    // Handle successful image load - FIXED: Proper history saving
+    // Handle successful image load
     function handleImageLoad(imgElement, imageUrl, prompt, imageNumber, generationId, generationDate) {
         console.log(`✅ Image ${imageNumber} loaded successfully`);
         imgElement.style.display = 'block';
         imgElement.previousElementSibling.style.display = 'none';
         
-        // Save to history - THIS IS CRITICAL FOR HISTORY LINKING
+        // Save to history
         saveToHistory(imageUrl, prompt, imageNumber, generationId, generationDate);
     }
 
@@ -475,8 +788,9 @@
         }, 100);
     }
 
-    // ✅ FIXED: Save image to history - PROPERLY LINKED
+    // Save image to history
     function saveToHistory(imageUrl, prompt, imageNumber, generationId, generationDate) {
+        const userId = getUserId();
         const historyItem = {
             id: `${generationId}_${imageNumber}`,
             imageUrl: imageUrl,
@@ -492,19 +806,20 @@
         console.log("💾 Saving to history:", historyItem);
 
         // Get current user's history or initialize
-        const userHistory = JSON.parse(localStorage.getItem(`imageHistory_${currentUser.id}`) || '[]');
+        const userHistory = JSON.parse(localStorage.getItem(`imageHistory_${userId}`) || '[]');
         
         // Check if this image already exists in history
         const existingIndex = userHistory.findIndex(item => item.id === historyItem.id);
         if (existingIndex === -1) {
             userHistory.unshift(historyItem); // Add to beginning
-            localStorage.setItem(`imageHistory_${currentUser.id}`, JSON.stringify(userHistory));
+            localStorage.setItem(`imageHistory_${userId}`, JSON.stringify(userHistory));
             console.log('✅ Image saved to history:', historyItem.id);
         }
     }
 
     // Add to favorites from generation results
     function addToFavorites(imageUrl, prompt, imageNumber, generationId, generationDate) {
+        const userId = getUserId();
         const historyItem = {
             id: `${generationId}_${imageNumber}`,
             imageUrl: imageUrl,
@@ -517,7 +832,7 @@
             downloads: 0
         };
 
-        const userHistory = JSON.parse(localStorage.getItem(`imageHistory_${currentUser.id}`) || '[]');
+        const userHistory = JSON.parse(localStorage.getItem(`imageHistory_${userId}`) || '[]');
         
         // Check if image exists in history
         const existingIndex = userHistory.findIndex(item => item.id === historyItem.id);
@@ -529,15 +844,16 @@
             userHistory.unshift(historyItem);
         }
         
-        localStorage.setItem(`imageHistory_${currentUser.id}`, JSON.stringify(userHistory));
+        localStorage.setItem(`imageHistory_${userId}`, JSON.stringify(userHistory));
         
         alert('⭐ Image added to favorites!');
         console.log('⭐ Added to favorites:', historyItem.id);
     }
 
-    // ✅ FIXED: Load and display history
+    // Load and display history
     function loadHistory() {
-        const userHistory = JSON.parse(localStorage.getItem(`imageHistory_${currentUser.id}`) || '[]');
+        const userId = getUserId();
+        const userHistory = JSON.parse(localStorage.getItem(`imageHistory_${userId}`) || '[]');
         console.log("📁 Loading history:", userHistory.length, "items found");
         
         const historyGrid = document.getElementById('historyGrid');
@@ -647,12 +963,13 @@
 
     // Toggle favorite
     function toggleFavorite(imageId, buttonElement) {
-        const userHistory = JSON.parse(localStorage.getItem(`imageHistory_${currentUser.id}`) || '[]');
+        const userId = getUserId();
+        const userHistory = JSON.parse(localStorage.getItem(`imageHistory_${userId}`) || '[]');
         const itemIndex = userHistory.findIndex(item => item.id === imageId);
         
         if (itemIndex !== -1) {
             userHistory[itemIndex].isFavorite = !userHistory[itemIndex].isFavorite;
-            localStorage.setItem(`imageHistory_${currentUser.id}`, JSON.stringify(userHistory));
+            localStorage.setItem(`imageHistory_${userId}`, JSON.stringify(userHistory));
             
             // Update button appearance
             if (buttonElement) {
@@ -670,7 +987,6 @@
 
     // Regenerate from history
     function regenerateFromHistory(prompt) {
-        document.getElementById('prompt').value = prompt;
         showGenerationSection();
         generateNow();
     }
@@ -685,15 +1001,16 @@
         document.body.removeChild(a);
         
         // Track download in history
-        const userHistory = JSON.parse(localStorage.getItem(`imageHistory_${currentUser.id}`) || '[]');
+        const userId = getUserId();
+        const userHistory = JSON.parse(localStorage.getItem(`imageHistory_${userId}`) || '[]');
         const itemIndex = userHistory.findIndex(item => item.imageUrl === url);
         if (itemIndex !== -1) {
             userHistory[itemIndex].downloads = (userHistory[itemIndex].downloads || 0) + 1;
-            localStorage.setItem(`imageHistory_${currentUser.id}`, JSON.stringify(userHistory));
+            localStorage.setItem(`imageHistory_${userId}`, JSON.stringify(userHistory));
         }
     }
 
-    // ✅ FIXED: Navigation functions - ALL BUTTONS WORK
+    // Navigation functions
     function viewHistory() {
         document.getElementById('generationSection').style.display = 'none';
         document.getElementById('historySection').style.display = 'block';
@@ -717,11 +1034,6 @@
         loadHistory();
     }
 
-    // ✅ FIXED: User info function
-    function viewUserInfo() {
-        alert(`My Brand Info:\n\nCompany: ${currentUser.company || 'Not set'}\nEmail: ${currentUser.email || 'Not set'}\nIndustry: ${currentUser.industry || 'Not set'}\nProduct: ${productName}`);
-    }
-
     // Refine modal functions
     function openRefineModal() {
         document.getElementById('refineModal').style.display = 'flex';
@@ -735,12 +1047,10 @@
     function applyRefinement() {
         const feedback = document.getElementById('refineInput').value.trim();
         if (feedback) {
-            const current = document.getElementById('prompt').value.trim();
-            document.getElementById('prompt').value = current ? current + ", " + feedback : feedback;
+            alert('Refinement feature would normally update your style preferences. For now, please update your questionnaire to change styles.');
         }
         document.getElementById('refineModal').style.display = 'none';
         document.getElementById('refineInput').value = '';
-        generateNow();
     }
 
     // Logout function
@@ -749,7 +1059,7 @@
         window.location.href = 'index.html';
     }
 
-    console.log("✅ COMPLETELY FIXED Dashboard loaded successfully!");
+    console.log("✅ DASHBOARD READY - Brand Info feature added!");
   </script>
 </body>
 </html>
