@@ -15,12 +15,7 @@
       </p>
 
       <form id="registerForm">
-        <!-- Company & Email -->
-        <div class="input-group">
-          <label for="company">Company Name *</label>
-          <input type="text" id="company" placeholder="e.g., Acme Corp" required />
-        </div>
-
+        <!-- Email & Password Only -->
         <div class="input-group">
           <label for="email">Email Address *</label>
           <input type="email" id="email" placeholder="you@company.com" required />
@@ -37,62 +32,6 @@
           <input type="password" id="confirmPassword" placeholder="Confirm your password" required />
         </div>
 
-        <!-- Industry -->
-        <div class="input-group">
-          <label for="industry">Industry *</label>
-          <select id="industry" onchange="toggleCustomIndustry()">
-            <option value="Retail">Retail</option>
-            <option value="Food and Beverage">Food and Beverage</option>
-            <option value="E-commerce">E-commerce</option>
-            <option value="Beauty">Beauty</option>
-            <option value="Others">Others (Please specify)</option>
-          </select>
-          <input type="text" id="customIndustry" placeholder="Enter your industry"
-                 class="mt-4" style="display:none;" />
-        </div>
-
-        <!-- Product Name -->
-        <div class="input-group">
-          <label for="productName">Product Name *</label>
-          <input type="text" id="productName" placeholder="e.g., Glow Serum, Eco Bottle" required />
-        </div>
-
-        <div class="input-group">
-          <label for="requirements">Company Requirements</label>
-          <textarea id="requirements" rows="3" placeholder="Branding, tone, target audience…"></textarea>
-        </div>
-
-        <!-- Value Prompts (optional – max 5) -->
-        <div class="input-group">
-          <label>Value Prompts (Optional – max 5)</label>
-          <p class="text-sm" style="color:var(--gray); margin-bottom: .5rem;">
-            e.g. "cartoon", "3D render", "minimalist"
-          </p>
-          <div id="valuePrompts" class="mb-3"></div>
-          <button type="button" class="btn btn-sm btn-secondary" id="addValueBtn">+ Add Value</button>
-        </div>
-
-        <!-- Default Image Specifications -->
-        <h2>Default Image Specifications</h2>
-        <div class="grid-2">
-          <div class="input-group">
-            <label for="format">Format</label>
-            <select id="format">
-              <option value="PNG">PNG</option>
-              <option value="JPEG">JPEG</option>
-              <option value="WEBP">WEBP</option>
-            </select>
-          </div>
-          <div class="input-group">
-            <label for="resolution">Resolution</label>
-            <select id="resolution">
-              <option value="1024x1024">1024 × 1024</option>
-              <option value="768x1152">768 × 1152 (Portrait)</option>
-              <option value="1152x768">1152 × 768 (Landscape)</option>
-            </select>
-          </div>
-        </div>
-
         <button type="submit" class="btn btn-primary btn-block mt-4">
           Create Account & Send Verification Code
         </button>
@@ -106,86 +45,17 @@
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
   <script>
     console.log("=== PROGEN AI REGISTER PAGE LOADED ===");
-    let valuePromptCount = 0;
-
-    document.addEventListener('DOMContentLoaded', () => {
-      document.getElementById('addValueBtn').addEventListener('click', addValuePrompt);
-      updateAddButtonState();
-    });
-
-    function addValuePrompt() {
-      if (valuePromptCount >= 5) {
-        alert("Maximum 5 value prompts allowed.");
-        return;
-      }
-      valuePromptCount++;
-
-      const container = document.getElementById("valuePrompts");
-      const wrapper = document.createElement("div");
-      wrapper.className = "input-group";
-      wrapper.style.marginBottom = "0.75rem";
-
-      wrapper.innerHTML = `
-        <div class="d-flex gap-1 align-center">
-          <input type="text" placeholder="e.g. cartoon, 3D render..." class="flex-grow" style="margin:0;" />
-          <button type="button" class="btn btn-danger btn-sm" onclick="removeValuePrompt(this)">Remove</button>
-        </div>
-      `;
-
-      container.appendChild(wrapper);
-      wrapper.querySelector('input').focus();
-      updateAddButtonState();
-    }
-
-    function removeValuePrompt(btn) {
-      btn.closest(".input-group").remove();
-      valuePromptCount--;
-      updateAddButtonState();
-    }
-
-    function updateAddButtonState() {
-      const btn = document.getElementById('addValueBtn');
-      if (valuePromptCount >= 5) {
-        btn.disabled = true;
-        btn.textContent = "Max 5 reached";
-        btn.classList.remove('btn-secondary');
-        btn.classList.add('btn');
-        btn.style.background = '#ccc';
-      } else {
-        btn.disabled = false;
-        btn.textContent = "+ Add Value";
-        btn.classList.add('btn-secondary');
-        btn.style.background = '';
-      }
-    }
-
-    function toggleCustomIndustry() {
-      const select = document.getElementById("industry");
-      const custom = document.getElementById("customIndustry");
-      if (select.value === "Others") {
-        custom.style.display = "block";
-        custom.required = true;
-      } else {
-        custom.style.display = "none";
-        custom.required = false;
-      }
-    }
 
     // Form Submit
     document.getElementById("registerForm").addEventListener("submit", async function (e) {
       e.preventDefault();
 
-      const company   = document.getElementById("company").value.trim();
       const email     = document.getElementById("email").value.trim().toLowerCase();
       const password  = document.getElementById("password").value;
       const confirmPassword = document.getElementById("confirmPassword").value;
-      const industrySelect = document.getElementById("industry").value;
-      const customIndustry = document.getElementById("customIndustry").value.trim();
-      const product   = document.getElementById("productName").value.trim();
-      const reqs      = document.getElementById("requirements").value.trim();
 
       // Validation
-      if (!company || !email || !product || !password) {
+      if (!email || !password) {
         alert("Please fill all required fields.");
         return;
       }
@@ -197,12 +67,6 @@
 
       if (password.length < 6) {
         alert("Password must be at least 6 characters long.");
-        return;
-      }
-
-      const industry = industrySelect === "Others" ? customIndustry : industrySelect;
-      if (industrySelect === "Others" && !customIndustry) {
-        alert("Please enter your custom industry.");
         return;
       }
 
@@ -222,27 +86,13 @@
         }
       }
 
-      const valuePrompts = Array.from(document.querySelectorAll("#valuePrompts input"))
-                               .map(i => i.value.trim())
-                               .filter(v => v);
-
-      const format     = document.getElementById("format").value;
-      const resolution = document.getElementById("resolution").value;
-
       // Generate verification code (6 digits)
       const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
       // Store user data temporarily with verification code
       const tempUser = { 
-        company, 
         email, 
         password, 
-        industry, 
-        product, 
-        requirements: reqs,
-        valuePrompts, 
-        format, 
-        resolution, 
         verificationCode,
         createdAt: new Date().toISOString(),
         verified: false,
@@ -253,10 +103,7 @@
       localStorage.setItem("pendingVerification", JSON.stringify(tempUser));
 
       const templateParams = { 
-        company, 
         email, 
-        product, 
-        industry, 
         code: verificationCode 
       };
 
@@ -281,4 +128,4 @@
     });
   </script>
 </body>
-</html>
+</html>v
