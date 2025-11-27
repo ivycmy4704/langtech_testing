@@ -73,6 +73,56 @@
       justify-content: center;
       margin-top: 2rem;
     }
+    .checkbox-group.required {
+      border: 2px solid #e0e0e0;
+      padding: 1rem;
+      border-radius: 8px;
+      background: #f8f9fa;
+    }
+    .checkbox-group.required label {
+      font-weight: 600;
+    }
+    .form-section h2 {
+      color: #333;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 0.5rem;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .value-wrapper {
+      margin-bottom: 0.75rem;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: white;
+    }
+    .value-input {
+      margin: 0 !important;
+    }
+    .btn-remove {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .btn-remove:hover {
+      background: #c82333;
+    }
+    .text-sm {
+      font-size: 0.875rem;
+    }
+    .mb-3 {
+      margin-bottom: 1rem;
+    }
+    .mt-4 {
+      margin-top: 1.5rem;
+    }
   </style>
 </head>
 <body>
@@ -82,38 +132,162 @@
       <p class="subtitle">Please provide information about your brand and products</p>
       
       <form id="questionnaireForm">
-        <!-- Brand Information Section -->
+        <!-- Company & Product Information Section - MOVED FROM REGISTER -->
         <div class="form-section">
-          <h2>Basic Brand Information</h2>
+          <h2>Company & Product Information (Required)</h2>
           
           <div class="form-group">
-            <label for="brandName">Brand Name: *</label>
-            <input type="text" id="brandName" name="brandName" required>
+            <label for="company">Company Name: *</label>
+            <input type="text" id="company" name="company" placeholder="e.g., Acme Corp" required />
+          </div>
+
+          <div class="form-group">
+            <label for="industry">Industry: *</label>
+            <select id="industry" name="industry" onchange="toggleCustomIndustry()" required>
+              <option value="">Select Industry</option>
+              <option value="Retail">Retail</option>
+              <option value="Food and Beverage">Food and Beverage</option>
+              <option value="E-commerce">E-commerce</option>
+              <option value="Beauty">Beauty</option>
+              <option value="Others">Others (Please specify)</option>
+            </select>
+            <input type="text" id="customIndustry" name="customIndustry" placeholder="Enter your industry" 
+                   style="display:none; margin-top: 0.5rem;" />
+          </div>
+
+          <div class="form-group">
+            <label for="productName">Product Name: *</label>
+            <input type="text" id="productName" name="productName" placeholder="e.g., Glow Serum, Eco Bottle" required />
+          </div>
+
+          <!-- Default Image Specifications -->
+          <div class="form-group">
+            <h3 style="margin-bottom: 1rem;">Default Image Specifications: *</h3>
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="format">Format: *</label>
+                <select id="format" name="format" required>
+                  <option value="">Select Format</option>
+                  <option value="PNG">PNG</option>
+                  <option value="JPEG">JPEG</option>
+                  <option value="WEBP">WEBP</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="resolution">Resolution: *</label>
+                <select id="resolution" name="resolution" required>
+                  <option value="">Select Resolution</option>
+                  <option value="1024x1024">1024 × 1024</option>
+                  <option value="768x1152">768 × 1152 (Portrait)</option>
+                  <option value="1152x768">1152 × 768 (Landscape)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image Style Preferences Section -->
+        <div class="form-section">
+          <h2>Image Style Preferences (Required)</h2>
+          <p>Select your preferred styles for product images. All sections are required.</p>
+          
+          <!-- Background & Scene -->
+          <div class="form-group">
+            <label>Background & Scene: *</label>
+            <div class="checkbox-group required">
+              <label><input type="checkbox" name="backgroundScene" value="on clean white background" required> Clean White</label>
+              <label><input type="checkbox" name="backgroundScene" value="on soft pastel background"> Pastel</label>
+              <label><input type="checkbox" name="backgroundScene" value="floating with soft shadows"> Floating</label>
+              <label><input type="checkbox" name="backgroundScene" value="on marble table"> Marble Table</label>
+              <label><input type="checkbox" name="backgroundScene" value="in luxury bathroom"> Luxury Bathroom</label>
+              <label><input type="checkbox" name="backgroundScene" value="on wooden table with plants"> Natural Wood</label>
+            </div>
+          </div>
+          
+          <!-- Lighting & Mood -->
+          <div class="form-group">
+            <label>Lighting & Mood: *</label>
+            <div class="checkbox-group required">
+              <label><input type="checkbox" name="lightingMood" value="soft natural light" required> Soft Natural</label>
+              <label><input type="checkbox" name="lightingMood" value="golden hour glow"> Golden Hour</label>
+              <label><input type="checkbox" name="lightingMood" value="studio lighting"> Studio Light</label>
+              <label><input type="checkbox" name="lightingMood" value="dramatic shadows"> Dramatic</label>
+              <label><input type="checkbox" name="lightingMood" value="bright and clean"> Bright & Clean</label>
+            </div>
+          </div>
+          
+          <!-- Style -->
+          <div class="form-group">
+            <label>Style: *</label>
+            <div class="checkbox-group required">
+              <label><input type="checkbox" name="style" value="minimalist" required> Minimalist</label>
+              <label><input type="checkbox" name="style" value="luxury editorial"> Luxury</label>
+              <label><input type="checkbox" name="style" value="e-commerce style"> E-commerce</label>
+              <label><input type="checkbox" name="style" value="flat lay"> Flat Lay</label>
+              <label><input type="checkbox" name="style" value="with water droplets"> Fresh Dew</label>
+            </div>
+          </div>
+          
+          <p style="color: #666; font-size: 0.9rem; margin-top: 1rem;">
+            <strong>Note:</strong> These style preferences will be automatically applied to all your product images.
+          </p>
+        </div>
+
+        <!-- Optional Sections -->
+        <div class="form-section">
+          <h2>Optional Information</h2>
+          <p style="color: #666; margin-bottom: 1.5rem;">The following sections are optional but can help us better understand your brand.</p>
+
+          <!-- Company Requirements - OPTIONAL -->
+          <div class="form-group">
+            <label for="requirements">Company Requirements (Optional)</label>
+            <textarea id="requirements" name="requirements" rows="3" placeholder="Branding, tone, target audience…"></textarea>
+          </div>
+
+          <!-- Value Prompts - OPTIONAL -->
+          <div class="form-group">
+            <label>Value Prompts (Optional - max 5)</label>
+            <p class="text-sm" style="color:#666; margin-bottom: .5rem;">
+              e.g. "cartoon", "3D render", "minimalist"
+            </p>
+            <div id="valuePrompts" class="mb-3"></div>
+            <button type="button" class="btn-secondary" id="addValueBtn">+ Add Value</button>
+          </div>
+        </div>
+
+        <!-- Brand Information Section - OPTIONAL -->
+        <div class="form-section">
+          <h2>Brand Information (Optional)</h2>
+          <p style="color: #666; margin-bottom: 1.5rem;">Additional brand details that can help with image generation.</p>
+          
+          <div class="form-group">
+            <label for="brandName">Brand Name:</label>
+            <input type="text" id="brandName" name="brandName" placeholder="Your brand name">
           </div>
           
           <div class="form-group">
-            <label for="address">Address: *</label>
-            <input type="text" id="address" name="address" required>
+            <label for="address">Address:</label>
+            <input type="text" id="address" name="address" placeholder="Your business address">
           </div>
           
           <div class="form-group">
-            <label for="phone">Phone Number: *</label>
-            <input type="tel" id="phone" name="phone" required>
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phone" name="phone" placeholder="Your contact number">
           </div>
           
           <div class="form-group">
-            <label for="openingHours">Opening Hours (e.g., 11:00-20:30 daily): *</label>
-            <input type="text" id="openingHours" name="openingHours" required>
+            <label for="openingHours">Opening Hours:</label>
+            <input type="text" id="openingHours" name="openingHours" placeholder="e.g., 11:00-20:30 daily">
           </div>
           
           <div class="form-group">
             <label for="holidayHours">Opening Hours on Rest Days/Public Holidays:</label>
-            <input type="text" id="holidayHours" name="holidayHours">
+            <input type="text" id="holidayHours" name="holidayHours" placeholder="Special holiday hours">
           </div>
           
           <div class="form-group">
-            <label for="advanceBooking">Advance Booking Required? *</label>
-            <select id="advanceBooking" name="advanceBooking" required>
+            <label for="advanceBooking">Advance Booking Required?</label>
+            <select id="advanceBooking" name="advanceBooking">
               <option value="">Select</option>
               <option value="Yes">Yes</option>
               <option value="No">No</option>
@@ -134,9 +308,9 @@
           </div>
         </div>
 
-        <!-- Brand Details Section -->
+        <!-- Brand Details Section - OPTIONAL -->
         <div class="form-section">
-          <h2>Brand Information</h2>
+          <h2>Additional Brand Details (Optional)</h2>
           
           <div class="form-group">
             <label for="companyProfile">Company Profile and Background:</label>
@@ -145,12 +319,12 @@
           
           <div class="form-group">
             <label for="branches">Number and addresses of branches in Hong Kong and overseas:</label>
-            <textarea id="branches" name="branches" rows="3"></textarea>
+            <textarea id="branches" name="branches" rows="3" placeholder="Branch locations"></textarea>
           </div>
           
           <div class="form-group">
             <label for="awards">Awards/Awards and Industry Endorsement:</label>
-            <textarea id="awards" name="awards" rows="3"></textarea>
+            <textarea id="awards" name="awards" rows="3" placeholder="Awards and recognition"></textarea>
           </div>
           
           <div class="form-group">
@@ -160,7 +334,7 @@
           
           <div class="form-group">
             <label for="keyPromotedCategories">Key Promoted Product Categories:</label>
-            <input type="text" id="keyPromotedCategories" name="keyPromotedCategories">
+            <input type="text" id="keyPromotedCategories" name="keyPromotedCategories" placeholder="Main product categories">
           </div>
           
           <div class="form-group">
@@ -175,26 +349,26 @@
           
           <div class="form-group">
             <label for="consumptionThreshold">General Consumption Threshold:</label>
-            <input type="text" id="consumptionThreshold" name="consumptionThreshold">
+            <input type="text" id="consumptionThreshold" name="consumptionThreshold" placeholder="Average spending range">
           </div>
           
           <div class="form-group">
             <label for="copywritingTheme">Ideal Copywriting Theme:</label>
-            <textarea id="copywritingTheme" name="copywritingTheme" rows="2"></textarea>
+            <textarea id="copywritingTheme" name="copywritingTheme" rows="2" placeholder="Preferred messaging style"></textarea>
           </div>
           
           <div class="form-group">
             <label for="suitableAdjectives">Suitable/Must Included Adjectives for Copywriting:</label>
-            <textarea id="suitableAdjectives" name="suitableAdjectives" rows="2"></textarea>
+            <textarea id="suitableAdjectives" name="suitableAdjectives" rows="2" placeholder="Preferred descriptive words"></textarea>
           </div>
           
           <div class="form-group">
             <label for="otherNotes">Other Important Notes:</label>
-            <textarea id="otherNotes" name="otherNotes" rows="2"></textarea>
+            <textarea id="otherNotes" name="otherNotes" rows="2" placeholder="Any additional information"></textarea>
           </div>
         </div>
 
-        <!-- Products Section -->
+        <!-- Products Section - OPTIONAL -->
         <div class="form-section">
           <h2>Product Information (Optional)</h2>
           <p>If you don't need to specify any products to promote, you can skip this section.</p>
@@ -205,7 +379,7 @@
               
               <div class="form-group">
                 <label for="productName1">Product Name:</label>
-                <input type="text" id="productName1" name="productName1">
+                <input type="text" id="productName1" name="productName1" placeholder="Additional product name">
               </div>
               
               <div class="form-group">
@@ -220,17 +394,17 @@
               
               <div class="form-group">
                 <label for="problemsSolved1">Problems the Products Can Help Solve:</label>
-                <textarea id="problemsSolved1" name="problemsSolved1" rows="3"></textarea>
+                <textarea id="problemsSolved1" name="problemsSolved1" rows="3" placeholder="Customer pain points solved"></textarea>
               </div>
               
               <div class="form-group">
                 <label for="advantages1">Advantages Over Other Products:</label>
-                <textarea id="advantages1" name="advantages1" rows="3"></textarea>
+                <textarea id="advantages1" name="advantages1" rows="3" placeholder="Competitive advantages"></textarea>
               </div>
               
               <div class="form-group">
                 <label for="price1">Price:</label>
-                <input type="text" id="price1" name="price1">
+                <input type="text" id="price1" name="price1" placeholder="Product pricing">
               </div>
               
               <div class="form-group">
@@ -240,7 +414,7 @@
               
               <div class="form-group">
                 <label for="productAdjectives1">Suitable Adjectives for Copywriting:</label>
-                <textarea id="productAdjectives1" name="productAdjectives1" rows="2"></textarea>
+                <textarea id="productAdjectives1" name="productAdjectives1" rows="2" placeholder="Product-specific descriptive words"></textarea>
               </div>
               
               <div class="form-group">
@@ -250,7 +424,7 @@
               
               <div class="form-group">
                 <label for="productNotes1">Other Important Notes:</label>
-                <textarea id="productNotes1" name="productNotes1" rows="2"></textarea>
+                <textarea id="productNotes1" name="productNotes1" rows="2" placeholder="Additional product information"></textarea>
               </div>
             </div>
           </div>
@@ -272,10 +446,21 @@
       console.log('Questionnaire page loaded successfully');
       
       let productCount = 1;
+      let valuePromptCount = 0;
+
+      // Initialize value prompts
+      updateAddButtonState();
 
       // Cancel button redirect
       document.getElementById('cancelBtn').addEventListener('click', function() {
         console.log('Cancel button clicked');
+        // Check if user is logged in before redirecting
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        if (!currentUser.id && !currentUser.email) {
+          alert("Please log in first.");
+          window.location.href = 'index.html';
+          return;
+        }
         window.location.href = 'dashboard.html';
       });
 
@@ -342,10 +527,50 @@
         document.getElementById('productsContainer').appendChild(productForm);
       });
 
+      // Add value prompt functionality
+      document.getElementById('addValueBtn').addEventListener('click', function() {
+        console.log("🎯 ADD VALUE BUTTON CLICKED! Current count:", valuePromptCount);
+        
+        if (valuePromptCount >= 5) {
+          alert("Maximum 5 value prompts allowed.");
+          return;
+        }
+        
+        valuePromptCount++;
+        console.log("New count:", valuePromptCount);
+
+        const container = document.getElementById("valuePrompts");
+        const wrapper = document.createElement("div");
+        wrapper.className = "value-wrapper";
+        wrapper.innerHTML = `
+          <div class="grid-2">
+            <input type="text" placeholder="e.g. cartoon, 3D render, minimalist..." class="value-input" />
+            <button type="button" class="btn-remove" onclick="removeValuePrompt(this)">Remove</button>
+          </div>
+        `;
+        
+        container.appendChild(wrapper);
+        updateAddButtonState();
+        
+        // Focus on the new input
+        const newInput = wrapper.querySelector('.value-input');
+        newInput.focus();
+        
+        console.log("New value prompt added successfully");
+      });
+
       // Form submission with all original functionality
       document.getElementById('questionnaireForm').addEventListener('submit', function(e) {
         e.preventDefault();
         console.log('Form submission started');
+        
+        // Check if user is logged in
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        if (!currentUser.id && !currentUser.email) {
+          alert("Please log in first.");
+          window.location.href = 'index.html';
+          return;
+        }
         
         // Collect all form data
         const formData = new FormData(this);
@@ -353,7 +578,7 @@
         
         // Convert FormData to object
         for (let [key, value] of formData.entries()) {
-          if (key === 'paymentMethods') {
+          if (key === 'paymentMethods' || key === 'backgroundScene' || key === 'lightingMood' || key === 'style') {
             if (!data[key]) data[key] = [];
             data[key].push(value);
           } else {
@@ -361,8 +586,11 @@
           }
         }
         
-        // Validate required fields
-        const requiredFields = ['brandName', 'address', 'phone', 'openingHours', 'advanceBooking'];
+        // Validate ONLY the required fields (all brand information is optional)
+        const requiredFields = [
+          'company', 'industry', 'productName', 
+          'format', 'resolution'
+        ];
         const missingFields = [];
         
         for (const field of requiredFields) {
@@ -370,22 +598,52 @@
             missingFields.push(field);
           }
         }
+
+        // Validate custom industry
+        if (data.industry === 'Others' && (!data.customIndustry || data.customIndustry.trim() === '')) {
+          missingFields.push('customIndustry');
+        }
         
         if (missingFields.length > 0) {
           alert('Please fill in all required fields: ' + missingFields.map(field => {
             const fieldNames = {
-              'brandName': 'Brand Name',
-              'address': 'Address', 
-              'phone': 'Phone Number',
-              'openingHours': 'Opening Hours',
-              'advanceBooking': 'Advance Booking'
+              'company': 'Company Name',
+              'industry': 'Industry', 
+              'productName': 'Product Name',
+              'format': 'Image Format',
+              'resolution': 'Image Resolution',
+              'customIndustry': 'Custom Industry'
             };
             return fieldNames[field] || field;
           }).join(', '));
           return;
         }
         
-        // Process products data
+        // Collect value prompts (optional)
+        const valueInputs = document.querySelectorAll("#valuePrompts .value-input");
+        const valuePrompts = Array.from(valueInputs)
+                              .map(i => i.value.trim())
+                              .filter(v => v);
+        
+        data.valuePrompts = valuePrompts;
+
+        // Handle custom industry
+        if (data.industry === 'Others') {
+          data.industry = data.customIndustry;
+        }
+        delete data.customIndustry;
+        
+        // Validate style preferences (at least one selection in each category)
+        const backgroundSelected = document.querySelectorAll('input[name="backgroundScene"]:checked').length > 0;
+        const lightingSelected = document.querySelectorAll('input[name="lightingMood"]:checked').length > 0;
+        const styleSelected = document.querySelectorAll('input[name="style"]:checked').length > 0;
+        
+        if (!backgroundSelected || !lightingSelected || !styleSelected) {
+          alert('Please select at least one option in each style category (Background & Scene, Lighting & Mood, Style)');
+          return;
+        }
+        
+        // Process products data (optional)
         const products = [];
         for (let i = 1; i <= productCount; i++) {
           const productName = data[`productName${i}`];
@@ -422,25 +680,27 @@
         // Add products array to data
         data.products = products;
         data.submittedAt = new Date().toISOString();
+
+        // Save product name to localStorage for dashboard use
+        localStorage.setItem('userProduct', data.productName);
         
         // Save to localStorage
         try {
-          const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-          
           // Save questionnaire data with user ID for better organization
-          if (currentUser && currentUser.id) {
-            localStorage.setItem(`questionnaireData_${currentUser.id}`, JSON.stringify(data));
-            console.log('Questionnaire data saved with user ID:', currentUser.id);
-          }
+          localStorage.setItem(`questionnaireData_${currentUser.id || currentUser.email}`, JSON.stringify(data));
+          console.log('Questionnaire data saved with user ID:', currentUser.id || currentUser.email);
           
           // Also save to global for backward compatibility
           localStorage.setItem('questionnaireData', JSON.stringify(data));
           console.log('Questionnaire data saved successfully', data);
           
-          // Show success message and redirect
+          // Show success message and redirect to DASHBOARD
           alert('Questionnaire submitted successfully! Redirecting to dashboard...');
           
-          // Redirect after a short delay to ensure everything is processed
+          // Set completion flag
+          localStorage.setItem(`questionnaire_completed_${currentUser.id || currentUser.email}`, 'true');
+          
+          // Redirect to DASHBOARD after successful submission
           setTimeout(() => {
             window.location.href = 'dashboard.html';
           }, 100);
@@ -453,7 +713,8 @@
 
       // Load saved data if exists
       try {
-        const savedData = localStorage.getItem('questionnaireData');
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const savedData = localStorage.getItem(`questionnaireData_${currentUser.id || currentUser.email}`) || localStorage.getItem('questionnaireData');
         if (savedData) {
           const data = JSON.parse(savedData);
           populateForm(data);
@@ -464,14 +725,71 @@
       }
     });
 
+    // Remove value prompt function
+    function removeValuePrompt(btn) {
+      console.log("Removing value prompt");
+      btn.closest(".value-wrapper").remove();
+      valuePromptCount--;
+      updateAddButtonState();
+      console.log("Value prompt removed. New count:", valuePromptCount);
+    }
+
+    // Update add button state
+    function updateAddButtonState() {
+      const addButton = document.getElementById('addValueBtn');
+      if (valuePromptCount >= 5) {
+        addButton.disabled = true;
+        addButton.textContent = 'Maximum 5 values reached';
+        console.log("Button disabled - max reached");
+      } else {
+        addButton.disabled = false;
+        addButton.textContent = '+ Add Value';
+        console.log("Button enabled");
+      }
+    }
+
+    // Toggle custom industry
+    function toggleCustomIndustry() {
+      const select = document.getElementById("industry");
+      const custom = document.getElementById("customIndustry");
+      if (select.value === "Others") {
+        custom.style.display = "block";
+        custom.required = true;
+      } else {
+        custom.style.display = "none";
+        custom.required = false;
+        custom.value = '';
+      }
+    }
+
     // Function to populate form with saved data
     function populateForm(data) {
       for (const key in data) {
-        if (key === 'paymentMethods' && Array.isArray(data[key])) {
+        if (key === 'paymentMethods' || key === 'backgroundScene' || key === 'lightingMood' || key === 'style') {
+          if (Array.isArray(data[key])) {
+            data[key].forEach(value => {
+              const checkbox = document.querySelector(`input[name="${key}"][value="${value}"]`);
+              if (checkbox) checkbox.checked = true;
+            });
+          }
+        } else if (key === 'valuePrompts' && Array.isArray(data[key])) {
+          // Populate value prompts
           data[key].forEach(value => {
-            const checkbox = document.querySelector(`input[name="paymentMethods"][value="${value}"]`);
-            if (checkbox) checkbox.checked = true;
+            if (valuePromptCount < 5) {
+              valuePromptCount++;
+              const container = document.getElementById("valuePrompts");
+              const wrapper = document.createElement("div");
+              wrapper.className = "value-wrapper";
+              wrapper.innerHTML = `
+                <div class="grid-2">
+                  <input type="text" value="${value}" class="value-input" />
+                  <button type="button" class="btn-remove" onclick="removeValuePrompt(this)">Remove</button>
+                </div>
+              `;
+              container.appendChild(wrapper);
+            }
           });
+          updateAddButtonState();
         } else if (key === 'products') {
           // Handle products separately - you can implement this if needed
           console.log('Products data available:', data[key]);
