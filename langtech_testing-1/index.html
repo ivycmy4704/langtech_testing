@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ProGen AI - Login</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+    }
+    .container {
+      max-width: 420px;
+      width: 100%;
+      padding: 0 1rem;
+    }
+    .card {
+      background: white;
+      padding: 3rem 2.5rem;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    .logo {
+      font-size: 2.8rem;
+      font-weight: bold;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin: 0 0 0.5rem;
+    }
+    .subtitle {
+      color: #666;
+      margin-bottom: 2rem;
+      font-size: 1.1rem;
+    }
+    .input-group {
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #444;
+    }
+    input {
+      width: 100%;
+      padding: 14px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102,126,234,0.2);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 16px;
+      border: none;
+      border-radius: 16px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 1rem;
+      transition: 0.3s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 30px rgba(102,126,234,0.4);
+    }
+    .text-center { text-align: center; margin-top: 1.5rem; }
+    a { color: #667eea; text-decoration: none; font-weight: 600; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1 class="logo">ProGen AI</h1>
+      <p class="subtitle">Professional Product Image Generator</p>
+
+      <form id="loginForm">
+        <div class="input-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="you@example.com" required />
+        </div>
+        
+        <div class="input-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" />
+        </div>
+        
+        <button type="submit" class="btn-primary">Log In</button>
+      </form>
+
+      <div class="text-center">
+        <p>Don't have an account? <a href="register.html">Create Account</a></p>
+        <p><a href="forgot-password.html">Forgot Password?</a></p>
+        <p><a href="admin-create.html">Admin Login →</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const password = document.getElementById('password').value;
+
+      // Get all registered users
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const user = users.find(u => u.email === email && u.password === password);
+
+      if (!user) {
+        alert('Invalid email or password.');
+        return;
+      }
+
+      if (!user.verified) {
+        alert('Please verify your email first!');
+        window.location.href = 'verify-email.html?email=' + encodeURIComponent(email);
+        return;
+      }
+
+      // Save current session
+      localStorage.setItem('currentUser', JSON.stringify(user));
+
+      // Check if user has completed questionnaire
+      const hasCompletedQuestionnaire = localStorage.getItem(`questionnaire_${email}`) === 'true';
+
+      if (hasCompletedQuestionnaire) {
+        // Second+ login → go straight to dashboard
+        window.location.href = 'dashboard.html';
+      } else {
+        // First login → go to questionnaire
+        window.location.href = 'questionnaire.html';
+      }
+    });
+
+    // Optional: Show success message after email verification
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('verified') === 'true') {
+      alert('Email verified! Welcome to ProGen AI');
+      history.replaceState({}, '', '/index.html');
+    }
+  </script>
+</body>
+</html>

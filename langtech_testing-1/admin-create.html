@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin • Template Builder</title>
+  <style>
+    :root { --primary: #6366f1; --bg: #f8fafc; --card: #ffffff; --border: #e2e8f0; }
+    body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; color: #333; margin:0; }
+    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+
+    /* Login Screen */
+    #loginScreen { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 999; }
+    #loginBox { background: white; padding: 3rem; border-radius: 24px; width: 420px; text-align: center; box-shadow: 0 30px 80px rgba(0,0,0,0.4); }
+    #loginBox h2 { margin: 0 0 2rem; font-size: 2rem; color: #667eea; }
+    #loginBox input { width: 100%; padding: 16px; margin: 12px 0; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 1.1rem; }
+    #loginBox button { width: 100%; padding: 16px; background: #667eea; color: white; border: none; border-radius: 14px; font-size: 1.2rem; cursor: pointer; font-weight: bold; margin-top: 1rem; }
+    #loginBox button:hover { background: #5a67d8; }
+
+    /* Main Panel */
+    #adminPanel { display: none; background: white; border-radius: 28px; overflow: hidden; box-shadow: 0 40px 100px rgba(0,0,0,0.3); margin: 2rem auto; max-width: 1400px; }
+    .header { 
+      background: linear-gradient(135deg, #667eea, #764ba2); 
+      color: white; 
+      padding: 1.8rem 2.5rem; 
+      font-size: 1.9rem; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+    }
+    .header-left { font-weight: bold; }
+    .header-right { display: flex; gap: 1rem; align-items: center; }
+
+    .nav-btn {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+      backdrop-filter: blur(10px);
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.3); transform: translateY(-2px); }
+    .logout-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .content { padding: 3rem; }
+
+    .card { background: white; border-radius: 24px; padding: 2.5rem; margin-bottom: 2.5rem; box-shadow: 0 15px 40px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin: 2rem 0; }
+    label { display: block; margin-bottom: 0.8rem; font-weight: 600; color: #444; font-size: 1.1rem; }
+    input, select, textarea { width: 100%; padding: 16px; border: 2px solid #e2e8f0; border-radius: 16px; font-size: 1.1rem; transition: 0.3s; }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(99,102,241,0.15); }
+    .color-input { height: 80px; cursor: pointer; border-radius: 16px; }
+    .btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 16px 32px; border: none; border-radius: 16px; cursor: pointer; font-weight: bold; font-size: 1.2rem; transition: 0.3s; }
+    .btn:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(102,126,234,0.4); }
+
+    .assign-box { background: #f0f8ff; padding: 2rem; border-radius: 20px; border: 3px dashed #667eea; margin: 2rem 0; }
+    #clientEmails { height: 120px; font-family: monospace; }
+
+    .history-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 2rem; margin-top: 2rem; }
+    .template-card { background: white; padding: 2rem; border-radius: 20px; box-shadow: 0 12px 35px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; transition: 0.3s; }
+    .template-card:hover { transform: translateY(-8px); }
+    .code { background: #1e293b; color: #10b981; padding: 18px; border-radius: 16px; font-family: 'Courier New', monospace; font-size: 1.8rem; text-align: center; margin: 1.2rem 0; letter-spacing: 3px; user-select: all; cursor: pointer; }
+    .assigned { background: #d1fae5; color: #065f46; padding: 8px 14px; border-radius: 50px; font-size: 0.9rem; margin: 0.4rem; display: inline-block; }
+  </style>
+</head>
+<body>
+
+  <!-- Login -->
+  <div id="loginScreen">
+    <div id="loginBox">
+      <h2>Admin Login</h2>
+      <input type="text" id="adminName" placeholder="Username" />
+      <input type="password" id="adminPass" placeholder="Password" />
+      <button onclick="login()">Enter Admin Panel</button>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="adminPanel">
+    <div class="header">
+      <div class="header-left">ProGen AI • Template Builder</div>
+      <div class="header-right">
+        <button class="nav-btn" onclick="location.href='admin-client.html'">
+          Client Management
+        </button>
+        <button class="nav-btn" onclick="location.href='admin-support.html'">
+          Client Support
+        </button>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="content">
+
+        <!-- Create Template -->
+        <div class="card">
+          <h2 style="margin:0 0 1.5rem; color:#667eea;">Create New Premium Template</h2>
+
+          <div class="form-grid">
+            <div>
+              <label>Template Name</label>
+              <input type="text" id="templateName" placeholder="e.g. Ramadan Luxury Gold 2025" />
+            </div>
+            <div>
+              <label>Industry</label>
+              <select id="templateIndustry">
+                <option>E-commerce</option>
+                <option>Food & Beverage</option>
+                <option>Retail</option>
+                <option>Beauty</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div>
+              <label>Aesthetic Style</label>
+              <select id="aestheticStyle">
+                <option>Luxury & Elegant</option>
+                <option>Minimal & Clean</option>
+                <option>Bold & Vibrant</option>
+                <option>Playful & Fun</option>
+                <option>Dark & Moody</option>
+              </select>
+            </div>
+            <div>
+              <label>Art Style</label>
+              <select id="artStyle">
+                <option>Realistic Photography</option>
+                <option>3D Render</option>
+                <option>Studio Product Shot</option>
+                <option>Flat Illustration</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div>
+              <label>Primary Color</label>
+              <input type="color" id="colorPrimary" value="#667eea" class="color-input" />
+            </div>
+            <div>
+              <label>Accent Color</label>
+              <input type="color" id="colorAccent" value="#ec4899" class="color-input" />
+            </div>
+          </div>
+
+          <div class="assign-box">
+            <h3>Assign Directly to Clients (Optional)</h3>
+            <p>Enter client emails or usernames (one per line). They will get this style <strong>automatically</strong>.</p>
+            <textarea id="clientEmails" placeholder="client@example.com&#10;john_doe&#10;+ 10 more..."></textarea>
+          </div>
+
+          <button class="btn" style="width:100%; padding:18px; font-size:1.3rem;" onclick="saveTemplate()">
+            Save Template & Generate Code
+          </button>
+        </div>
+
+        <!-- History -->
+        <div class="card">
+          <h2 style="color:#667eea;">All Templates & Assignments</h2>
+          <div class="history-grid" id="history"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ADMIN_USERNAME = "admin";
+    const ADMIN_PASSWORD = "admin001";  
+
+    function login() {
+      const name = document.getElementById("adminName").value.trim();
+      const pass = document.getElementById("adminPass").value;
+      if (name === ADMIN_USERNAME && pass === ADMIN_PASSWORD) {
+        sessionStorage.setItem("adminLoggedIn", "true");
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("adminPanel").style.display = "block";
+        loadHistory();
+      } else alert("Wrong username or password!");
+    }
+
+    function logout() {
+      sessionStorage.removeItem("adminLoggedIn");
+      location.reload();
+    }
+
+    if (sessionStorage.getItem("adminLoggedIn")) {
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("adminPanel").style.display = "block";
+      loadHistory();
+    }
+
+    function generateCode(industry, name) {
+      const map = { "E-commerce": "ECO", "Food & Beverage": "FNB", "Retail": "RTL", "Beauty": "BTY" };
+      const prefix = map[industry] || "TMP";
+      const clean = name.replace(/[^a-z0-9]/gi, "").slice(0,10).toUpperCase();
+      return `${prefix}-${new Date().getFullYear()}-${clean || "TEMP"}`;
+    }
+
+    function saveTemplate() {
+      const name = document.getElementById("templateName").value.trim();
+      if (!name) return alert("Please enter a template name!");
+
+      const code = generateCode(document.getElementById("templateIndustry").value, name);
+      const assignedClients = document.getElementById("clientEmails").value.split("\n").map(s => s.trim()).filter(Boolean);
+
+      const template = {
+        id: Date.now(),
+        name,
+        code,
+        industry: document.getElementById("templateIndustry").value,
+        createdAt: new Date().toLocaleString(),
+        assignedTo: assignedClients,
+        style: {
+          aesthetic: document.getElementById("aestheticStyle").value,
+          artStyle: document.getElementById("artStyle").value,
+          colors: { primary: document.getElementById("colorPrimary").value, accent: document.getElementById("colorAccent").value }
+        }
+      };
+
+      let data = JSON.parse(localStorage.getItem("progenTemplatesV2") || '{"_history":[]}');
+      data._history.unshift(template);
+      localStorage.setItem("progenTemplatesV2", JSON.stringify(data));
+
+      assignedClients.forEach(client => {
+        localStorage.setItem(`assignedTemplate_${client}`, JSON.stringify(template));
+      });
+
+      navigator.clipboard.writeText(code);
+      alert(`Template Created!\n\nCode: ${code}\nAssigned to ${assignedClients.length} clients\nCode copied!`);
+
+      document.getElementById("templateName").value = "";
+      document.getElementById("clientEmails").value = "";
+      loadHistory();
+    }
+
+    function loadHistory() {
+      const data = JSON.parse(localStorage.getItem("progenTemplatesV2") || '{"_history":[]}');
+      const container = document.getElementById("history");
+      container.innerHTML = data._history.map(t => `
+        <div class="template-card">
+          <h3>${t.name}</h3>
+          <div class="code" onclick="navigator.clipboard.writeText('${t.code}'); alert('Copied!')">${t.code}</div>
+          <small>${t.createdAt} • ${t.industry}</small>
+          ${t.assignedTo.length > 0 ? `
+            <div style="margin-top:1rem;">
+              <strong>Assigned to (${t.assignedTo.length}):</strong><br>
+              ${t.assignedTo.map(c => `<span class="assigned">${c}</span>`).join(" ")}
+            </div>
+          ` : '<em style="color:#888; display:block; margin-top:1rem;">No direct assignment</em>'}
+        </div>
+      `).join("");
+    }
+
+    loadHistory();
+  </script>
+</body>
+</html>

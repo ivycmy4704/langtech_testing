@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Account - ProGen AI</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Create Your Account</h1>
+      <p class="subtitle">
+        Fill in your details – we'll send a verification code to your email.
+      </p>
+
+      <form id="registerForm">
+        <!-- Email & Password Only -->
+        <div class="input-group">
+          <label for="email">Email Address *</label>
+          <input type="email" id="email" placeholder="you@company.com" required />
+        </div>
+
+        <!-- Password -->
+        <div class="input-group">
+          <label for="password">Password *</label>
+          <input type="password" id="password" placeholder="Create a password" required minlength="6" />
+        </div>
+
+        <div class="input-group">
+          <label for="confirmPassword">Confirm Password *</label>
+          <input type="password" id="confirmPassword" placeholder="Confirm your password" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block mt-4">
+          Create Account & Send Verification Code
+        </button>
+      </form>
+
+      <p class="text-center mt-4"><a href="index.html">Back to Login</a></p>
+    </div>
+  </div>
+
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script>
+    console.log("=== PROGEN AI REGISTER PAGE LOADED ===");
+
+    // Form Submit
+    document.getElementById("registerForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const email     = document.getElementById("email").value.trim().toLowerCase();
+      const password  = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      // Validation
+      if (!email || !password) {
+        alert("Please fill all required fields.");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
+
+      if (password.length < 6) {
+        alert("Password must be at least 6 characters long.");
+        return;
+      }
+
+      // Check if email already exists
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const existingUser = users.find(u => u.email === email);
+      if (existingUser) {
+        if (existingUser.verified) {
+          alert("An account with this email already exists. Please log in instead.");
+          window.location.href = "index.html";
+          return;
+        } else {
+          // User exists but isn't verified - allow re-registration (will overwrite)
+          const index = users.findIndex(u => u.email === email);
+          users.splice(index, 1);
+          localStorage.setItem('users', JSON.stringify(users));
+        }
+      }
+
+      // Generate verification code (6 digits)
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+      // Store user data temporarily with verification code
+      const tempUser = { 
+        email, 
+        password, 
+        verificationCode,
+        createdAt: new Date().toISOString(),
+        verified: false,
+        credits: 20
+      };
+
+      // Store in pending verification
+      localStorage.setItem("pendingVerification", JSON.stringify(tempUser));
+
+      const templateParams = { 
+        email, 
+        code: verificationCode 
+      };
+
+      emailjs.init("04haQDj1VizCiKBn4");
+
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Sending Verification Code...";
+
+      try {
+        await emailjs.send("service_1vi3zyz", "template_y5dzqi9", templateParams);
+        alert(`Verification code sent to ${email}! Please check your inbox.`);
+        window.location.href = `verify-email.html?email=${encodeURIComponent(email)}`;
+      } catch (err) {
+        console.error("EmailJS error:", err);
+        alert(`Account created, but email failed.\nYour verification code: ${verificationCode}\nPlease save it!`);
+        window.location.href = `verify-email.html?email=${encodeURIComponent(email)}`;
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Create Account & Send Verification Code";
+      }
+    });
+  </script>
+</body>
+</html>v
