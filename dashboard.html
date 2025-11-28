@@ -147,7 +147,7 @@
       </div>
 
       <div class="template-code-box">
-        <h3>Or Enter a Premium Template Code (in the pink box)</h3>
+        <h3>Or Enter a Premium Template Code (request for it in the support page if you want a special one!)</h3>
         <input type="text" id="templateCodeInput" placeholder="e.g. LUXURY-2025" style="padding:14px; width:340px; border:none; border-radius:12px; font-size:1.2rem; text-align:center;" />
         <button onclick="applyTemplateCode()" style="margin-left:10px; padding:12px 24px; background:white; color:#667eea; border:none; border-radius:12px; font-weight:bold; cursor:pointer;">Apply Code</button>
         <p id="templateStatus" style="margin-top:1rem; font-size:1rem;"></p>
@@ -328,4 +328,5 @@
     function downloadImage(url) { const a=document.createElement('a'); a.href=url; a.download=`${productName}_${activeTemplate?(activeTemplate.code||activeTemplate.id):'default'}_${Date.now()}.jpg`; a.click(); }
   </script>
 </body>
+
 </html>
