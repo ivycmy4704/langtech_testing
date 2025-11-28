@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>驗證電子郵件 - ProGen AI</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>驗證您的電子郵件</h1>
+      <p class="subtitle">
+        我們已將6位數驗證碼發送到您的電子郵件地址。
+      </p>
+
+      <form id="verifyForm">
+        <div class="input-group">
+          <label for="email">電子郵件</label>
+          <input type="email" id="email" readonly />
+        </div>
+
+        <div class="input-group">
+          <label for="code">驗證碼</label>
+          <input type="text" id="code" placeholder="輸入6位數驗證碼" maxlength="6" required />
+        </div>
+
+        <button type="submit" class="btn-primary btn-block">驗證電子郵件</button>
+      </form>
+
+      <p class="text-center mt-4">
+        沒有收到驗證碼？ 
+        <a href="#" id="resendLink">重新發送驗證碼</a>
+      </p>
+      <p class="text-center">
+        <a href="register.html">返回註冊頁面</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script>
+    // Get email from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get('email');
+    
+    if (email) {
+      document.getElementById('email').value = email;
+    } else {
+      alert('未提供電子郵件。請重新註冊。');
+      window.location.href = 'register.html';
+    }
+
+    // Verify form submission
+    document.getElementById('verifyForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const enteredCode = document.getElementById('code').value.trim();
+      const pendingUser = JSON.parse(localStorage.getItem('pendingVerification') || '{}');
+      
+      if (pendingUser.email === email && pendingUser.verificationCode === enteredCode) {
+        // Code is correct - create user account
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        
+        // Remove verification code from user data before saving
+        const { verificationCode, ...userData } = pendingUser;
+        userData.verified = true;
+        
+        users.push(userData);
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.removeItem('pendingVerification');
+        
+        alert('電子郵件驗證成功！您現在可以登入了。');
+        window.location.href = 'index.html?verified=true';
+      } else {
+        alert('驗證碼無效。請重新嘗試。');
+      }
+    });
+
+    // Resend code functionality
+    document.getElementById('resendLink').addEventListener('click', async function(e) {
+      e.preventDefault();
+      
+      const pendingUser = JSON.parse(localStorage.getItem('pendingVerification') || '{}');
+      
+      if (pendingUser.email === email) {
+        // Generate new verification code
+        const newCode = Math.floor(100000 + Math.random() * 900000).toString();
+        pendingUser.verificationCode = newCode;
+        localStorage.setItem('pendingVerification', JSON.stringify(pendingUser));
+        
+        const templateParams = { 
+          company: pendingUser.company, 
+          email: pendingUser.email, 
+          product: pendingUser.product, 
+          industry: pendingUser.industry, 
+          code: newCode 
+        };
+
+        emailjs.init("04haQDj1VizCiKBn4");
+        
+        try {
+          await emailjs.send("service_1vi3zyz", "template_y5dzqi9", templateParams);
+          alert('新的驗證碼已發送！');
+        } catch (err) {
+          console.error("EmailJS error:", err);
+          alert(`發送郵件失敗。您的驗證碼：${newCode}`);
+        }
+      } else {
+        alert('會話已過期。請重新註冊。');
+        window.location.href = 'register.html';
+      }
+    });
+  </script>
+</body>
+</html>
