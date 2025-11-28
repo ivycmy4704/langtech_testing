@@ -21,7 +21,7 @@
     .btn-secondary { background: #f8f9fa; color: #666; border: 2px solid #e1e5e9; }
 
     .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
-    .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-bottom: 2rem; }
     .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1rem 2rem; color: white; display: flex; justify-content: space-between; align-items: center; }
     .navbar a { color: white; text-decoration: none; margin-left: 1.5rem; font-weight: 500; }
 
@@ -34,8 +34,89 @@
     tr:hover { background: #f8f9fa; }
     .btn-sm { padding: 6px 12px; margin: 0 4px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.9rem; }
     .btn-success { background: #28a745; color: white; }
+    .btn-info { background: #17a2b8; color: white; }
     .btn-secondary { background: #6c757d; color: white; }
     .btn-danger { background: #dc3545; color: white; }
+
+    /* History Modal Styles */
+    .history-modal { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%; 
+      background: rgba(0,0,0,0.8); 
+      display: none; 
+      align-items: center; 
+      justify-content: center; 
+      z-index: 10000; 
+    }
+    .history-content { 
+      background: white; 
+      padding: 2rem; 
+      border-radius: 12px; 
+      width: 90%; 
+      max-width: 1000px; 
+      max-height: 80vh; 
+      overflow-y: auto; 
+    }
+    .history-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    .history-item {
+      border: 1px solid #e1e5e9;
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+    }
+    .history-image {
+      width: 100%;
+      height: 200px;
+      background: #f8f9fa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .history-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .history-info {
+      padding: 1rem;
+    }
+    .history-prompt {
+      font-size: 0.9rem;
+      color: #555;
+      margin-bottom: 0.5rem;
+      line-height: 1.4;
+    }
+    .history-date {
+      font-size: 0.8rem;
+      color: #888;
+      display: flex;
+      justify-content: space-between;
+    }
+    .empty-history {
+      text-align: center;
+      padding: 3rem;
+      color: #666;
+      grid-column: 1 / -1;
+    }
+    .close-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      float: right;
+      margin-bottom: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -57,6 +138,17 @@
           <button type="submit" class="btn-primary">Login</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- History Modal -->
+  <div id="historyModal" class="history-modal">
+    <div class="history-content">
+      <button class="close-btn" onclick="closeHistoryModal()">✕ Close</button>
+      <h3 id="historyUserTitle">User History</h3>
+      <div id="historyContent">
+        <!-- History content will be loaded here -->
+      </div>
     </div>
   </div>
 
@@ -82,6 +174,7 @@
               <th>Industry</th>
               <th>Credits</th>
               <th>Last Login</th>
+              <th>Generated Images</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -97,6 +190,7 @@
     const modal = document.getElementById('adminModal');
     const panel = document.getElementById('adminPanel');
     const form = document.getElementById('adminLoginForm');
+    const historyModal = document.getElementById('historyModal');
 
     const setSession = () => sessionStorage.setItem('adminAuth', 'true');
     const clearSession = () => sessionStorage.removeItem('adminAuth');
@@ -130,39 +224,115 @@
       );
 
       if (filtered.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:3rem; color:#666;">No users found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:3rem; color:#666;">No users found</td></tr>';
         return;
       }
 
-      tbody.innerHTML = filtered.map(user => `
+      tbody.innerHTML = filtered.map(user => {
+        // Count user's generated images
+        const userHistory = JSON.parse(localStorage.getItem(`imageHistory_${user.email}`) || '[]');
+        const imageCount = userHistory.length;
+        
+        return `
         <tr>
           <td><strong>${user.company || 'N/A'}</strong></td>
           <td>${user.email}</td>
           <td>${user.industry || 'N/A'}</td>
-          <td><input type="number" value="${user.credits || 0}" class="credit-input" data-id="${user.id}" style="width:70px;" min="0"></td>
+          <td><input type="number" value="${user.credits || 0}" class="credit-input" data-email="${user.email}" style="width:70px;" min="0"></td>
           <td>${user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Never'}</td>
           <td>
-            <button class="btn-sm btn-success" onclick="saveCredits(${user.id})">Save</button>
-            <button class="btn-sm btn-secondary" onclick="editUser(${user.id})">Edit</button>
-            <button class="btn-sm btn-danger" onclick="deleteUser(${user.id})">Delete</button>
+            <span style="font-weight:bold; color:${imageCount > 0 ? '#28a745' : '#dc3545'}">
+              ${imageCount} images
+            </span>
+          </td>
+          <td>
+            <button class="btn-sm btn-info" onclick="viewUserHistory('${user.email}', '${user.company}')">View History</button>
+            <button class="btn-sm btn-success" onclick="saveCredits('${user.email}')">Save Credits</button>
+            <button class="btn-sm btn-secondary" onclick="editUser('${user.email}')">Edit</button>
+            <button class="btn-sm btn-danger" onclick="deleteUser('${user.email}')">Delete</button>
           </td>
         </tr>
-      `).join('');
+      `}).join('');
     }
 
-    window.saveCredits = function(id) {
+    // NEW: View user history function
+    window.viewUserHistory = function(userEmail, companyName) {
+      const userHistory = JSON.parse(localStorage.getItem(`imageHistory_${userEmail}`) || '[]');
+      const historyContent = document.getElementById('historyContent');
+      const historyTitle = document.getElementById('historyUserTitle');
+      
+      historyTitle.textContent = `${companyName || 'User'} - Generated Images (${userHistory.length})`;
+      
+      if (userHistory.length === 0) {
+        historyContent.innerHTML = `
+          <div class="empty-history">
+            <h4>No Generated Images</h4>
+            <p>This user hasn't generated any images yet.</p>
+          </div>
+        `;
+      } else {
+        historyContent.innerHTML = `
+          <div class="history-grid">
+            ${userHistory.map(item => `
+              <div class="history-item">
+                <div class="history-image">
+                  <img src="${item.imageUrl}" alt="${item.prompt}" 
+                       onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjBmMmY1Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBhdmFpbGFibGU8L3RleHQ+PC9zdmc+'">
+                </div>
+                <div class="history-info">
+                  <div class="history-prompt" title="${item.prompt}">
+                    ${item.prompt.length > 80 ? item.prompt.substring(0, 80) + '...' : item.prompt}
+                  </div>
+                  <div class="history-date">
+                    <span>${new Date(item.timestamp).toLocaleDateString()}</span>
+                    <span>Image ${item.imageNumber}</span>
+                  </div>
+                  <div style="margin-top: 0.5rem;">
+                    <button class="btn-sm btn-success" onclick="downloadAdminImage('${item.imageUrl}', '${companyName}', ${item.imageNumber})" style="cursor:pointer;">
+                      Download
+                    </button>
+                    ${item.isFavorite ? '⭐' : ''}
+                  </div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+      
+      historyModal.style.display = 'flex';
+    };
+
+    // NEW: Close history modal
+    window.closeHistoryModal = function() {
+      historyModal.style.display = 'none';
+    };
+
+    // NEW: Download image from admin panel
+    window.downloadAdminImage = function(url, companyName, imageNumber) {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${(companyName || 'user').replace(/ /g, '_')}_${imageNumber}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    };
+
+    // UPDATED: Save credits using email instead of id
+    window.saveCredits = function(userEmail) {
       const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const user = users.find(u => u.id === id);
-      const input = document.querySelector(`.credit-input[data-id="${id}"]`);
+      const user = users.find(u => u.email === userEmail);
+      const input = document.querySelector(`.credit-input[data-email="${userEmail}"]`);
       const credits = parseInt(input.value) || 0;
       user.credits = credits;
       localStorage.setItem('users', JSON.stringify(users));
-      alert(`Credits updated to ${credits}`);
+      alert(`Credits updated to ${credits} for ${userEmail}`);
     };
 
-    window.editUser = function(id) {
+    // UPDATED: Edit user using email
+    window.editUser = function(userEmail) {
       const users = JSON.parse(localStorage.getItem('users') || '[]');
-      const user = users.find(u => u.id === id);
+      const user = users.find(u => u.email === userEmail);
       const newName = prompt('New company name:', user.company);
       if (newName && newName.trim()) {
         user.company = newName.trim();
@@ -171,15 +341,23 @@
       }
     };
 
-    window.deleteUser = function(id) {
+    // UPDATED: Delete user using email
+    window.deleteUser = function(userEmail) {
       if (confirm('Delete this user permanently?')) {
         let users = JSON.parse(localStorage.getItem('users') || '[]');
-        users = users.filter(u => u.id !== id);
+        users = users.filter(u => u.email !== userEmail);
         localStorage.setItem('users', JSON.stringify(users));
-        localStorage.removeItem(`questionnaireData_${id}`);
+        localStorage.removeItem(`imageHistory_${userEmail}`);
         renderUsers();
       }
     };
+
+    // Close modal when clicking outside
+    historyModal.addEventListener('click', function(e) {
+      if (e.target === historyModal) {
+        closeHistoryModal();
+      }
+    });
   </script>
 </body>
 </html>
