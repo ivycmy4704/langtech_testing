@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verify Email - ProGen AI</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>Verify Your Email</h1>
+      <p class="subtitle">
+        We've sent a 6-digit verification code to your email address.
+      </p>
+
+      <form id="verifyForm">
+        <div class="input-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" readonly />
+        </div>
+
+        <div class="input-group">
+          <label for="code">Verification Code</label>
+          <input type="text" id="code" placeholder="Enter 6-digit code" maxlength="6" required />
+        </div>
+
+        <button type="submit" class="btn-primary btn-block">Verify Email</button>
+      </form>
+
+      <p class="text-center mt-4">
+        Didn't receive the code? 
+        <a href="#" id="resendLink">Resend Code</a>
+      </p>
+      <p class="text-center">
+        <a href="register.html">Back to Registration</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script>
+    // Get email from URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get('email');
+    
+    if (email) {
+      document.getElementById('email').value = email;
+    } else {
+      alert('No email provided. Please register again.');
+      window.location.href = 'register.html';
+    }
+
+    // Verify form submission
+    document.getElementById('verifyForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const enteredCode = document.getElementById('code').value.trim();
+      const pendingUser = JSON.parse(localStorage.getItem('pendingVerification') || '{}');
+      
+      if (pendingUser.email === email && pendingUser.verificationCode === enteredCode) {
+        // Code is correct - create user account
+        const users = JSON.parse(localStorage.getItem('users') || '[]');
+        
+        // Remove verification code from user data before saving
+        const { verificationCode, ...userData } = pendingUser;
+        userData.verified = true;
+        
+        users.push(userData);
+        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.removeItem('pendingVerification');
+        
+        alert('Email verified successfully! You can now log in.');
+        window.location.href = 'index.html?verified=true';
+      } else {
+        alert('Invalid verification code. Please try again.');
+      }
+    });
+
+    // Resend code functionality
+    document.getElementById('resendLink').addEventListener('click', async function(e) {
+      e.preventDefault();
+      
+      const pendingUser = JSON.parse(localStorage.getItem('pendingVerification') || '{}');
+      
+      if (pendingUser.email === email) {
+        // Generate new verification code
+        const newCode = Math.floor(100000 + Math.random() * 900000).toString();
+        pendingUser.verificationCode = newCode;
+        localStorage.setItem('pendingVerification', JSON.stringify(pendingUser));
+        
+        const templateParams = { 
+          company: pendingUser.company, 
+          email: pendingUser.email, 
+          product: pendingUser.product, 
+          industry: pendingUser.industry, 
+          code: newCode 
+        };
+
+        emailjs.init("04haQDj1VizCiKBn4");
+        
+        try {
+          await emailjs.send("service_1vi3zyz", "template_y5dzqi9", templateParams);
+          alert('New verification code sent!');
+        } catch (err) {
+          console.error("EmailJS error:", err);
+          alert(`Failed to resend email. Your code: ${newCode}`);
+        }
+      } else {
+        alert('Session expired. Please register again.');
+        window.location.href = 'register.html';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ProGen AI • Brand & Product Setup</title>
+  <style>
+    :root { --primary: #667eea; --accent: #764ba2; --success: #10b981; --danger: #ef4444; --warning: #f59e0b; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin: 0;
+      min-height: 100vh;
+      color: #333;
+    }
+    .container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+    .card {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 32px;
+      padding: 3rem;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .logo {
+      font-size: 3rem; font-weight: bold;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin: 0 0 0.5rem;
+    }
+    .subtitle { text-align: center; font-size: 1.3rem; color: #666; margin-bottom: 1rem; }
+
+    .alert-success {
+      background: var(--success); color: white; padding: 1.2rem 2rem;
+      border-radius: 16px; margin: 1.5rem 0; text-align: center; font-weight: 600;
+      box-shadow: 0 10px 30px rgba(16,185,129,0.3);
+    }
+    .alert-warning {
+      background: var(--warning); color: white; padding: 1rem 2rem;
+      border-radius: 16px; margin: 1.5rem 0; text-align: center; font-weight: 600;
+    }
+
+    .section {
+      background: white; border-radius: 20px; padding: 2rem;
+      margin-bottom: 2rem; box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+      border: 1px solid #e2e8f0;
+    }
+    .section h2 {
+      color: var(--primary); border-bottom: 3px solid var(--primary);
+      padding-bottom: 0.8rem; margin-top: 0; font-size: 1.6rem;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem; margin-top: 1.5rem;
+    }
+    .form-group { margin-bottom: 1.5rem; }
+    label {
+      display: block; margin-bottom: 0.7rem; font-weight: 600; color: #444;
+    }
+    input, select, textarea {
+      width: 100%; padding: 16px; border: 2px solid #e2e8f0;
+      border-radius: 16px; font-size: 1.1rem; transition: all 0.3s; box-sizing: border-box;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none; border-color: var(--primary);
+      box-shadow: 0 0 0 5px rgba(102,126,234,0.2);
+    }
+    textarea { min-height: 110px; resize: vertical; }
+
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem; margin-top: 0.5rem;
+    }
+    .checkbox-group label {
+      display: flex; align-items: center; font-weight: normal; cursor: pointer;
+    }
+    .checkbox-group input { width: auto; margin-right: 0.8rem; transform: scale(1.3); }
+
+    .product-card {
+      background: #f8faff; border: 2px dashed var(--primary);
+      border-radius: 20px; padding: 2rem; position: relative;
+      margin-bottom: 1.5rem;
+    }
+    .remove-btn {
+      position: absolute; top: 1rem; right: 1rem;
+      background: var(--danger); color: white; border: none;
+      width: 40px; height: 40px; border-radius: 50%;
+      font-size: 1.3rem; cursor: pointer;
+    }
+
+    .btn {
+      padding: 16px 32px; border: none; border-radius: 16px;
+      font-size: 1.2rem; font-weight: bold; cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+    }
+    .btn-primary:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(102,126,234,0.4); }
+    .btn-secondary { background: #6c757d; color: white; }
+    .btn-add { background: var(--success); color: white; margin-top: 1rem; }
+
+    .btn-group {
+      display: flex; gap: 1.5rem; justify-content: center;
+      margin-top: 3rem; flex-wrap: wrap;
+    }
+    .required { color: var(--danger); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1 class="logo">ProGen AI</h1>
+      <p class="subtitle">Tell us about your brand & products — we’ll create perfect images</p>
+      <div id="statusAlert"></div>
+
+      <form id="questionnaireForm">
+        <!-- Company & Product Info -->
+        <div class="section">
+          <h2>Company & Product Information <span class="required">(Required)</span></h2>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Company Name *</label>
+              <input type="text" id="company" required placeholder="e.g. Luxe Beauty Co." />
+            </div>
+            <div class="form-group">
+              <label>Industry *</label>
+              <select id="industry" required onchange="toggleCustom()">
+                <option value="">Select Industry</option>
+                <option>Retail</option>
+                <option>Food & Beverage</option>
+                <option>E-commerce</option>
+                <option>Beauty</option>
+                <option>Others</option>
+              </select>
+              <input type="text" id="customIndustry" placeholder="Your industry" style="display:none; margin-top:0.8rem;" />
+            </div>
+            <div class="form-group">
+              <label>Main Product Name *</label>
+              <input type="text" id="productName" required placeholder="e.g. Glow Serum, Organic Matcha" />
+            </div>
+            <div class="form-group">
+              <label>Image Format *</label>
+              <select id="format" required>
+                <option>PNG</option>
+                <option>JPEG</option>
+                <option>WEBP</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Resolution *</label>
+              <select id="resolution" required>
+                <option>1024 × 1024</option>
+                <option>768 × 1152 (Portrait)</option>
+                <option>1152 × 768 (Landscape)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Brand Info -->
+        <div class="section">
+          <h2>Brand Details (Optional)</h2>
+          <div class="form-grid">
+            <div class="form-group"><label>Brand Name</label><input type="text" id="brandName" /></div>
+            <div class="form-group"><label>Address</label><input type="text" id="address" /></div>
+            <div class="form-group"><label>Phone</label><input type="tel" id="phone" /></div>
+            <div class="form-group"><label>Opening Hours</label><input type="text" id="openingHours" placeholder="e.g. 11:00–20:30 daily" /></div>
+            <div class="form-group"><label>Holiday Hours</label><input type="text" id="holidayHours" /></div>
+            <div class="form-group">
+              <label>Advance Booking?</label>
+              <select id="advanceBooking"><option>No</option><option>Yes</option></select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Payment Methods</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" value="Cash"> Cash</label>
+              <label><input type="checkbox" value="Credit Card"> Credit Card</label>
+              <label><input type="checkbox" value="WeChat"> WeChat</label>
+              <label><input type="checkbox" value="Alipay"> Alipay</label>
+              <label><input type="checkbox" value="Octopus"> Octopus Card</label>
+              <label><input type="checkbox" value="Vouchers"> Vouchers</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Details -->
+        <div class="section">
+          <h2>More About Your Brand (Optional)</h2>
+          <div class="form-grid">
+            <div class="form-group"><label>Company Background</label><textarea id="companyProfile" placeholder="Year founded, story, etc."></textarea></div>
+            <div class="form-group"><label>Target Audience</label><textarea id="targetAudience" placeholder="Age, gender, income, interests..."></textarea></div>
+            <div class="form-group"><label>Brand Advantages</label><textarea id="brandAdvantages"></textarea></div>
+            <div class="form-group"><label>Ideal Tone & Adjectives</label><textarea id="suitableAdjectives" placeholder="e.g. luxurious, natural, premium, authentic"></textarea></div>
+          </div>
+        </div>
+
+        <!-- Additional Products -->
+        <div class="section">
+          <h2>Additional Products to Promote (Optional)</h2>
+          <div id="productsContainer"></div>
+          <button type="button" class="btn btn-add" id="addProduct">+ Add Product</button>
+        </div>
+
+        <div class="btn-group">
+          <button type="submit" class="btn btn-primary">
+            <span id="saveBtnText">Save & Start Generating Images</span>
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="history.back()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let productCount = 0;
+
+    window.toggleCustom = function() {
+      const sel = document.getElementById('industry');
+      const inp = document.getElementById('customIndustry');
+      inp.style.display = sel.value === 'Others' ? 'block' : 'none';
+      inp.required = sel.value === 'Others';
+    };
+
+    function addProduct() {
+      productCount++;
+      const div = document.createElement('div');
+      div.className = 'product-card';
+      div.innerHTML = `
+        <button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button>
+        <h3 style="margin:0 0 1.5rem; color:var(--primary);">Product ${productCount}</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Product Name</label><input type="text" class="p-name" /></div>
+          <div class="form-group"><label>Category</label><input type="text" class="p-cat" /></div>
+          <div class="form-group"><label>Key Features (7–10)</label><textarea class="p-features" rows="3"></textarea></div>
+          <div class="form-group"><label>Problems Solved</label><textarea class="p-problems" rows="3"></textarea></div>
+          <div class="form-group"><label>Price</label><input type="text" class="p-price" /></div>
+          <div class="form-group"><label>Current Offer</label><textarea class="p-offer" rows="2"></textarea></div>
+        </div>
+      `;
+      document.getElementById('productsContainer').appendChild(div);
+    }
+
+    document.getElementById('addProduct').onclick = addProduct;
+
+    // Load saved data on page load
+    window.onload = function () {
+      const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      if (!user.email) {
+        document.getElementById('statusAlert').innerHTML = `
+          <div class="alert-warning">Please log in to save your brand profile.</div>
+        `;
+        return;
+      }
+
+      const savedData = localStorage.getItem(`brandData_${user.email}`);
+      if (!savedData) return;
+
+      const data = JSON.parse(savedData);
+
+      // Populate form
+      document.getElementById('company').value = data.company || '';
+      document.getElementById('productName').value = data.productName || '';
+      document.getElementById('format').value = data.format || 'PNG';
+      document.getElementById('resolution').value = data.resolution || '1024 × 1024';
+
+      if (['Retail','Food & Beverage','E-commerce','Beauty'].includes(data.industry)) {
+        document.getElementById('industry').value = data.industry;
+      } else {
+        document.getElementById('industry').value = 'Others';
+        document.getElementById('customIndustry').value = data.industry || '';
+        toggleCustom();
+      }
+
+      document.getElementById('brandName').value = data.brandName || '';
+      document.getElementById('address').value = data.address || '';
+      document.getElementById('phone').value = data.phone || '';
+      document.getElementById('openingHours').value = data.openingHours || '';
+      document.getElementById('holidayHours').value = data.holidayHours || '';
+      document.getElementById('advanceBooking').value = data.advanceBooking || 'No';
+
+      (data.paymentMethods || []).forEach(m => {
+        const el = document.querySelector(`input[value="${m}"]`);
+        if (el) el.checked = true;
+      });
+
+      document.getElementById('companyProfile').value = data.companyProfile || '';
+      document.getElementById('targetAudience').value = data.targetAudience || '';
+      document.getElementById('brandAdvantages').value = data.brandAdvantages || '';
+      document.getElementById('suitableAdjectives').value = data.suitableAdjectives || '';
+
+      (data.products || []).forEach(p => {
+        addProduct();
+        const cards = document.querySelectorAll('.product-card');
+        const card = cards[cards.length - 1];
+        card.querySelector('.p-name').value = p.name || '';
+        card.querySelector('.p-cat').value = p.category || '';
+        card.querySelector('.p-features').value = p.features || '';
+        card.querySelector('.p-problems').value = p.problems || '';
+        card.querySelector('.p-price').value = p.price || '';
+        card.querySelector('.p-offer').value = p.offer || '';
+      });
+
+      // Show success banner
+      document.getElementById('statusAlert').innerHTML = `
+        <div class="alert-success">
+          Your brand profile is already set up and saved!<br>
+          You can update it below — changes will only be saved when you click the button and confirm.
+        </div>
+      `;
+      document.getElementById('saveBtnText').textContent = 'Update & Save Changes';
+    };
+
+    // Save only on explicit submit + confirmation
+    document.getElementById('questionnaireForm').onsubmit = function(e) {
+      e.preventDefault();
+
+      const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      if (!user.email) {
+        alert('Login required');
+        location.href = 'index.html';
+        return;
+      }
+
+      const existingData = localStorage.getItem(`brandData_${user.email}`);
+      if (existingData && !confirm('This will permanently update your brand profile. Continue?')) {
+        return;
+      }
+
+      const data = {
+        company: document.getElementById('company').value.trim(),
+        industry: document.getElementById('industry').value === 'Others'
+          ? document.getElementById('customIndustry').value.trim()
+          : document.getElementById('industry').value,
+        productName: document.getElementById('productName').value.trim(),
+        format: document.getElementById('format').value,
+        resolution: document.getElementById('resolution').value,
+        brandName: document.getElementById('brandName').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        openingHours: document.getElementById('openingHours').value.trim(),
+        holidayHours: document.getElementById('holidayHours').value.trim(),
+        advanceBooking: document.getElementById('advanceBooking').value,
+        paymentMethods: Array.from(document.querySelectorAll('.checkbox-group input[type="checkbox"]:checked'))
+          .map(c => c.value),
+        companyProfile: document.getElementById('companyProfile').value.trim(),
+        targetAudience: document.getElementById('targetAudience').value.trim(),
+        brandAdvantages: document.getElementById('brandAdvantages').value.trim(),
+        suitableAdjectives: document.getElementById('suitableAdjectives').value.trim(),
+        products: []
+      };
+
+      document.querySelectorAll('.product-card').forEach(card => {
+        data.products.push({
+          name: card.querySelector('.p-name').value.trim(),
+          category: card.querySelector('.p-cat').value.trim(),
+          features: card.querySelector('.p-features').value.trim(),
+          problems: card.querySelector('.p-problems').value.trim(),
+          price: card.querySelector('.p-price').value.trim(),
+          offer: card.querySelector('.p-offer').value.trim()
+        });
+      });
+
+      // Save permanently
+      localStorage.setItem(`brandData_${user.email}`, JSON.stringify(data));
+      localStorage.setItem('userProduct', data.productName);
+      localStorage.setItem(`questionnaire_${user.email}`, 'true');
+
+      alert('Brand profile saved successfully!');
+      setTimeout(() => location.href = 'dashboard.html', 800);
+    };
+  </script>
+</body>
+</html>

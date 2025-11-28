@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Support - ProGen AI</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f4f6f9; }
+    #adminModal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+    .modal-content { background: #fff; padding: 2.5rem; border-radius: 16px; width: 380px; box-shadow: 0 20px 40px rgba(0,0,0,.3); position: relative; }
+    .modal-content::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #667eea, #764ba2, #f093fb); }
+    .modal-content h3 { margin: 0 0 1.5rem; text-align: center; font-size: 1.8rem; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .input-group { margin-bottom: 1.5rem; }
+    label { display: block; margin-bottom: .6rem; font-weight: 600; color: #555; }
+    input { width: 100%; padding: 12px; border: 2px solid #e1e5e9; border-radius: 8px; font-size: 1rem; }
+    input:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); outline: none; }
+    .modal-actions { display: flex; gap: 1rem; margin-top: 2rem; }
+    .modal-actions button { padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; flex: 1; }
+    .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color:#fff; }
+    .btn-secondary { background: #f8f9fa; color: #666; border: 2px solid #e1e5e9; }
+
+    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+    .card { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); margin-bottom: 2rem; }
+    .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1rem 2rem; color: white; display: flex; justify-content: space-between; align-items: center; }
+    .navbar a { color: white; text-decoration: none; margin-left: 1.5rem; font-weight: 500; }
+
+    .ticket-item { background: #fff; padding: 1.5rem; margin-bottom: 1.5rem; border-radius: 12px; border: 1px solid #e1e5e9; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .ticket-header { display: flex; justify-content: space-between; margin-bottom: 1rem; }
+    .ticket-status { padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+    .status-open { background: #d4edda; color: #155724; }
+    .status-closed { background: #f8d7da; color: #721c24; }
+    .btn-sm { padding: 6px 12px; margin: 0 4px; border: none; border-radius: 6px; cursor: pointer; }
+    .btn-success { background: #28a745; color: white; }
+    .btn-secondary { background: #6c757d; color: white; }
+    .btn-danger { background: #dc3545; color: white; }
+  </style>
+</head>
+<body>
+
+  <div id="adminModal">
+    <div class="modal-content">
+      <h3>Admin Login</h3>
+      <form id="adminLoginForm">
+        <div class="input-group">
+          <label>Admin Name</label>
+          <input type="text" id="adminName" required />
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="adminPass" required />
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="cancelBtn" class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-primary">Login</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="adminPanel" style="display:none;">
+    <nav class="navbar">
+      <div style="font-size: 1.6rem; font-weight: bold;">Support Center</div>
+      <div>
+        <a href="admin-create.html">Create Templates</a>
+        <a href="admin-client.html">Client Management</a>
+        <a href="index.html" id="logoutLink">Logout</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="card">
+        <h2>Support Tickets</h2>
+        <div id="tickets"></div>
+      </div>
+      <div class="card">
+        <h2>Recent Login History</h2>
+        <div id="loginHistory"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ADMIN_NAME = 'admin';
+    const ADMIN_PASS = 'admin001';
+    const modal = document.getElementById('adminModal');
+    const panel = document.getElementById('adminPanel');
+    const form = document.getElementById('adminLoginForm');
+
+    const setSession = () => sessionStorage.setItem('adminAuth', 'true');
+    const clearSession = () => sessionStorage.removeItem('adminAuth');
+    const isAuth = () => sessionStorage.getItem('adminAuth') === 'true';
+
+    if (isAuth()) { modal.style.display = 'none'; panel.style.display = 'block'; loadData(); }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = document.getElementById('adminName').value.trim();
+      const pass = document.getElementById('adminPass').value;
+      if (name === ADMIN_NAME && pass === ADMIN_PASS) {
+        setSession();
+        modal.style.display = 'none';
+        panel.style.display = 'block';
+        loadData();
+      } else alert('Invalid credentials');
+    });
+
+    document.getElementById('cancelBtn').onclick = () => location.href = 'index.html';
+    document.getElementById('logoutLink').onclick = e => { e.preventDefault(); clearSession(); location.href = 'index.html'; };
+
+    function loadData() {
+      renderTickets();
+      renderLoginHistory();
+    }
+
+    function renderTickets() {
+      const tickets = JSON.parse(localStorage.getItem('supportTickets') || '[]');
+      const container = document.getElementById('tickets');
+      if (tickets.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:#666; padding:3rem;">No support tickets yet</p>';
+        return;
+      }
+      tickets.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+      container.innerHTML = tickets.map(t => `
+        <div class="ticket-item">
+          <div class="ticket-header">
+            <strong>${t.company || 'Guest'} - ${t.subject}</strong>
+            <span class="ticket-status status-${t.status || 'open'}">${(t.status || 'open').toUpperCase()}</span>
+          </div>
+          <div><strong>Email:</strong> ${t.email}</div>
+          <div style="background:#f8f9fa; padding:1rem; border-radius:8px; margin:1rem 0;">${t.message}</div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <small>${new Date(t.createdAt).toLocaleString()}</small>
+            <div>
+              <button class="btn-sm btn-success" onclick="updateTicketStatus('${t.id}','closed')" ${t.status==='closed'?'disabled':''}>Close</button>
+              <button class="btn-sm btn-danger" onclick="deleteTicket('${t.id}')">Delete</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderLoginHistory() {
+      const history = JSON.parse(localStorage.getItem('userLoginHistory') || '[]');
+      const container = document.getElementById('loginHistory');
+      if (history.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:#666; padding:3rem;">No login history</p>';
+        return;
+      }
+      history.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+      container.innerHTML = history.slice(0, 20).map(h => `
+        <div style="background:#f8f9fa; padding:1rem; margin-bottom:0.5rem; border-radius:8px;">
+          <strong>${h.company || 'Unknown'}</strong> (${h.email}) — ${new Date(h.timestamp).toLocaleString()}
+        </div>
+      `).join('');
+    }
+
+    window.updateTicketStatus = function(id, status) {
+      let tickets = JSON.parse(localStorage.getItem('supportTickets') || '[]');
+      const t = tickets.find(x => x.id === id);
+      if (t) { t.status = status; t.updatedAt = new Date().toISOString(); }
+      localStorage.setItem('supportTickets', JSON.stringify(tickets));
+      renderTickets();
+    };
+
+    window.deleteTicket = function(id) {
+      if (confirm('Delete this ticket permanently?')) {
+        let tickets = JSON.parse(localStorage.getItem('supportTickets') || '[]');
+        tickets = tickets.filter(t => t.id !== id);
+        localStorage.setItem('supportTickets', JSON.stringify(tickets));
+        renderTickets();
+      }
+    };
+  </script>
+</body>
+</html>
