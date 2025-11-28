@@ -16,18 +16,12 @@
     .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
     .card { background: #fff; border-radius: 20px; padding: 3rem; box-shadow: 0 15px 40px rgba(0,0,0,0.1); text-align: center; }
 
-    /* PREMIUM TEMPLATE DISPLAY BOX (Used for both Admin & Code Entry) */
+    /* PREMIUM BOX — ALWAYS VISIBLE */
     #premiumTemplateBox {
       background: linear-gradient(135deg, #8b5cf6, #ec4899);
-      color: white;
-      padding: 2.5rem;
-      border-radius: 24px;
-      margin: 0 0 2.5rem 0;
-      box-shadow: 0 25px 60px rgba(139,92,246,0.6);
-      animation: float 6s ease-in-out infinite;
-      display: none;
-      position: relative;
-      overflow: hidden;
+      color: white; padding: 2.5rem; border-radius: 24px; margin: 0 0 2.5rem 0;
+      box-shadow: 0 25px 60px rgba(139,92,246,0.6); animation: float 6s ease-in-out infinite;
+      position: relative; overflow: hidden;
     }
     #premiumTemplateBox::before {
       content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
@@ -54,29 +48,17 @@
     .color-preview { display: flex; gap: 12px; margin-top: 8px; }
     .color-box { width: 44px; height: 44px; border-radius: 14px; border: 3px solid rgba(255,255,255,0.4); }
 
-    /* UNIVERSAL TEMPLATES */
     .universal-templates {
       background: linear-gradient(135deg, #667eea, #764ba2);
-      color: white;
-      padding: 2rem;
-      border-radius: 20px;
-      margin: 2rem 0;
+      color: white; padding: 2rem; border-radius: 20px; margin: 2rem 0;
       box-shadow: 0 15px 40px rgba(102,126,234,0.4);
     }
     .universal-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      margin-top: 1.5rem;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;
     }
     .template-option {
-      background: rgba(255,255,255,0.15);
-      border-radius: 16px;
-      padding: 1.5rem;
-      cursor: pointer;
-      transition: all 0.3s;
-      backdrop-filter: blur(10px);
-      border: 2px solid transparent;
+      background: rgba(255,255,255,0.15); border-radius: 16px; padding: 1.5rem; cursor: pointer;
+      transition: all 0.3s; backdrop-filter: blur(10px); border: 2px solid transparent;
     }
     .template-option:hover { transform: translateY(-6px); background: rgba(255,255,255,0.25); }
     .template-option.selected { border: 3px solid #10b981; background: rgba(16,185,129,0.2); transform: scale(1.05); }
@@ -86,19 +68,18 @@
     .info-note { background: #f8f9fa; border-left: 5px solid var(--primary); }
 
     .btn-primary { background: var(--primary); color: white; padding: 1.4rem 2.5rem; border: none; border-radius: 16px; font-size: 1.3rem; width: 100%; cursor: pointer; font-weight: bold; margin: 1rem 0; }
-    .btn-success { background: var(--success); color: white; padding: 1.4rem 3rem; border: none; border-radius: 16px; font-size: 1.3rem; cursor: pointer; font-weight: bold; }
+    .btn-success { background: var(--success); color: white; padding: 1.2rem 2rem; border: none; border-radius: 12px; font-size: 1.1rem; cursor: pointer; font-weight: bold; }
 
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; }
     .result-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 12px 30px rgba(0,0,0,0.15); }
-    .image-container { height: 520px; background: #f8f9ff; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-    .final-img { display: none; width: 100%; height: 100%; object-fit: cover; border-radius: 20px 20px 0 0; }
+    .image-container { height: 520px; background: #f0f7ff; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .final-img { display: none; width: 100%; height: 100%; object-fit: cover; }
     .loader-wrapper { position: absolute; z-index: 10; text-align: center; color: var(--primary); }
     .spinner { width: 80px; height: 80px; border: 9px solid #f0f0f0; border-top: 9px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem; }
     .timer-text { font-family: 'Courier New', monospace; font-size: 2rem; font-weight: bold; color: var(--primary); }
-    .regenerate-box { margin: 3rem 0 1rem; padding: 2.5rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 20px; box-shadow: 0 15px 40px rgba(102,126,234,0.4); animation: slideUp 0.8s ease-out; display: none; }
+    .regenerate-box { margin: 3rem 0 1rem; padding: 2.5rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 20px; box-shadow: 0 15px 40px rgba(102,126,234,0.4); display: none; text-align: center; }
 
     @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     @keyframes shine { 0% { transform: translateX(-100%) translateY(-100%) rotate(30deg); } 100% { transform: translateX(100%) translateY(100%) rotate(30deg); } }
   </style>
@@ -109,7 +90,7 @@
     <div class="nav-links">
       <a href="dashboard.html">Dashboard</a>
       <a href="credit.html">Buy Credits (<span id="creditDisplay">20</span>)</a>
-      <a href="client-homepage.html">Home</a>
+      <a href="client-home.html">Home</a>
       <a href="index.html">Logout</a>
     </div>
   </nav>
@@ -117,22 +98,22 @@
   <div class="container">
     <div class="card">
 
-      <!-- PREMIUM TEMPLATE DISPLAY (Admin OR Code Entry) -->
+      <!-- ALWAYS VISIBLE PREMIUM PREVIEW -->
       <div id="premiumTemplateBox">
-        <div class="premium-badge" id="premiumBadge">PREMIUM TEMPLATE ACTIVE</div>
+        <div class="premium-badge" id="premiumBadge">PREMIUM TEMPLATE</div>
         <h2 class="premium-title" id="premiumTitle">Luxury Gold 2025</h2>
         <div class="premium-code" id="premiumCode">LUX-2025-GOLD</div>
-        <p id="premiumSource">Applied via code</p>
+        <p id="premiumSource" style="opacity:0.9;font-size:1.1rem;margin:1rem 0;">Enter code to unlock this exclusive style</p>
         <div class="premium-details">
-          <div class="detail-item"><strong>Aesthetic</strong><br><span id="premiumAesthetic">Luxury & Elegant</span></div>
-          <div class="detail-item"><strong>Style</strong><br><span id="premiumArtStyle">Studio Product Shot</span></div>
+          <div class="detail-item"><strong>Aesthetic</strong><br>Luxury & Elegant</div>
+          <div class="detail-item"><strong>Style</strong><br>Studio Product Shot</div>
           <div class="detail-item"><strong>Colors</strong>
             <div class="color-preview">
-              <div class="color-box" id="premiumColor1"></div>
-              <div class="color-box" id="premiumColor2"></div>
+              <div class="color-box" style="background:#ffd700;"></div>
+              <div class="color-box" style="background:#1a1a1a;"></div>
             </div>
           </div>
-          <div class="detail-item"><strong>Industry</strong><br><span id="premiumIndustry">E-commerce</span></div>
+          <div class="detail-item"><strong>Industry</strong><br>Jewelry • Watches • Premium</div>
         </div>
       </div>
 
@@ -140,17 +121,16 @@
         Stunning Images for <span style="color:var(--primary);" id="productNameDisplay">Your Product</span>
       </h2>
 
-      <!-- UNIVERSAL TEMPLATES -->
       <div class="universal-templates">
-        <h3 style="margin:0 0 1rem;">Choose Your Style (Universal Templates)</h3>
+        <h3 style="margin:0 0 1rem;">Choose Your Style (Free Templates)</h3>
         <div class="universal-grid" id="universalTemplates"></div>
       </div>
 
-      <div class="template-code-box">
-        <h3>Or Enter a Premium Template Code (request for it in the support page if you want a special one!)</h3>
-        <input type="text" id="templateCodeInput" placeholder="e.g. LUXURY-2025" style="padding:14px; width:340px; border:none; border-radius:12px; font-size:1.2rem; text-align:center;" />
-        <button onclick="applyTemplateCode()" style="margin-left:10px; padding:12px 24px; background:white; color:#667eea; border:none; border-radius:12px; font-weight:bold; cursor:pointer;">Apply Code</button>
-        <p id="templateStatus" style="margin-top:1rem; font-size:1rem;"></p>
+      <div style="margin:2.5rem 0;">
+        <h3>Have a Premium Code?</h3>
+        <input type="text" id="templateCodeInput" placeholder="e.g. LUX-2025-GOLD" style="padding:14px; width:340px; border:1px solid #ccc; border-radius:12px; font-size:1.2rem;" />
+        <button onclick="applyTemplateCode()" style="margin-left:10px; padding:12px 24px; background:#8b5cf6; color:white; border:none; border-radius:12px; cursor:pointer; font-weight:bold;">Activate Premium</button>
+        <p id="templateStatus" style="margin-top:1rem; font-weight:bold;"></p>
       </div>
 
       <div class="locked-product">
@@ -158,7 +138,7 @@
       </div>
 
       <div class="info-note">
-        Lightning-fast • 1024×1024 HD • 2 credits per generation
+        Lightning-fast • 1024×1024 HD • 2 credits per generation • Powered by Pollinations.ai
       </div>
 
       <button class="btn-primary" onclick="generateNow()">
@@ -168,8 +148,7 @@
       <div id="results" class="grid-2" style="display:none;"></div>
 
       <div id="regenerateBox" class="regenerate-box">
-        <h3>Want More Variations?</h3>
-        <p>Generate 2 fresh images instantly</p>
+        <h3>Want more variations?</h3>
         <button class="btn-success" onclick="generateNow()">Generate 2 More (-2 Credits)</button>
       </div>
     </div>
@@ -177,80 +156,69 @@
 
   <script>
     let productName = "Premium Product";
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    let currentUser = { email: "" };
     let activeTemplate = null;
 
     const UNIVERSAL_TEMPLATES = [
       { id: "clean-white", name: "Clean White Studio", desc: "Pure white, soft light", promptAdd: ", clean white seamless background, soft studio lighting, premium product photography" },
       { id: "dark-moody", name: "Dark & Moody", desc: "Cinematic black backdrop", promptAdd: ", dark black background, moody cinematic lighting, high contrast, luxury" },
-      { id: "fun-colorful", name: "Fun & Colorful", desc: "Fun and colorful vibe", promptAdd: ", colorful fancy light, interesting backdrop, sweet and cute outlook" },
+      { id: "natural-light", name: "Natural Window Light", desc: "Soft daylight feel", promptAdd: ", soft natural window light, light gray backdrop, lifestyle product shot" },
       { id: "gold-luxury", name: "Gold Luxury", desc: "Golden hour vibes", promptAdd: ", golden hour lighting, subtle gold reflections, ultra premium" },
       { id: "minimal-gray", name: "Minimal Gray", desc: "Scandinavian simplicity", promptAdd: ", light gray seamless background, minimal composition, soft shadows" }
     ];
 
     document.addEventListener('DOMContentLoaded', () => {
+      try {
+        currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      } catch(e) {}
       if (!currentUser.email) {
         alert("Please login first");
         location.href = 'index.html';
         return;
       }
 
-      productName = localStorage.getItem('userProduct') || "Premium Product";
+      productName = localStorage.getItem('userProduct') || "Your Product";
       document.getElementById('productNameDisplay').textContent = productName;
       document.getElementById('lockedProductName').textContent = productName;
       updateCredits();
 
-      // 1. Check for admin-assigned template first
-      const assigned = localStorage.getItem(`assignedTemplate_${currentUser.email}`);
-      if (assigned) {
+      // Check for saved premium code
+      const saved = localStorage.getItem(`userPremiumCode_${currentUser.email}`);
+      if (saved) {
         try {
-          const template = JSON.parse(assigned);
-          showPremiumTemplate(template, "Assigned by Admin");
-          activeTemplate = template;
+          const t = JSON.parse(saved);
+          activatePremium(t);
         } catch(e) {}
-
-      // 2. Check if user previously entered a code
-      } else {
-        const savedCodeData = localStorage.getItem(`userPremiumCode_${currentUser.email}`);
-        if (savedCodeData) {
-          const template = JSON.parse(savedCodeData);
-          showPremiumTemplate(template, "Applied via code");
-          activeTemplate = template;
-        }
       }
 
-      // Load universal template choice
-      const savedChoice = localStorage.getItem(`userTemplateChoice_${currentUser.email}`);
-      renderUniversalTemplates(savedChoice || "clean-white");
+      const savedChoice = localStorage.getItem(`userTemplateChoice_${currentUser.email}`) || "clean-white";
+      renderUniversalTemplates(savedChoice);
+      if (!activeTemplate) activeTemplate = UNIVERSAL_TEMPLATES.find(t => t.id === savedChoice);
     });
 
-    function showPremiumTemplate(template, sourceText) {
-      document.getElementById('premiumTitle').textContent = template.name;
+    function activatePremium(template) {
+      document.getElementById('premiumBadge').textContent = "PREMIUM ACTIVE";
+      document.getElementById('premiumBadge').style.background = "rgba(16,185,129,0.5)";
+      document.getElementById('premiumTitle').textContent = template.name || "Premium Active";
       document.getElementById('premiumCode').textContent = template.code || "CUSTOM";
-      document.getElementById('premiumSource').textContent = sourceText;
-      document.getElementById('premiumAesthetic').textContent = template.style?.aesthetic || "Premium";
-      document.getElementById('premiumArtStyle').textContent = template.style?.artStyle || "Professional";
-      document.getElementById('premiumIndustry').textContent = template.industry || "All";
-      document.getElementById('premiumColor1').style.background = template.style?.colors?.primary || "#8b5cf6";
-      document.getElementById('premiumColor2').style.background = template.style?.colors?.accent || "#ec4899";
-      document.getElementById('premiumTemplateBox').style.display = 'block';
+      document.getElementById('premiumSource').textContent = "Premium style activated";
+      document.getElementById('premiumSource').style.color = "#10b981";
+      activeTemplate = template;
     }
 
     window.applyTemplateCode = function() {
       const code = document.getElementById('templateCodeInput').value.trim().toUpperCase();
       if (!code) return;
 
-      // Try to find in admin's saved templates
-      const allTemplates = JSON.parse(localStorage.getItem("progenTemplatesV2") || '{"_history":[]}')._history;
+      const allTemplates = JSON.parse(localStorage.getItem("progenTemplatesV2") || '{"_history":[]}')._history || [];
       const found = allTemplates.find(t => t.code === code);
 
       if (found) {
-        showPremiumTemplate(found, "Applied via code");
-        activeTemplate = found;
+        activatePremium(found);
         localStorage.setItem(`userPremiumCode_${currentUser.email}`, JSON.stringify(found));
-        document.getElementById('templateStatus').innerHTML = `<span style="color:#10b981;">Premium template activated!</span>`;
+        document.getElementById('templateStatus').innerHTML = '<span style="color:#10b981;">Premium template activated!</span>';
       } else {
-        document.getElementById('templateStatus').innerHTML = `<span style="color:#fca5a5;">Invalid or expired code</span>`;
+        document.getElementById('templateStatus').innerHTML = '<span style="color:#ef4444;">Invalid or expired code</span>';
       }
     };
 
@@ -262,48 +230,35 @@
           <p>${t.desc}</p>
         </div>
       `).join('');
-
-      if (!activeTemplate || activeTemplate.id?.startsWith?.('clean')) {
-        const selected = UNIVERSAL_TEMPLATES.find(t => t.id === selectedId);
-        activeTemplate = selected;
-      }
     }
 
     window.selectUniversalTemplate = function(id) {
       localStorage.setItem(`userTemplateChoice_${currentUser.email}`, id);
       renderUniversalTemplates(id);
-      document.getElementById('templateStatus').innerHTML = `<span style="color:#10b981;">Switched to: ${UNIVERSAL_TEMPLATES.find(t=>t.id===id).name}</span>`;
-      // Hide premium box if using universal
-      if (document.getElementById('premiumTemplateBox').style.display === 'block') {
-        const keep = confirm("Keep premium template active?\nOK = Keep premium • Cancel = Use universal");
-        if (!keep) {
-          document.getElementById('premiumTemplateBox').style.display = 'none';
-          localStorage.removeItem(`userPremiumCode_${currentUser.email}`);
-        }
-      }
+      activeTemplate = UNIVERSAL_TEMPLATES.find(t => t.id === id);
     };
 
     function getFullPrompt() {
-      let prompt = `${productName}, luxury product photography, ultra sharp, photorealistic, premium quality, 8k, commercial ad style`;
-
+      let prompt = `${productName}, photorealistic, ultra sharp, 8k, commercial product photography, sharp focus`;
       if (activeTemplate?.promptAdd) {
         prompt += activeTemplate.promptAdd;
       } else {
         prompt += ", clean white seamless background, soft studio lighting";
       }
+      prompt += `, seed:${Date.now() + Math.floor(Math.random()*100000)}`;
       return prompt;
     }
 
-    // Rest of your functions (credits, generate, history, download) remain 100% the same
     function updateCredits() {
       const credits = parseInt(localStorage.getItem('userCredits') || '20');
       document.getElementById('creditDisplay').textContent = credits;
     }
+
     function deductCredits() {
       let credits = parseInt(localStorage.getItem('userCredits') || '20');
       if (credits < 2) {
         alert("Not enough credits!");
-        setTimeout(() => location.href = 'credit.html', 1200);
+        setTimeout(() => location.href = 'credit.html', 1000);
         return false;
       }
       credits -= 2;
@@ -311,23 +266,81 @@
       updateCredits();
       return true;
     }
-    function saveToHistory(imageUrl, prompt) {
-      const allRecords = JSON.parse(localStorage.getItem('userRecords') || '{}');
-      if (!allRecords[currentUser.email]) allRecords[currentUser.email] = [];
 
-      allRecords[currentUser.email].unshift({
-        imageUrl, prompt,
+    function saveToHistory(url, prompt) {
+      const records = JSON.parse(localStorage.getItem('userRecords') || '{}');
+      if (!records[currentUser.email]) records[currentUser.email] = [];
+      records[currentUser.email].unshift({
+        imageUrl: url,
+        prompt: prompt,
         title: productName + (activeTemplate ? ` [${activeTemplate.name || activeTemplate.code}]` : ""),
         date: new Date().toISOString()
       });
-      if (allRecords[currentUser.email].length > 50) allRecords[currentUser.email].pop();
-      localStorage.setItem('userRecords', JSON.stringify(allRecords));
+      if (records[currentUser.email].length > 50) records[currentUser.email].pop();
+      localStorage.setItem('userRecords', JSON.stringify(records));
     }
-    window.generateNow = function() { /* same as before */ };
-    function onImageLoad(img, url, prompt) { img.style.display='block'; clearInterval(img.closest('.result-card').timerInterval); img.parentElement.querySelector('.loader-wrapper').style.display='none'; saveToHistory(url, prompt); }
-    function downloadImage(url) { const a=document.createElement('a'); a.href=url; a.download=`${productName}_${activeTemplate?(activeTemplate.code||activeTemplate.id):'default'}_${Date.now()}.jpg`; a.click(); }
+
+    window.generateNow = function() {
+      if (!deductCredits()) return;
+
+      const results = document.getElementById('results');
+      results.style.display = 'grid';
+      results.innerHTML = '';
+      document.getElementById('regenerateBox').style.display = 'block';
+
+      const prompt = getFullPrompt();
+
+      for (let i = 0; i < 2; i++) {
+        const card = document.createElement('div');
+        card.className = 'result-card';
+        card.innerHTML = `
+          <div class="image-container">
+            <div class="loader-wrapper">
+              <div class="spinner"></div>
+              <div class="timer-text">00:15</div>
+              <p>Generating your image...</p>
+            </div>
+            <img class="final-img" alt="Generated ${i+1}" />
+          </div>
+          <div style="padding:1.5rem;">
+            <button class="btn-success" onclick="downloadImage(this.closest('.result-card').querySelector('img').src)">
+              Download Image ${i+1}
+            </button>
+          </div>
+        `;
+        results.appendChild(card);
+
+        const img = card.querySelector('.final-img');
+        const timerText = card.querySelector('.timer-text');
+        let seconds = 15;
+        const timer = setInterval(() => {
+          seconds--;
+          timerText.textContent = `00:${seconds.toString().padStart(2, '0')}`;
+          if (seconds <= 0) clearInterval(timer);
+        }, 1000);
+
+        const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&seed=${Date.now()+i*10000}&nologo=true&enhance=true`;
+
+        img.onload = () => {
+          img.style.display = 'block';
+          card.querySelector('.loader-wrapper').style.display = 'none';
+          clearInterval(timer);
+          saveToHistory(img.src, prompt);
+        };
+        img.onerror = () => {
+          card.querySelector('.loader-wrapper').innerHTML = '<p style="color:red;">Failed. Try again!</p>';
+          clearInterval(timer);
+        };
+        img.src = url;
+      }
+    };
+
+    window.downloadImage = function(src) {
+      const a = document.createElement('a');
+      a.href = src;
+      a.download = `${productName.replace(/ /g, '_')}_${Date.now()}.jpg`;
+      a.click();
+    };
   </script>
 </body>
-
 </html>
-
