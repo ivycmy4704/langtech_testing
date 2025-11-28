@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ProGen AI - 我的專屬空間</title>
+  <style>
+    :root {
+      --primary: #667eea;
+      --accent: #764ba2;
+      --gradient: linear-gradient(135deg, #667eea, #764ba2);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Microsoft JhengHei','Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e6e9ff 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    /* 頂部導覽列 */
+    .navbar {
+      background: white;
+      padding: 1.5rem 4rem;
+      box-shadow: 0 10px 40px rgba(102,126,234,0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .brand {
+      font-size: 2.2rem;
+      font-weight: bold;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .user-info {
+      font-size: 1.1rem;
+      color: #555;
+    }
+    .logout-btn {
+      background: #ef4444;
+      color: white;
+      padding: 0.9rem 2.2rem;
+      border: none;
+      border-radius: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-left: 2rem;
+      box-shadow: 0 8px 25px rgba(239,68,68,0.3);
+      transition: 0.3s;
+    }
+    .logout-btn:hover {
+      background: #dc2626;
+      transform: translateY(-4px);
+      box-shadow: 0 15px 35px rgba(239,68,68,0.4);
+    }
+
+    /* 主內容 */
+    .container {
+      max-width: 1400px;
+      margin: 4rem auto;
+      padding: 0 2rem;
+    }
+
+    /* 歡迎大區塊 */
+    .hero {
+      background: white;
+      border-radius: 32px;
+      padding: 5rem 4rem;
+      text-align: center;
+      box-shadow: 0 25px 80px rgba(102,126,234,0.18);
+      margin-bottom: 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 8px;
+      background: var(--gradient);
+      border-radius: 32px 32px 0 0;
+    }
+    .hero h1 {
+      font-size: 3.2rem;
+      margin-bottom: 1.5rem;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      font-size: 1.5rem;
+      color: #666;
+      max-width: 800px;
+      margin: 0 auto 3rem;
+    }
+    .btn-huge {
+      background: var(--gradient);
+      color: white;
+      padding: 1.4rem 4rem;
+      border: none;
+      border-radius: 20px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 15px 40px rgba(102,126,234,0.4);
+      transition: 0.4s;
+    }
+    .btn-huge:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 30px 60px rgba(102,126,234,0.5);
+    }
+
+    /* 功能卡片區 */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 2.5rem;
+    }
+    .feature-card {
+      background: white;
+      border-radius: 28px;
+      padding: 3rem 2.5rem;
+      text-align: center;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.1);
+      transition: all 0.4s;
+      cursor: pointer;
+      border: 1px solid #e2e8f0;
+    }
+    .feature-card:hover {
+      transform: translateY(-15px);
+      box-shadow: 0 30px 70px rgba(102,126,234,0.25);
+    }
+    .feature-card h3 {
+      font-size: 1.8rem;
+      margin: 1.5rem 0 1rem;
+      color: var(--primary);
+    }
+    .feature-card p {
+      color: #666;
+      font-size: 1.1rem;
+      line-height: 1.7;
+    }
+
+    /* 歷史紀錄區塊 */
+    .section { display: none; }
+    .section.active { display: block; animation: fadeIn 0.8s; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:none; } }
+
+    .history-title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin: 4rem 0 3rem;
+      color: var(--primary);
+      font-weight: bold;
+    }
+    .record-item {
+      background: white;
+      border-radius: 24px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 2.5rem;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.08);
+      transition: 0.3s;
+    }
+    .record-item:hover {
+      transform: translateX(12px);
+      box-shadow: 0 20px 50px rgba(102,126,234,0.18);
+    }
+    .record-item img {
+      width: 160px;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 20px;
+      border: 4px solid #f0f4ff;
+    }
+    .no-img {
+      width: 160px; height: 160px;
+      background: #f8f9fa;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #aaa;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 頂部導覽列 -->
+  <nav class="navbar">
+    <div class="brand">ProGen AI</div>
+    <div style="display:flex; align-items:center;">
+      <div class="user-info">歡迎，<strong id="userDisplay">載入中...</strong></div>
+      <button class="logout-btn" onclick="logout()">登出</button>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- 首頁歡迎區塊 -->
+    <div id="welcome" class="section active">
+      <div class="hero">
+        <h1>嗨，<span id="companyName">載入中...</span>！</h1>
+        <p>準備好用最強 AI 為您的商品打造吸睛無敵的視覺大片了嗎？</p>
+        <button class="btn-huge" onclick="location.href='dashboard.html'">
+          立即生成商品圖
+        </button>
+      </div>
+
+      <div class="cards-grid">
+        <div class="feature-card" onclick="location.href='credit.html'">
+          <h3>點數餘額</h3>
+          <p>查看目前剩餘點數<br>隨時加值，無痛升級方案</p>
+        </div>
+        <div class="feature-card" onclick="location.href='questionnaire.html'">
+          <h3>品牌設定</h3>
+          <p>更新公司資訊、產品風格<br>讓 AI 更懂您的品牌調性</p>
+        </div>
+        <div class="feature-card" onclick="showSection('records')">
+          <h3>歷史作品</h3>
+          <p>瀏覽所有曾經生成的<br>AI 商品圖，一鍵回顧</p>
+        </div>
+        <div class="feature-card" onclick="location.href='support.html'">
+          <h3>技術支援</h3>
+          <p>有任何問題？<br>管理員 24h 內快速回覆</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 歷史紀錄頁面 -->
+    <div id="records" class="section">
+      <h2 class="history-title">我的 AI 生成紀錄</h2>
+      <div id="recordsList">載入中...</div>
+      <div style="text-align:center; margin-top:3rem;">
+        <button class="btn-huge" onclick="location.href='dashboard.html'">
+          再生成一張新圖
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // 檢查登入
+    const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    if (!user || !user.email) {
+      alert('請先登入系統');
+      location.href = 'index.html';
+    }
+
+    // 顯示歡迎名稱
+    const company = user.company || user.email.split('@')[0];
+    document.getElementById('companyName').textContent = company + '！';
+    document.getElementById('userDisplay').textContent = company;
+
+    // 登出
+    function logout() {
+      if (confirm('確定要登出嗎？')) {
+        localStorage.removeItem('currentUser');
+        alert('已成功登出');
+        location.href = 'index.html';
+      }
+    }
+
+    // 切換頁面
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      if (id === 'records') loadRecords();
+    }
+
+    // 載入歷史紀錄
+    function loadRecords() {
+      const all = JSON.parse(localStorage.getItem('userRecords') || '{}');
+      const myRecords = (all[user.email] || []).sort((a,b) => new Date(b.date) - new Date(a.date));
+      const box = document.getElementById('recordsList');
+
+      if (myRecords.length === 0) {
+        box.innerHTML = `
+          <div style="text-align:center;padding:6rem;background:white;border-radius:28px;box-shadow:0 15px 50px rgba(0,0,0,0.1);">
+            <h3 style="color:#999;margin-bottom:1rem;">還沒有生成過圖片喔</h3>
+            <p style="color:#666;margin-bottom:2rem;">現在就開始您的第一張 AI 商品大片！</p>
+            <button class="btn-huge" onclick="location.href='dashboard.html'">立即開始生成</button>
+          </div>`;
+        return;
+      }
+
+      box.innerHTML = myRecords.map(r => `
+        <div class="record-item">
+          ${r.imageUrl 
+            ? `<img src="${r.imageUrl}" alt="AI生成圖">`
+            : `<div class="no-img">無預覽</div>`
+          }
+          <div style="flex:1;">
+            <h3 style="margin:0 0 1rem;color:#333;">${r.title || '未命名商品圖'}</h3>
+            <p style="color:#666;margin:0 0 0.5rem;">
+              生成時間：${new Date(r.date).toLocaleString('zh-TW')}
+            </p>
+            <p style="color:#888;font-size:0.95rem;">
+              Prompt：${(r.prompt || '無').substring(0,120)}${(r.prompt || '').length > 120 ? '...' : ''}
+            </p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // 網址帶 #records 自動跳轉
+    if (location.hash === '#records') showSection('records');
+  </script>
+</body>
+</html>

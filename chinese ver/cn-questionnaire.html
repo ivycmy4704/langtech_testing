@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ProGen AI • 品牌設定 - 讓 AI 永遠懂您</title>
+  <style>
+    :root {
+      --primary: #667eea;
+      --accent: #764ba2;
+      --success: #16a34a;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --gradient: linear-gradient(135deg, #667eea, #764ba2);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Microsoft JhengHei','Segoe UI',sans-serif;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e6e9ff 100%);
+      min-height: 100vh;
+      color: #333;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .main-card {
+      background: rgba(255,255,255,0.98);
+      backdrop-filter: blur(20px);
+      border-radius: 40px;
+      padding: 4rem 3.5rem;
+      box-shadow: 0 35px 90px rgba(102,126,234,0.25);
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+    .logo {
+      font-size: 3.8rem; font-weight: 900;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 1.6rem;
+      color: #666;
+      margin-bottom: 3rem;
+      line-height: 1.7;
+    }
+    .alert {
+      padding: 1.8rem 2.5rem;
+      border-radius: 24px;
+      text-align: center;
+      font-size: 1.35rem;
+      font-weight: bold;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+    }
+    .alert-success { background: #ecfdf5; color: #065f46; border: 3px solid #6ee7b7; }
+    .alert-warning { background: #fffbeb; color: #92400e; border: 3px solid #fbbf24; }
+
+    .section {
+      background: white;
+      border-radius: 32px;
+      padding: 3rem;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.08);
+      border: 2px solid #f1f5f9;
+    }
+    .section h2 {
+      font-size: 2.2rem;
+      color: var(--primary);
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 4px solid #e0e7ff;
+      position: relative;
+    }
+    .section h2::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 100px; height: 4px;
+      background: var(--gradient);
+      border-radius: 2px;
+    }
+    .required { color: var(--danger); font-size: 1.1rem; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+    .form-group { margin-bottom: 1.8rem; }
+    label {
+      display: block;
+      margin-bottom: 0.9rem;
+      font-weight: 700;
+      color: #444;
+      font-size: 1.15rem;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 1.3rem 1.6rem;
+      border: 3px solid #e2e8f0;
+      border-radius: 20px;
+      font-size: 1.15rem;
+      background: #f8fafc;
+      transition: all 0.4s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 6px rgba(102,126,234,0.18);
+    }
+    textarea { min-height: 130px; resize: vertical; }
+
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.2rem;
+      margin-top: 1rem;
+    }
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      background: #f8fafc;
+      border-radius: 16px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+    .checkbox-group label:hover { background: #e0e7ff; }
+    .checkbox-group input {
+      margin-right: 1rem;
+      transform: scale(1.5);
+      accent-color: var(--primary);
+    }
+
+    .product-card {
+      background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+      border: 3px dashed var(--primary);
+      border-radius: 28px;
+      padding: 2.5rem;
+      position: relative;
+      margin-bottom: 2rem;
+      transition: all 0.4s;
+    }
+    .product-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 50px rgba(102,126,234,0.25);
+    }
+    .remove-btn {
+      position: absolute;
+      top: 1.2rem; right: 1.2rem;
+      background: var(--danger);
+      color: white;
+      border: none;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      font-size: 1.6rem;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(239,68,68,0.4);
+    }
+    .remove-btn:hover { transform: scale(1.15); }
+
+    .btn {
+      padding: 1.4rem 3rem;
+      border: none;
+      border-radius: 24px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.4s;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.15);
+    }
+    .btn-primary {
+      background: var(--gradient);
+      color: white;
+    }
+    .btn-primary:hover { transform: translateY(-8px); box-shadow: 0 25px 60px rgba(102,126,234,0.5); }
+    .btn-add { background: var(--success); color: white; padding: 1.2rem 2.5rem; font-size: 1.3rem; }
+    .btn-group {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      margin-top: 4rem;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="main-card">
+      <h1 class="logo">ProGen AI</h1>
+      <p class="subtitle">只要填一次，AI 就永遠記住您的品牌風格<br>讓每一張商品圖都完美符合您的調性！</p>
+
+      <div id="statusAlert"></div>
+
+      <form id="questionnaireForm">
+
+        <!-- 必填基本資訊 -->
+        <div class="section">
+          <h2>公司與商品基本資料 <span class="required">（必填）</span></h2>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>公司名稱 *</label>
+              <input type="text" id="company" required placeholder="例如：星辰美妝、老王咖啡" />
+            </div>
+            <div class="form-group">
+              <label>所在產業 *</label>
+              <select id="industry" required onchange="toggleCustom()">
+                <option value="">請選擇產業</option>
+                <option>美妝保養</option>
+                <option>服飾鞋包</option>
+                <option>食品飲料</option>
+                <option>3C家電</option>
+                <option>珠寶手錶</option>
+                <option>生活居家</option>
+                <option>其他</option>
+              </select>
+              <input type="text" id="customIndustry" placeholder="請填寫您的產業" style="display:none;margin-top:1rem;" />
+            </div>
+            <div class="form-group">
+              <label>主要商品名稱 *</label>
+              <input type="text" id="productName" required placeholder="例如：極光精華液、有機抹茶粉" />
+            </div>
+            <div class="form-group">
+              <label>圖片格式 *</label>
+              <select id="format" required>
+                <option>PNG（透明背景）</option>
+                <option>JPEG（白底）</option>
+                <option>WEBP（高壓縮）</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>圖片尺寸 *</label>
+              <select id="resolution" required>
+                <option>1024 × 1024（正方形）</option>
+                <option>768 × 1152（直立）</option>
+                <option>1152 × 768（橫幅）</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 品牌詳細資訊 -->
+        <div class="section">
+          <h2>品牌詳細資訊（選填，越詳細越精準）</h2>
+          <div class="form-grid">
+            <div class="form-group"><label>品牌名稱</label><input type="text" id="brandName" placeholder="若與公司名稱不同" /></div>
+            <div class="form-group"><label>門市地址</label><input type="text" id="address" /></div>
+            <div class="form-group"><label>聯絡電話</label><input type="tel" id="phone" /></div>
+            <div class="form-group"><label>營業時間</label><input type="text" id="openingHours" placeholder="例如：11:00–21:00（全年無休）" /></div>
+            <div class="form-group"><label>節假日營業</label><input type="text" id="holidayHours" placeholder="例如：10:00–22:00" /></div>
+            <div class="form-group">
+              <label>需要提前預約？</label>
+              <select id="advanceBooking"><option>否</option><option>是</option></select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>支援付款方式</label>
+            <div class="checkbox-group">
+              <label><input type="checkbox" value="現金"> 現金</label>
+              <label><input type="checkbox" value="信用卡"> 信用卡</label>
+              <label><input type="checkbox" value="LINE Pay"> LINE Pay</label>
+              <label><input type="checkbox" value="街口支付"> 街口支付</label>
+              <label><input type="checkbox" value="台灣Pay"> 台灣Pay</label>
+              <label><input type="checkbox" value="禮券"> 禮券</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- 品牌調性 -->
+        <div class="section">
+          <h2>品牌調性描述（越具體 AI 越懂您）</h2>
+          <div class="form-grid">
+            <div class="form-group"><label>公司背景故事</label><textarea id="companyProfile" placeholder="創立年份、創業故事、品牌理念..."></textarea></div>
+            <div class="form-group"><label>目標客群</label><textarea id="targetAudience" placeholder="年齡、性別、收入、興趣、生活方式..."></textarea></div>
+            <div class="form-group"><label>品牌最大優勢</label><textarea id="brandAdvantages" placeholder="成分天然、CP值高、獨家專利..."></textarea></div>
+            <div class="form-group"><label>希望呈現的風格關鍵字</label><textarea id="suitableAdjectives" placeholder="例如：極簡北歐、高級奢華、日系文青、自然清新、科技感、復古懷舊..."></textarea></div>
+          </div>
+        </div>
+
+        <!-- 其他商品 -->
+        <div class="section">
+          <h2>其他想推廣的商品（選填）</h2>
+          <div id="productsContainer"></div>
+          <button type="button" class="btn btn-add" id="addProduct">新增商品</button>
+        </div>
+
+        <div class="btn-group">
+          <button type="submit" class="btn btn-primary">
+            <span id="saveBtnText">儲存並開始生成商品圖</span>
+          </button>
+          <button type="button" class="btn" style="background:#94a3b8;color:white;" onclick="history.back()">先跳過，晚點再填</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let productCount = 0;
+
+    window.toggleCustom = function() {
+      const sel = document.getElementById('industry');
+      const inp = document.getElementById('customIndustry');
+      inp.style.display = sel.value === '其他' ? 'block' : 'none';
+      inp.required = sel.value === '其他';
+    };
+
+    function addProduct() {
+      productCount++;
+      const div = document.createElement('div');
+      div.className = 'product-card';
+      div.innerHTML = `
+        <button type="button" class="remove-btn" onclick="this.parentElement.remove()">×</button>
+        <h3 style="margin:0 0 1.8rem;color:var(--primary);font-size:1.8rem;">商品 ${productCount}</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>商品名稱</label><input type="text" class="p-name" placeholder="例如：玫瑰精油面膜" /></div>
+          <div class="form-group"><label>商品類別</label><input type="text" class="p-cat" placeholder="例如：保養品" /></div>
+          <div class="form-group"><label>主要特色（7–10個）</label><textarea class="p-features" placeholder="例：法國玫瑰精油、24H保濕、敏感肌可用"></textarea></div>
+          <div class="form-group"><label>解決的痛點</label><textarea class="p-problems" placeholder="例：乾燥、暗沉、毛孔粗大"></textarea></div>
+          <div class="form-group"><label>售價</label><input type="text" class="p-price" placeholder="例：NT$1,280" /></div>
+          <div class="form-group"><label>當前優惠</label><textarea class="p-offer" placeholder="例：買一送一、限時8折"></textarea></div>
+        </div>
+      `;
+      document.getElementById('productsContainer').appendChild(div);
+    }
+    document.getElementById('addProduct').onclick = addProduct;
+
+    // 載入已儲存資料（完整版）
+    window.onload = function () {
+      const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      if (!user.email) {
+        document.getElementById('statusAlert').innerHTML = `<div class="alert alert-warning">請先登入才能儲存品牌設定</div>`;
+        return;
+      }
+
+      const saved = localStorage.getItem(`brandData_${user.email}`);
+      if (!saved) return;
+
+      const data = JSON.parse(saved);
+      document.getElementById('statusAlert').innerHTML = `
+        <div class="alert alert-success">
+          您的品牌資料已設定完成！<br>可隨時在下方修改，點擊「更新」即可儲存
+        </div>
+      `;
+      document.getElementById('saveBtnText').textContent = '更新並儲存修改';
+
+      document.getElementById('company').value = data.company || '';
+      document.getElementById('productName').value = data.productName || '';
+      document.getElementById('format').value = data.format || 'PNG（透明背景）';
+      document.getElementById('resolution').value = data.resolution || '1024 × 1024（正方形）';
+
+      if (data.industry && !['美妝保養','服飾鞋包','食品飲料','3C家電','珠寶手錶','生活居家'].includes(data.industry)) {
+        document.getElementById('industry').value = '其他';
+        document.getElementById('customIndustry').value = data.industry;
+        toggleCustom();
+      } else {
+        document.getElementById('industry').value = data.industry || '';
+      }
+
+      document.getElementById('brandName').value = data.brandName || '';
+      document.getElementById('address').value = data.address || '';
+      document.getElementById('phone').value = data.phone || '';
+      document.getElementById('openingHours').value = data.openingHours || '';
+      document.getElementById('holidayHours').value = data.holidayHours || '';
+      document.getElementById('advanceBooking').value = data.advanceBooking === '是' ? '是' : '否';
+
+      (data.paymentMethods || []).forEach(m => {
+        const chk = document.querySelector(`input[value="${m}"]`);
+        if (chk) chk.checked = true;
+      });
+
+      document.getElementById('companyProfile').value = data.companyProfile || '';
+      document.getElementById('targetAudience').value = data.targetAudience || '';
+      document.getElementById('brandAdvantages').value = data.brandAdvantages || '';
+      document.getElementById('suitableAdjectives').value = data.suitableAdjectives || '';
+
+      (data.products || []).forEach(p => {
+        addProduct();
+        const cards = document.querySelectorAll('.product-card');
+        const card = cards[cards.length - 1];
+        card.querySelector('.p-name').value = p.name || '';
+        card.querySelector('.p-cat').value = p.category || '';
+        card.querySelector('.p-features').value = p.features || '';
+        card.querySelector('.p-problems').value = p.problems || '';
+        card.querySelector('.p-price').value = p.price || '';
+        card.querySelector('.p-offer').value = p.offer || '';
+      });
+    };
+
+    // 完整儲存邏輯
+    document.getElementById('questionnaireForm').onsubmit = function(e) {
+      e.preventDefault();
+      const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      if (!user.email) { alert('請先登入！'); location.href = 'index.html'; return; }
+
+      const data = {
+        company: document.getElementById('company').value.trim(),
+        industry: document.getElementById('industry').value === '其他' ? document.getElementById('customIndustry').value.trim() : document.getElementById('industry').value,
+        productName: document.getElementById('productName').value.trim(),
+        format: document.getElementById('format').value,
+        resolution: document.getElementById('resolution').value,
+        brandName: document.getElementById('brandName').value.trim(),
+        address: document.getElementById('address').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        openingHours: document.getElementById('openingHours').value.trim(),
+        holidayHours: document.getElementById('holidayHours').value.trim(),
+        advanceBooking: document.getElementById('advanceBooking').value,
+        paymentMethods: Array.from(document.querySelectorAll('.checkbox-group input:checked')).map(c => c.value),
+        companyProfile: document.getElementById('companyProfile').value.trim(),
+        targetAudience: document.getElementById('targetAudience').value.trim(),
+        brandAdvantages: document.getElementById('brandAdvantages').value.trim(),
+        suitableAdjectives: document.getElementById('suitableAdjectives').value.trim(),
+        products: []
+      };
+
+      document.querySelectorAll('.product-card').forEach(card => {
+        if (!card.querySelector('.p-name').value.trim()) return;
+        data.products.push({
+          name: card.querySelector('.p-name').value.trim(),
+          category: card.querySelector('.p-cat').value.trim(),
+          features: card.querySelector('.p-features').value.trim(),
+          problems: card.querySelector('.p-problems').value.trim(),
+          price: card.querySelector('.p-price').value.trim(),
+          offer: card.querySelector('.p-offer').value.trim()
+        });
+      });
+
+      localStorage.setItem(`brandData_${user.email}`, JSON.stringify(data));
+      localStorage.setItem('userProduct', data.productName);
+      localStorage.setItem(`questionnaire_${user.email}`, 'true');
+
+      alert('品牌設定已成功儲存！');
+      setTimeout(() => location.href = 'cn-dashboard.html', 1000);
+    };
+  </script>
+</body>
+</html>

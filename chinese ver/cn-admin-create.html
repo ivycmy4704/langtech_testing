@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>模板建立器 - ProGen AI 管理後台</title>
+  <style>
+    :root { --primary: #6366f1; --bg: #f8fafc; --card: #ffffff; --border: #e2e8f0; }
+    body { 
+      font-family: 'Microsoft JhengHei','Segoe UI', system-ui, sans-serif; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+      min-height: 100vh; color: #333; margin:0; 
+    }
+    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+
+    /* 登入畫面 */
+    #loginScreen { 
+      position: fixed; inset: 0; background: rgba(0,0,0,0.65); 
+      display: flex; align-items: center; justify-content: center; z-index: 999; 
+      backdrop-filter: blur(10px);
+    }
+    #loginBox { 
+      background: white; padding: 3.5rem; border-radius: 28px; width: 440px; 
+      text-align: center; box-shadow: 0 40px 100px rgba(0,0,0,0.5); 
+    }
+    #loginBox h2 { margin: 0 0 2rem; font-size: 2.2rem; color: #667eea; font-weight: bold; }
+    #loginBox input { 
+      width: 100%; padding: 18px; margin: 14px 0; 
+      border: 2px solid #e2e8f0; border-radius: 16px; font-size: 1.15rem; box-sizing: border-box; 
+    }
+    #loginBox input:focus { border-color: #667eea; box-shadow: 0 0 0 5px rgba(102,126,234,0.2); outline: none; }
+    #loginBox button { 
+      width: 100%; padding: 18px; 
+      background: linear-gradient(135deg, #667eea, #764ba2); 
+      color: white; border: none; border-radius: 16px; 
+      font-size: 1.3rem; font-weight: bold; cursor: pointer; margin-top: 1.5rem; 
+    }
+    #loginBox button:hover { background: #5a67d8; transform: translateY(-3px); }
+
+    /* 主面板 */
+    #adminPanel { display: none; }
+    .header { 
+      background: linear-gradient(135deg, #667eea, #764ba2); 
+      color: white; padding: 2rem 3rem; font-size: 2rem; font-weight: bold; 
+      display: flex; justify-content: space-between; align-items: center; 
+    }
+    .header-right { display: flex; gap: 1.2rem; align-items: center; }
+    .nav-btn {
+      background: rgba(255,255,255,0.22); color: white; border: none;
+      padding: 14px 28px; border-radius: 14px; font-weight: 600; cursor: pointer;
+      transition: 0.3s; backdrop-filter: blur(12px);
+    }
+    .nav-btn:hover { background: rgba(255,255,255,0.32); transform: translateY(-3px); }
+    .logout-btn {
+      background: #ef4444; color: white; border: none;
+      padding: 14px 30px; border-radius: 14px; font-weight: bold; cursor: pointer;
+    }
+    .logout-btn:hover { background: #dc2626; transform: translateY(-3px); }
+
+    .content { padding: 3.5rem; }
+    .card { 
+      background: white; border-radius: 28px; padding: 3rem; 
+      margin-bottom: 3rem; box-shadow: 0 20px 50px rgba(0,0,0,0.12); 
+      border: 1px solid #e2e8f0; 
+    }
+    .form-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); 
+      gap: 2.2rem; margin: 2.5rem 0; 
+    }
+    label { display: block; margin-bottom: 0.9rem; font-weight: 600; color: #333; font-size: 1.15rem; }
+    input, select, textarea { 
+      width: 100%; padding: 18px; border: 2px solid #e2e8f0; 
+      border-radius: 18px; font-size: 1.15rem; box-sizing: border-box; 
+    }
+    input:focus, select:focus, textarea:focus { 
+      border-color: #667eea; outline: none; 
+      box-shadow: 0 0 0 5px rgba(102,126,234,0.2); 
+    }
+    .color-input { height: 90px; cursor: pointer; border-radius: 18px; border: 3px solid #e2e8f0; }
+    .btn { 
+      background: linear-gradient(135deg, #667eea, #764ba2); color: white; 
+      padding: 20px 40px; border: none; border-radius: 18px; cursor: pointer; 
+      font-weight: bold; font-size: 1.35rem; transition: 0.35s; width: 100%; margin-top: 1rem; 
+    }
+    .btn:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(102,126,234,0.4); }
+    .assign-box { 
+      background: #f0f8ff; padding: 2.5rem; border-radius: 24px; 
+      border: 4px dashed #667eea; margin: 2.5rem 0; text-align: center; 
+    }
+    #clientEmails { height: 140px; font-family: 'Consolas', monospace; font-size: 1.1rem; }
+    .history-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); 
+      gap: 2.5rem; margin-top: 2rem; 
+    }
+    .template-card { 
+      background: white; padding: 2.5rem; border-radius: 24px; 
+      box-shadow: 0 15px 45px rgba(0,0,0,0.12); 
+      border: 1px solid #e2e8f0; transition: 0.3s; 
+    }
+    .template-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(0,0,0,0.25); }
+    .code { 
+      background: #1e293b; color: #10b981; padding: 22px; 
+      border-radius: 18px; font-family: 'Courier New', monospace; 
+      font-size: 2rem; font-weight: bold; text-align: center; 
+      margin: 1.5rem 0; letter-spacing: 4px; user-select: all; 
+      cursor: pointer; transition: 0.3s; 
+    }
+    .code:hover { background: #0f172a; transform: scale(1.03); }
+    .assigned { 
+      background: #d1fae5; color: #065f46; padding: 10px 16px; 
+      border-radius: 50px; font-size: 0.95rem; margin: 0.5rem; 
+      display: inline-block; font-weight: 600; 
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 登入畫面 -->
+  <div id="loginScreen">
+    <div id="loginBox">
+      <h2>管理員登入</h2>
+      <input type="text" id="adminName" placeholder="帳號" />
+      <input type="password" id="adminPass" placeholder="密碼" />
+      <button onclick="login()">進入管理後台</button>
+    </div>
+  </div>
+
+  <!-- 主面板 -->
+  <div id="adminPanel">
+    <div class="header">
+      <div>ProGen AI • 模板建立器</div>
+      <div class="header-right">
+        <button class="nav-btn" onclick="location.href='cn-admin-client.html'">客戶管理</button>
+        <button class="nav-btn" onclick="location.href='admin-support.html'">技術支援中心</button>
+        <button class="logout-btn" onclick="logout()">登出</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="content">
+
+        <!-- 建立新模板 -->
+        <div class="card">
+          <h2 style="margin:0 0 2rem; color:#667eea; font-size:1.9rem;">建立高級模板</h2>
+
+          <div class="form-grid">
+            <div>
+              <label>模板名稱</label>
+              <input type="text" id="templateName" placeholder="例如：2025 拉瑪丹奢華金色系列" />
+            </div>
+            <div>
+              <label>產業類別</label>
+              <select id="templateIndustry">
+                <option>電商平台</option>
+                <option>餐飲美食</option>
+                <option>零售百貨</option>
+                <option>美妝保養</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div>
+              <label>風格調性</label>
+              <select id="aestheticStyle">
+                <option>奢華優雅</option>
+                <option>極簡清新</option>
+                <option>大膽繽紛</option>
+                <option>活潑有趣</option>
+                <option>暗黑神秘</option>
+              </select>
+            </div>
+            <div>
+              <label>美術風格</label>
+              <select id="artStyle">
+                <option>真實攝影</option>
+                <option>3D 渲染</option>
+                <option>影棚商品照</option>
+                <option>扁平插畫</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div>
+              <label>主色</label>
+              <input type="color" id="colorPrimary" value="#667eea" class="color-input" />
+            </div>
+            <div>
+              <label>輔助色</label>
+              <input type="color" id="colorAccent" value="#ec4899" class="color-input" />
+            </div>
+          </div>
+
+          <div class="assign-box">
+            <h3>直接分配給客戶（可選）</h3>
+            <p>輸入客戶的 Email 或使用者名稱（每行一個），他們會自動獲得此模板</p>
+            <textarea id="clientEmails" placeholder="client@example.com&#10;john_doe&#10;mary_2025&#10;+ 更多..."></textarea>
+          </div>
+
+          <button class="btn" onclick="saveTemplate()">
+            儲存模板 & 產生專屬代碼（已自動複製到剪貼簿）
+          </button>
+        </div>
+
+        <!-- 歷史記錄 -->
+        <div class="card">
+          <h2 style="color:#667eea; font-size:1.9rem; margin:0 0 2rem;">所有模板與分配紀錄</h2>
+          <div class="history-grid" id="history"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ADMIN = { name: "admin", pass: "admin001" };
+
+    function login() {
+      const n = document.getElementById("adminName").value.trim();
+      const p = document.getElementById("adminPass").value;
+      if (n === ADMIN.name && p === ADMIN.pass) {
+        sessionStorage.setItem("adminLoggedIn", "true");
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("adminPanel").style.display = "block";
+        loadHistory();
+      } else {
+        alert("帳號或密碼錯誤！");
+      }
+    }
+
+    function logout() {
+      if (confirm("確定要登出管理後台？")) {
+        sessionStorage.removeItem("adminLoggedIn");
+        location.reload();
+      }
+    }
+
+    // 自動登入檢查
+    if (sessionStorage.getItem("adminLoggedIn") === "true") {
+      document.getElementById("loginScreen").style.display = "none";
+      document.getElementById("adminPanel").style.display = "block";
+      loadHistory();
+    }
+
+    // 產生代碼
+    function generateCode(industry, name) {
+      const map = {
+        "電商平台": "ECO",
+        "餐飲美食": "FNB",
+        "零售百貨": "RTL",
+        "美妝保養": "BTY"
+      };
+      const prefix = map[industry] || "TMP";
+      const year = new Date().getFullYear();
+      const clean = name.replace(/[^a-zA-Z0-9]/g, "").substring(0,12).toUpperCase() || "TEMP";
+      return `${prefix}-${year}-${clean}`;
+    }
+
+    // 儲存模板
+    function saveTemplate() {
+      const name = document.getElementById("templateName").value.trim();
+      if (!name) return alert("請輸入模板名稱！");
+
+      const industry = document.getElementById("templateIndustry").value;
+      const code = generateCode(industry, name);
+
+      const assignedClients = document.getElementById("clientEmails").value
+        .split("\n")
+        .map(s => s.trim())
+        .filter(Boolean);
+
+      const template = {
+        id: Date.now(),
+        name,
+        code,
+        industry,
+        createdAt: new Date().toLocaleString("zh-TW", {
+          year: "numeric", month: "2-digit", day: "2-digit",
+          hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+        }).replace(/\//g, '/'),
+        assignedTo: assignedClients,
+        style: {
+          aesthetic: document.getElementById("aestheticStyle").value,
+          artStyle: document.getElementById("artStyle").value,
+          colors: {
+            primary: document.getElementById("colorPrimary").value,
+            accent: document.getElementById("colorAccent").value
+          }
+        }
+      };
+
+      let data = JSON.parse(localStorage.getItem("progenTemplatesV2") || '{"_history":[]}');
+      data._history.unshift(template);
+      localStorage.setItem("progenTemplatesV2", JSON.stringify(data));
+
+      // 分配給客戶
+      assignedClients.forEach(client => {
+        localStorage.setItem(`assignedTemplate_${client}`, JSON.stringify(template));
+      });
+
+      // 複製代碼
+      navigator.clipboard.writeText(code).then(() => {
+        alert(`模板「${name}」建立成功！\n\n專屬代碼：${code}\n已自動複製到剪貼簿！\n\n已分配給 ${assignedClients.length} 位客戶`);
+      });
+
+      // 清空表單
+      document.getElementById("templateName").value = "";
+      document.getElementById("clientEmails").value = "";
+      loadHistory();
+    }
+
+    // 載入歷史
+    function loadHistory() {
+      const data = JSON.parse(localStorage.getItem("progenTemplatesV2") || '{"_history":[]}');
+      const container = document.getElementById("history");
+
+      if (data._history.length === 0) {
+        container.innerHTML = '<p style="text-align:center;color:#888;padding:3rem;">尚未建立任何模板</p>';
+        return;
+      }
+
+      container.innerHTML = data._history.map(t => `
+        <div class="template-card">
+          <h3>${t.name}</h3>
+          <div class="code" onclick="navigator.clipboard.writeText('${t.code}'); alert('已複製代碼！')">${t.code}</div>
+          <small>${t.createdAt} • ${t.industry}</small>
+          <div style="margin-top:1rem;">
+            主色 <span style="display:inline-block;width:30px;height:20px;background:${t.style.colors.primary};border:1px solid #ccc;vertical-align:middle;"></span>
+            輔色 <span style="display:inline-block;width:30px;height:20px;background:${t.style.colors.accent};border:1px solid #ccc;vertical-align:middle;"></span>
+          </div>
+          ${t.assignedTo.length > 0 ? `
+            <div style="margin-top:1.5rem;">
+              <strong>已分配客戶 (${t.assignedTo.length} 人)：</strong><br>
+              ${t.assignedTo.map(c => `<span class="assigned">${c}</span>`).join(" ")}
+            </div>
+          ` : '<em style="color:#888;">尚未直接分配</em>'}
+        </div>
+      `).join("");
+    }
+
+    loadHistory();
+  </script>
+</body>
+</html>

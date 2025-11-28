@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>客戶管理 - ProGen AI 管理後台</title>
+<style>
+  body { font-family: 'Microsoft JhengHei','Segoe UI',sans-serif; margin:0; background:#f4f6f9; }
+  #adminModal { position:fixed; inset:0; background:linear-gradient(135deg,#667eea,#764ba2); display:flex; align-items:center; justify-content:center; z-index:9999; }
+  .modal-content { background:#fff; padding:3rem; border-radius:20px; width:420px; box-shadow:0 30px 80px rgba(0,0,0,.4); position:relative; }
+  .modal-content::before { content:''; position:absolute; top:0; left:0; right:0; height:6px; background:linear-gradient(90deg,#667eea,#764ba2,#f093fb); border-radius:20px 20px 0 0; }
+  .modal-content h3 { margin:0 0 2rem; text-align:center; font-size:2rem; background:linear-gradient(135deg,#667eea,#764ba2); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-weight:bold; }
+  input, button { font-family:inherit; }
+  input { width:100%; padding:14px; border:2px solid #e1e5e9; border-radius:12px; box-sizing:border-box; margin-bottom:1rem; font-size:1.05rem; }
+  input:focus { outline:none; border-color:#667eea; box-shadow:0 0 0 4px rgba(102,126,234,.15); }
+  button { padding:14px; border:none; border-radius:12px; cursor:pointer; font-weight:600; font-size:1.05rem; }
+  .btn-primary { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; }
+  .btn-secondary { background:#f8f9fa; color:#666; border:2px solid #e1e5e9; }
+
+  .navbar { background:linear-gradient(135deg,#667eea,#764ba2); padding:1.3rem 3rem; color:white; display:flex; justify-content:space-between; align-items:center; }
+  .navbar a { color:white; text-decoration:none; margin-left:2rem; }
+  .container { max-width:1350px; margin:2rem auto; padding:0 1.5rem; }
+  .card { background:white; padding:2.5rem; border-radius:20px; box-shadow:0 10px 40px rgba(0,0,0,.1); }
+  .search-bar { width:100%; padding:16px 20px; border:2px solid #e1e5e9; border-radius:14px; font-size:1.1rem; margin-bottom:2rem; box-sizing:border-box; }
+  table { width:100%; border-collapse:separate; border-spacing:0 12px; }
+  th { background:linear-gradient(135deg,#667eea,#764ba2); color:white; padding:1.3rem 1rem; text-align:left; font-weight:600; }
+  td { padding:1.4px 1rem; background:#fcfcfd; }
+  tr:hover td { background:#f0f5ff; }
+  .btn-sm { padding:8px 16px; margin:0 6px; border:none; border-radius:10px; cursor:pointer; font-weight:600; min-width:70px; }
+  .btn-success { background:#28a745; color:white; }
+  .btn-info { background:#17a2b8; color:white; }
+  .btn-danger { background:#dc3545; color:white; }
+</style>
+</head>
+<body>
+
+<div id="adminModal">
+  <div class="modal-content">
+    <h3>管理員登入</h3>
+    <input type="text" id="adminName" placeholder="帳號" />
+    <input type="password" id="adminPass" placeholder="密碼" />
+    <div style="display:flex; gap:1rem; margin-top:1.5rem;">
+      <button class="btn-secondary" onclick="location.href='index.html'">取消</button>
+      <button class="btn-primary" onclick="login()">登入後台</button>
+    </div>
+  </div>
+</div>
+
+<div id="adminPanel" style="display:none;">
+  <nav class="navbar">
+    <div style="font-size:1.8rem;font-weight:bold;">ProGen AI • 客戶管理</div>
+    <div>
+      <a href="cn-admin-create.html">模板建立器</a>
+      <a href="cn-admin-support.html">技術支援</a>
+      <a href="#" onclick="logout()">登出</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <h2 style="margin:0 0 2rem;color:#667eea;font-size:1.9rem;">客戶管理總覽</h2>
+      <input type="text" id="search" class="search-bar" placeholder="輸入公司名稱或 Email 搜尋..." oninput="renderUsers()" />
+      <table>
+        <thead><tr>
+          <th>公司名稱</th>
+          <th>聯絡 Email</th>
+          <th>產業類別</th>
+          <th>剩餘點數</th>
+          <th>最後登入</th>
+          <th>操作</th>
+        </tr></thead>
+        <tbody id="userTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// 管理員帳密（正式上線記得改掉！）
+const ADMIN = { name: "admin", pass: "admin001" };
+
+// 登入
+function login() {
+  const n = document.getElementById("adminName").value.trim();
+  const p = document.getElementById("adminPass").value;
+  if (n === ADMIN.name && p === ADMIN.pass) {
+    sessionStorage.setItem("adminAuth", "true");
+    document.getElementById("adminModal").style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
+    renderUsers();
+  } else {
+    alert("帳號或密碼錯誤！");
+  }
+}
+
+// 登出
+function logout() {
+  if (confirm("確定要登出？")) {
+    sessionStorage.removeItem("adminAuth");
+    location.reload();
+  }
+}
+
+// 自動登入檢查
+if (sessionStorage.getItem("adminAuth") === "true") {
+  document.getElementById("adminModal").style.display = "none";
+  document.getElementById("adminPanel").style.display = "block";
+  renderUsers();
+}
+
+// 自動建立一筆測試資料（第一次開會自動出現）
+if (!localStorage.getItem("users")) {
+  const demo = [{
+    id: 1,
+    company: "星辰科技股份有限公司",
+    email: "sales@startech.tw",
+    industry: "電商平台",
+    credits: 880,
+    lastLogin: Date.now()
+  }];
+  localStorage.setItem("users", JSON.stringify(demo));
+}
+
+function renderUsers() {
+  let users = [];
+  try {
+    users = JSON.parse(localStorage.getItem("users") || "[]");
+  } catch(e) {
+    users = [];
+  }
+
+  const keyword = (document.getElementById("search").value || "").toLowerCase();
+  const filtered = users.filter(u => 
+    (u.company||"").toLowerCase().includes(keyword) || 
+    (u.email||"").toLowerCase().includes(keyword)
+  );
+
+  const tbody = document.getElementById("userTableBody");
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:4rem;color:#999;font-size:1.2rem;">
+      目前沒有客戶資料
+    </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(u => `
+    <tr>
+      <td><strong>${u.company || "未填寫"}</strong></td>
+      <td>${u.email || "-"}</td>
+      <td>${u.industry || "未設定"}</td>
+      <td>
+        <input type="number" min="0" value="${u.credits||0}" class="credit-input" data-id="${u.id}" style="width:90px;padding:8px;border-radius:8px;border:2px solid #ddd;text-align:center;">
+      </td>
+      <td>${u.lastLogin ? new Date(u.lastLogin).toLocaleString("zh-TW") : "尚未登入"}</td>
+      <td>
+        <button class="btn-sm btn-success" onclick="saveCredits(${u.id})">儲存</button>
+        <button class="btn-sm btn-info" onclick="editUser(${u.id})">編輯</button>
+        <button class="btn-sm btn-danger" onclick="deleteUser(${u.id})">刪除</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+// 儲存點數
+window.saveCredits = function(id) {
+  let users = JSON.parse(localStorage.getItem("users") || "[]");
+  const input = document.querySelector(`.credit-input[data-id="${id}"]`);
+  const credits = parseInt(input.value) || 0;
+  const user = users.find(u => u.id === id);
+  user.credits = credits;
+  localStorage.setItem("users", JSON.stringify(users));
+  alert(`點數已更新為 ${credits} 點`);
+};
+
+// 編輯公司名稱
+window.editUser = function(id) {
+  let users = JSON.parse(localStorage.getItem("users") || "[]");
+  const user = users.find(u => u.id === id);
+  const newName = prompt("請輸入新的公司名稱：", user.company);
+  if (newName && newName.trim()) {
+    user.company = newName.trim();
+    localStorage.setItem("users", JSON.stringify(users));
+    renderUsers();
+  }
+};
+
+// 刪除客戶
+window.deleteUser = function(id) {
+  if (confirm("確定要「永久刪除」這位客戶嗎？")) {
+    let users = JSON.parse(localStorage.getItem("users") || "[]");
+    users = users.filter(u => u.id !== id);
+    localStorage.setItem("users", JSON.stringify(users));
+    renderUsers();
+  }
+};
+
+// 頁面載入就顯示
+renderUsers();
+</script>
+</body>
+</html>

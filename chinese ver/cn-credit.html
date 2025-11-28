@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ProGen AI - 加值點數</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --primary: #667eea;
+      --accent: #764ba2;
+      --success: #16a34a;
+      --gradient: linear-gradient(135deg, #667eea, #764ba2);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Microsoft JhengHei','Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e6e9ff 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    /* 頂部導覽列 */
+    .navbar {
+      background: rgba(255,255,255,0.98);
+      backdrop-filter: blur(16px);
+      padding: 1.5rem 4rem;
+      box-shadow: 0 10px 40px rgba(102,126,234,0.18);
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 2.3rem;
+      font-weight: 900;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      cursor: pointer;
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      font-size: 1.1rem;
+    }
+    .nav-right a {
+      color: #555;
+      text-decoration: none;
+      padding: 0.7rem 1.6rem;
+      border-radius: 16px;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+    .nav-right a:hover { background: rgba(102,126,234,0.12); color: var(--primary); }
+    .credit-display {
+      background: var(--gradient);
+      color: white;
+      padding: 0.8rem 2rem;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 1.15rem;
+      box-shadow: 0 8px 25px rgba(102,126,234,0.4);
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 11rem 2rem 6rem;
+      text-align: center;
+    }
+    .header h1 {
+      font-size: 3.6rem;
+      font-weight: 900;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 1rem;
+    }
+    .header p {
+      font-size: 1.45rem;
+      color: #666;
+      max-width: 800px;
+      margin: 0 auto 5rem;
+      line-height: 1.8;
+    }
+
+    /* 方案卡片 */
+    .plans {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 3rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .plan {
+      background: white;
+      border-radius: 32px;
+      padding: 3.5rem 2.5rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+      transition: all 0.5s ease;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      border: 4px solid transparent;
+    }
+    .plan:hover {
+      transform: translateY(-25px);
+      box-shadow: 0 35px 80px rgba(102,126,234,0.3);
+    }
+    .plan.popular {
+      border-color: var(--primary);
+      transform: scale(1.08);
+      z-index: 10;
+    }
+    .popular-badge {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+      color: white;
+      padding: 12px 36px;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 1rem;
+      box-shadow: 0 10px 30px rgba(238,90,82,0.5);
+      letter-spacing: 1px;
+    }
+
+    .plan h3 {
+      font-size: 2rem;
+      margin-bottom: 1.2rem;
+      color: #333;
+    }
+    .plan-price {
+      font-size: 5rem;
+      font-weight: 900;
+      color: var(--primary);
+      margin: 1.5rem 0;
+    }
+    .plan-price small {
+      font-size: 1.6rem;
+      color: #999;
+    }
+    .plan-credits {
+      font-size: 1.9rem;
+      font-weight: bold;
+      color: #333;
+      margin: 1.5rem 0;
+    }
+    .savings {
+      background: #ecfdf5;
+      color: var(--success);
+      padding: 0.8rem 1.5rem;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin: 1.2rem 0;
+      display: inline-block;
+    }
+
+    .btn-buy {
+      background: var(--gradient);
+      color: white;
+      border: none;
+      padding: 1.4rem;
+      border-radius: 20px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 2rem;
+      box-shadow: 0 12px 35px rgba(102,126,234,0.4);
+      transition: 0.4s;
+    }
+    .btn-buy:hover {
+      transform: scale(1.05);
+      box-shadow: 0 20px 50px rgba(102,126,234,0.5);
+    }
+
+    /* 成功彈窗 */
+    .success-modal {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.92);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 9999;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.5s;
+    }
+    .success-modal.show { opacity: 1; pointer-events: all; }
+    .success-box {
+      background: white;
+      padding: 5rem 4rem;
+      border-radius: 36px;
+      text-align: center;
+      max-width: 500px;
+      animation: zoomIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 30px 100px rgba(0,0,0,0.4);
+    }
+    @keyframes zoomIn {
+      0% { transform: scale(0.2); opacity: 0; }
+      }
+      70% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .footer-note {
+      margin-top: 6rem;
+      padding: 2rem;
+      background: rgba(255,255,255,0.7);
+      border-radius: 20px;
+      color: #666;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 導覽列 -->
+  <nav class="navbar">
+    <div class="logo" onclick="location.href='cn-client-homepage.html'">ProGen AI</div>
+    <div class="nav-right">
+      <a href="cn-client-homepage.html">首頁</a>
+      <a href="dashboard.html">生成圖片</a>
+      <a class="credit-display">
+        剩餘點數：<strong id="liveCreditDisplay">載入中...</strong>
+      </a>
+      <a href="index.html" style="color:#ef4444;font-weight:bold;">登出</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="header">
+      <h1>加值點數，無限創作！</h1>
+      <p>立即獲得點數，開始用 AI 生成專業級商品圖！<br><strong>【此為展示模式】完全免費，點擊即可馬上加值成功！</strong></p>
+    </div>
+
+    <div class="plans">
+      <!-- 試用方案 -->
+      <div class="plan" onclick="buyPlan(30)">
+        <h3>新手體驗</h3>
+        <div class="plan-price">$5<small>.00</small></div>
+        <div class="plan-credits">30 點數</div>
+        <p class="plan-desc">適合第一次體驗 AI 生圖<br>輕鬆試試看效果</p>
+        <button class="btn-buy">立即加值 30 點</button>
+      </div>
+
+      <!-- 最熱門 -->
+      <div class="plan popular" onclick="buyPlan(120)">
+        <div class="popular-badge">最划算！熱賣中</div>
+        <h3>專業方案</h3>
+        <div class="plan-price">$19<small>.00</small></div>
+        <div class="plan-credits">120 點數</div>
+        <div class="savings">超值 75% 折扣！平均 $0.16 一張</div>
+        <p class="plan-desc">最受歡迎 • 適合大量生成<br>電商賣家首選</p>
+        <button class="btn-buy">立即加值 120 點</button>
+      </div>
+
+      <!-- 商業方案 -->
+      <div class="plan" onclick="buyPlan(400)">
+        <h3>企業無限</h3>
+        <div class="plan-price">$49<small>.00</small></div>
+        <div class="plan-credits">400 點數</div>
+        <div class="savings">最便宜！平均只要 $0.12 一張</div>
+        <p class="plan-desc">重度使用者專屬<br>無限創意，隨心所欲</p>
+        <button class="btn-buy">立即加值 400 點</button>
+      </div>
+    </div>
+
+    <div class="footer-note">
+      <strong>展示模式說明：</strong> 完全免費體驗！點擊任一方案都會「瞬間加值成功」，點數直接進帳，可馬上開始生成圖片喔～
+    </div>
+  </div>
+
+  <!-- 成功彈窗 -->
+  <div id="successModal" class="success-modal">
+    <div class="success-box">
+      <i class="fas fa-check-circle" style="font-size:6rem;color:var(--success);margin-bottom:2rem;"></i>
+      <h2 style="font-size:2.8rem;margin:1rem 0;color:#333;">加值成功！</h2>
+      <p id="creditsAdded" style="font-size:2rem;font-weight:bold;color:var(--primary);margin:1.5rem 0;"></p>
+      <p style="font-size:1.4rem;color:#666;margin-bottom:2rem;">點數已立即加入您的帳戶頭！</p>
+      <button class="btn-buy" style="padding:1.5rem 4rem;font-size:1.5rem;" onclick="closeModal()">
+        立即去生成圖片
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // 取得目前點數
+    function getCredits() {
+      return parseInt(localStorage.getItem('userCredits') || '0');
+    }
+
+    // 更新右上角即時顯示
+    function updateCreditDisplay() {
+      document.getElementById('liveCreditDisplay').textContent = getCredits();
+    }
+
+    // 加值功能
+    function buyPlan(add) {
+      const plan = event.currentTarget;
+      const btn = plan.querySelector('.btn-buy');
+      const oldText = btn.textContent;
+      btn.textContent = '處理中...';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        const now = getCredits();
+        const total = now + add;
+        localStorage.setItem('userCredits', total);
+
+        document.getElementById('creditsAdded').textContent = `+${add} 點數成功加入！您現在共有 ${total} 點`;
+        document.getElementById('successModal').classList.add('show');
+        updateCreditDisplay();
+
+        btn.textContent = oldText;
+        btn.disabled = false;
+      }, 1800);
+    }
+
+    function closeModal() {
+      document.getElementById('successModal').classList.remove('show');
+      location.href = 'dashboard.html'; // 直接跳去生圖頁面
+    }
+
+    // 按 Esc 關閉彈窗
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') document.getElementById('successModal').classList.remove('show');
+    });
+
+    // 頁面載入完成就更新點數顯示
+    document.addEventListener('DOMContentLoaded', updateCreditDisplay);
+  </script>
+</body>
+</html>

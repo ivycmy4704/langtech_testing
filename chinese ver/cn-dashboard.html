@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ProGen AI - AI 商品圖生成中心</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    :root {
+      --primary: #667eea;
+      --accent: #764ba2;
+      --success: #16a34a;
+      --danger: #ef4444;
+      --gradient: linear-gradient(135deg, #667eea, #764ba2);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Microsoft JhengHei','Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #f0f4ff 0%, #e6e9ff 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    /* 頂部導覽列 */
+    .navbar {
+      background: rgba(255,255,255,0.98);
+      backdrop-filter: blur(16px);
+      padding: 1.5rem 4rem;
+      box-shadow: 0 10px 40px rgba(102,126,234,0.18);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-size: 2.4rem;
+      font-weight: 900;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      cursor: pointer;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      font-size: 1.1rem;
+    }
+    .nav-links a {
+      color: #555;
+      text-decoration: none;
+      padding: 0.8rem 1.8rem;
+      border-radius: 18px;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+    .nav-links a:hover { background: rgba(102,126,234,0.12); color: var(--primary); }
+    .credit-badge {
+      background: var(--gradient);
+      color: white;
+      padding: 0.9rem 2rem;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 1.15rem;
+      box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 3rem auto;
+      padding: 0 2rem;
+    }
+    .main-card {
+      background: white;
+      border-radius: 36px;
+      padding: 4rem;
+      box-shadow: 0 30px 80px rgba(102,126,234,0.18);
+      text-align: center;
+    }
+
+    /* 尊榮特效 Premium 模板預覽 */
+    #premiumTemplateBox {
+      background: linear-gradient(135deg, #8b5cf6, #d946ef);
+      color: white;
+      padding: 3.5rem 3rem;
+      border-radius: 32px;
+      margin-bottom: 3rem;
+      box-shadow: 0 30px 80px rgba(139,92,246,0.5);
+      animation: float 8s ease-in-out infinite;
+      position: relative;
+      overflow: hidden;
+    }
+    #premiumTemplateBox::before {
+      content: ''; position: absolute; inset: -100%;
+      background: repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.08) 40px, rgba(255,255,255,0.08) 80px);
+      animation: shine 18s linear infinite;
+    }
+    .premium-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.3);
+      padding: 0.8rem 2rem;
+      border-radius: 50px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-bottom: 1.2rem;
+      backdrop-filter: blur(12px);
+    }
+    .premium-title {
+      font-size: 3rem;
+      margin: 1rem 0;
+      font-weight: 900;
+    }
+    .premium-code {
+      background: rgba(255,255,255,0.25);
+      padding: 1.2rem 3rem;
+      border-radius: 50px;
+      font-family: 'Courier New', monospace;
+      font-size: 2.6rem;
+      letter-spacing: 8px;
+      margin: 1.5rem 0;
+      backdrop-filter: blur(12px);
+    }
+    .premium-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+      font-size: 1.15rem;
+    }
+    .detail-item {
+      background: rgba(255,255,255,0.2);
+      padding: 1.3rem;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+    }
+    .color-preview {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    .color-box {
+      width: 50px;
+      height: 50px;
+      border-radius: 16px;
+      border: 4px solid rgba(255,255,255,0.5);
+    }
+
+    /* 免費模板選擇區 */
+    .universal-templates {
+      background: var(--gradient);
+      color: white;
+      padding: 3rem;
+      border-radius: 32px;
+      margin: 3rem 0;
+      box-shadow: 0 20px 60px rgba(102,126,234,0.4);
+    }
+    .universal-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    .template-option {
+      background: rgba(255,255,255,0.18);
+      border-radius: 24px;
+      padding: 2rem;
+      cursor: pointer;
+      transition: all 0.4s;
+      backdrop-filter: blur(12px);
+      border: 3px solid transparent;
+    }
+    .template-option:hover {
+      transform: translateY(-12px);
+      background: rgba(255,255,255,0.28);
+    }
+    .template-option.selected {
+      border: 4px solid #fbbf24;
+      background: rgba(251,191,36,0.3);
+      transform: scale(1.06);
+      box-shadow: 0 15px 40px rgba(251,191,36,0.4);
+    }
+
+    .code-input-area {
+      margin: 3rem 0;
+      padding: 2.5rem;
+      background: #f8fafc;
+      border-radius: 28px;
+      border: 3px dashed #cbd5e1;
+    }
+
+    .locked-product {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      color: #1e40af;
+      padding: 1.8rem;
+      border-radius: 24px;
+      font-size: 1.6rem;
+      font-weight: bold;
+      margin: 2.5rem 0;
+      border: 3px solid #93c5fd;
+    }
+
+    .info-note {
+      background: #fefce8;
+      color: #92400e;
+      padding: 1.8rem;
+      border-radius: 20px;
+      margin: 2rem 0;
+      border-left: 6px solid #facc15;
+      font-size: 1.1rem;
+    }
+
+    .btn-generate {
+      background: var(--gradient);
+      color: white;
+      padding: 1.8rem 4rem;
+      border: none;
+      border-radius: 24px;
+      font-size: 1.8rem;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+      margin: 2rem 0;
+      box-shadow: 0 20px 50px rgba(102,126,234,0.5);
+      transition: 0.4s;
+    }
+    .btn-generate:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 30px 70px rgba(102,126,234,0.6);
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 3rem;
+      margin-top: 4rem;
+    }
+    .result-card {
+      background: white;
+      border-radius: 32px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+    .image-container {
+      height: 580px;
+      background: #f8fafc;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .final-img {
+      display: none;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .loader-wrapper {
+      position: absolute;
+      z-index: 10;
+      text-align: center;
+      color: var(--primary);
+    }
+    .spinner {
+      width: 100px;
+      height: 100px;
+      border: 12px solid #f1f5f9;
+      border-top: 12px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1.2s linear infinite;
+      margin-bottom: 1.5rem;
+    }
+    .timer-text {
+      font-family: 'Courier New', monospace;
+      font-size: 3rem;
+      font-weight: bold;
+      color: var(--primary);
+      margin: 1rem 0;
+    }
+
+    .regenerate-box {
+      margin: 5rem 0 2rem;
+      padding: 3.5rem;
+      background: var(--gradient);
+      color: white;
+      border-radius: 32px;
+      text-align: center;
+      box-shadow: 0 25px 70px rgba(102,126,234,0.5);
+      display: none;
+    }
+    .btn-regenerate {
+      background: white;
+      color: var(--primary);
+      padding: 1.4rem 3.5rem;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 1.5rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
+    @keyframes shine { 0% { transform: translateX(-150%) translateY(-150%) rotate(30deg); } 100% { transform: translateX(150%) translateY(150%) rotate(30deg); } }
+  </style>
+</head>
+<body>
+
+  <!-- 導覽列 -->
+  <nav class="navbar">
+    <div class="logo" onclick="location.href='cn-client-homepage.html'">ProGen AI</div>
+    <div class="nav-links">
+      <a href="cn-client-homepage.html">我的首頁</a>
+      <a href="cn-dashboard.html">生成圖片</a>
+      <a class="credit-badge">
+        剩餘點數：<strong id="creditDisplay">載入中...</strong>
+      </a>
+      <a href="index.html" style="color:#ef4444;font-weight:bold;">登出</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="main-card">
+
+      <!-- 永久顯示的尊榮 Premium 預覽 -->
+      <div id="premiumTemplateBox">
+        <div class="premium-badge" id="premiumBadge">尊榮模板</div>
+        <h2 class="premium-title" id="premiumTitle">Luxury Gold 2025</h2>
+        <div class="premium-code" id="premiumCode">LUX-2025-GOLD</div>
+        <p id="premiumSource" style="opacity:0.9;font-size:1.3rem;margin:1.5rem 0;">輸入兌換碼即可永久解鎖此高級風格</p>
+        <div class="premium-details">
+          <div class="detail-item"><strong>風格</strong><br>極致奢華</div>
+          <div class="detail-item"><strong>拍攝</strong><br>專業棚拍</div>
+          <div class="detail-item"><strong>主色調</strong>
+            <div class="color-preview">
+              <div class="color-box" style="background:#ffd700;"></div>
+              <div class="color-box" style="background:#1a1a1a;"></div>
+            </div>
+          </div>
+          <div class="detail-item"><strong>適合</strong><br>珠寶・手錶・高端精品</div>
+        </div>
+      </div>
+
+      <h2 style="font-size:3rem;margin-bottom:1.5rem;">
+        為您的 <span style="background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;" id="productNameDisplay">商品</span> 生成吸睛大片！
+      </h2>
+
+      <!-- 免費模板選擇 -->
+      <div class="universal-templates">
+        <h3 style="font-size:2rem;margin-bottom:1rem;">選擇風格（免費模板）</h3>
+        <div class="universal-grid" id="universalTemplates"></div>
+      </div>
+
+      <!-- 輸入兌換碼區塊 -->
+      <div class="code-input-area">
+        <h3 style="font-size:1.8rem;margin-bottom:1.5rem;">擁有尊榮兌換碼？</h3>
+        <input type="text" id="templateCodeInput" placeholder="例如：LUX-2025-GOLD" style="padding:1.2rem 2rem;width:420px;border:3px solid #e2e8f0;border-radius:20px;font-size:1.4rem;text-align:center;" />
+        <button onclick="applyTemplateCode()" style="margin-left:1rem;padding:1.2rem 3rem;background:#8b5cf6;color:white;border:none;border-radius:20px;font-size:1.4rem;font-weight:bold;cursor:pointer;">立即啟用</button>
+        <p id="templateStatus" style="margin-top:1.5rem;font-size:1.3rem;font-weight:bold;"></p>
+      </div>
+
+      <div class="locked-product">
+        目前商品： <span id="lockedProductName">載入中...</span>
+      </div>
+
+      <div class="info-note">
+        閃電生成 • 1024×1024 高清 • 每次生成消耗 2 點數 • 技術由 Pollinations.ai 強力驅動
+      </div>
+
+      <button class="btn-generate" onclick="generateNow()">
+        立即生成 2 張專業商品圖（-2 點數）
+      </button>
+
+      <!-- 生成結果區 -->
+      <div id="results" class="results-grid" style="display:none;"></div>
+
+      <!-- 再次生成按鈕 -->
+      <div id="regenerateBox" class="regenerate-box">
+        <h3 style="font-size:2.4rem;margin-bottom:1.5rem;">想要更多不同版本？</h3>
+        <p style="font-size:1.4rem;opacity:0.9;">每生成一次都是全新的創意變化！</p>
+        <button class="btn-regenerate" onclick="generateNow()">再生成 2 張（-2 點數）</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let productName = "您的商品";
+    let currentUser = { email: "" };
+    let activeTemplate = null;
+
+    const UNIVERSAL_TEMPLATES = [
+      { id: "clean-white", name: "純白專業棚拍", desc: "經典白底，柔和光影", promptAdd: ", 純白無縫背景, 柔和專業棚燈光, 高級商品攝影" },
+      { id: "dark-moody", name: "暗黑電影感", desc: "深黑背景，高對比", promptAdd: ", 純黑背景, 電影級燈光, 高反差, 奢華質感" },
+      { id: "natural-light", name: "自然窗光", desc: "溫暖日光，生活感", promptAdd: ", 柔和自然窗光, 淺灰背景, 生活風商品拍攝" },
+      { id: "gold-luxury", name: "黃金奢華", desc: "金色光暈，極致高端", promptAdd: ", 黃金時刻燈光, 細膩金色反光, 頂級奢華呈現" },
+      { id: "minimal-gray", name: "極簡北歐", desc: "淺灰純淨，極簡美學", promptAdd: ", 淺灰無縫背景, 極簡構圖, 柔和陰影" }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      } catch(e) {}
+      if (!currentUser.email) {
+        alert("請先登入才能使用生成功能");
+        location.href = 'index.html';
+        return;
+      }
+
+      productName = localStorage.getItem('userProduct') || "您的商品";
+      document.getElementById('productNameDisplay').textContent = productName;
+      document.getElementById('lockedProductName').textContent = productName;
+      updateCredits();
+
+      // 檢查是否有已儲存的尊榮模板
+      const saved = localStorage.getItem(`userPremiumCode_${currentUser.email}`);
+      if (saved) {
+        try {
+          const t = JSON.parse(saved);
+          activatePremium(t);
+        } catch(e) {}
+      }
+
+      const savedChoice = localStorage.getItem(`userTemplateChoice_${currentUser.email}`) || "clean-white";
+      renderUniversalTemplates(savedChoice);
+      if (!activeTemplate) activeTemplate = UNIVERSAL_TEMPLATES.find(t => t.id === savedChoice);
+    });
+
+    function activatePremium(template) {
+      document.getElementById('premiumBadge').textContent = "已啟用尊榮模板";
+      document.getElementById('premiumBadge').style.background = "rgba(34,197,94,0.6)";
+      document.getElementById('premiumTitle').textContent = template.name || "尊榮風格啟用";
+      document.getElementById('premiumCode').textContent = template.code || "CUSTOM";
+      document.getElementById('premiumSource').innerHTML = '<i class="fas fa-check-circle"></i> 尊榮模板已成功啟用！';
+      document.getElementById('premiumSource').style.color = "#22c55e";
+      activeTemplate = template;
+    }
+
+    window.applyTemplateCode = function() {
+      const code = document.getElementById('templateCodeInput').value.trim().toUpperCase();
+      if (!code) return;
+
+      const allTemplates = JSON.parse(localStorage.getItem("progenTemplatesV2") || '{"_history":[]}')._history || [];
+      const found = allTemplates.find(t => t.code === code);
+
+      if (found) {
+        activatePremium(found);
+        localStorage.setItem(`userPremiumCode_${currentUser.email}`, JSON.stringify(found));
+        document.getElementById('templateStatus').innerHTML = '<span style="color:#22c55e;"><i class="fas fa-check-circle"></i> 尊榮模板啟用成功！</span>';
+      } else {
+        document.getElementById('templateStatus').innerHTML = '<span style="color:#ef4444;"><i class="fas fa-times-circle"></i> 兌換碼無效或已過期</span>';
+      }
+    };
+
+    function renderUniversalTemplates(selectedId) {
+      const container = document.getElementById('universalTemplates');
+      container.innerHTML = UNIVERSAL_TEMPLATES.map(t => `
+        <div class="template-option ${t.id === selectedId ? 'selected' : ''}" onclick="selectUniversalTemplate('${t.id}')">
+          <h4 style="font-size:1.6rem;margin-bottom:0.8rem;">${t.name}</h4>
+          <p style="opacity:0.9;">${t.desc}</p>
+        </div>
+      `).join('');
+    }
+
+    window.selectUniversalTemplate = function(id) {
+      localStorage.setItem(`userTemplateChoice_${currentUser.email}`, id);
+      renderUniversalTemplates(id);
+      activeTemplate = UNIVERSAL_TEMPLATES.find(t => t.id === id);
+    };
+
+    function getFullPrompt() {
+      let prompt = `${productName}, 寫實攝影, 極致銳利, 8K畫質, 商業商品攝影, 完美對焦`;
+      if (activeTemplate?.promptAdd) {
+        prompt += activeTemplate.promptAdd;
+      } else {
+        prompt += ", 純白無縫背景, 柔和專業棚燈光";
+      }
+      prompt += `, seed:${Date.now() + Math.floor(Math.random()*100000)}`;
+      return prompt;
+    }
+
+    function updateCredits() {
+      const credits = parseInt(localStorage.getItem('userCredits') || '0');
+      document.getElementById('creditDisplay').textContent = credits;
+    }
+
+    function deductCredits() {
+      let credits = parseInt(localStorage.getItem('userCredits') || '0');
+      if (credits < 2) {
+        alert("點數不足！請先去加值");
+        setTimeout(() => location.href = 'cn-credit.html', 1200);
+        return false;
+      }
+      credits -= 2;
+      localStorage.setItem('userCredits', credits);
+      updateCredits();
+      return true;
+    }
+
+    function saveToHistory(url, prompt) {
+      const records = JSON.parse(localStorage.getItem('userRecords') || '{}');
+      if (!records[currentUser.email]) records[currentUser.email] = [];
+      records[currentUser.email].unshift({
+        imageUrl: url,
+        prompt: prompt,
+        title: productName + (activeTemplate ? ` [${activeTemplate.name || activeTemplate.code}]` : ""),
+        date: new Date().toISOString()
+      });
+      if (records[currentUser.email].length > 50) records[currentUser.email].pop();
+      localStorage.setItem('userRecords', JSON.stringify(records));
+    }
+
+    window.generateNow = function() {
+      if (!deductCredits()) return;
+
+      const results = document.getElementById('results');
+      results.style.display = 'grid';
+      results.innerHTML = '';
+      document.getElementById('regenerateBox').style.display = 'block';
+
+      const prompt = getFullPrompt();
+
+      for (let i = 0; i < 2; i++) {
+        const card = document.createElement('div');
+        card.className = 'result-card';
+        card.innerHTML = `
+          <div class="image-container">
+            <div class="loader-wrapper">
+              <div class="spinner"></div>
+              <div class="timer-text">00:15</div>
+              <p style="font-size:1.3rem;">AI 正在為您創作第 ${i+1} 張大片...</p>
+            </div>
+            <img class="final-img" alt="AI生成圖 ${i+1}" />
+          </div>
+          <div style="padding:2rem;text-align:center;">
+            <button style="padding:1.2rem 3rem;background:#16a34a;color:white;border:none;border-radius:20px;font-size:1.3rem;font-weight:bold;cursor:pointer;" onclick="downloadImage(this.closest('.result-card').querySelector('img').src)">
+              下載圖片 ${i+1} (HD 1024×1024)
+            </button>
+          </div>
+        `;
+        results.appendChild(card);
+
+        const img = card.querySelector('.final-img');
+        const timerText = card.querySelector('.timer-text');
+        let seconds = 15;
+        const timer = setInterval(() => {
+          seconds--;
+          timerText.textContent = `00:${seconds.toString().padStart(2, '0')}`;
+          if (seconds <= 0) clearInterval(timer);
+        }, 1000);
+
+        const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1024&height=1024&seed=${Date.now()+i*12345}&nologo=true&enhance=true`;
+
+        img.onload = () => {
+          img.style.display = 'block';
+          card.querySelector('.loader-wrapper').style.display = 'none';
+          clearInterval(timer);
+          saveToHistory(img.src, prompt);
+        };
+        img.onerror = () => {
+          card.querySelector('.loader-wrapper').innerHTML = '<p style="color:#ef4444;font-size:1.4rem;">生成失敗，請再試一次！</p>';
+          clearInterval(timer);
+        };
+        img.src = url;
+      }
+    };
+
+    window.downloadImage = function(src) {
+      const a = document.createElement('a');
+      a.href = src;
+      a.download = `${productName.replace(/[^a-zA-Z0-9]/g, '_')}_${Date.now()}.jpg`;
+      a.click();
+    };
+  </script>
+</body>
+</html>

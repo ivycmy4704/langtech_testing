@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>技術支援中心 - ProGen AI 管理後台</title>
+  <style>
+    body { font-family: 'Microsoft JhengHei','Segoe UI',sans-serif; margin:0; background:#f4f6f9; }
+    #adminModal { position:fixed; inset:0; background:linear-gradient(135deg,#667eea,#764ba2); display:flex; align-items:center; justify-content:center; z-index:9999; backdrop-filter:blur(10px); }
+    .modal-content { background:#fff; padding:3rem; border-radius:24px; width:420px; box-shadow:0 30px 80px rgba(0,0,0,.45); position:relative; }
+    .modal-content::before { content:''; position:absolute; top:0; left:0; right:0; height:6px; background:linear-gradient(90deg,#667eea,#764ba2,#f093fb); border-radius:24px 24px 0 0; }
+    .modal-content h3 { margin:0 0 2rem; text-align:center; font-size:2.1rem; background:linear-gradient(135deg,#667eea,#764ba2); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-weight:bold; }
+    input { width:100%; padding:16px; border:2px solid #e1e5e9; border-radius:14px; box-sizing:border-box; margin-bottom:1.2rem; font-size:1.1rem; }
+    input:focus { outline:none; border-color:#667eea; box-shadow:0 0 0 4px rgba(102,126,234,.15); }
+    .modal-actions { display:flex; gap:1rem; margin-top:2rem; }
+    .modal-actions button { flex:1; padding:16px; border:none; border-radius:14px; font-weight:600; font-size:1.1rem; cursor:pointer; }
+    .btn-primary { background:linear-gradient(135deg,#667eea,#764ba2); color:#fff; }
+    .btn-secondary { background:#f8f9fa; color:#666; border:2px solid #e1e5e9; }
+
+    .navbar { background:linear-gradient(135deg,#667eea,#764ba2); padding:1.5rem 3rem; color:white; display:flex; justify-content:space-between; align-items:center; border-radius:20px 20px 0 0; margin-bottom:-1px; }
+    .navbar a { color:white; text-decoration:none; margin-left:2.5rem; font-weight:500; }
+    .navbar a:hover { opacity:0.8; }
+
+    .container { max-width:1300px; margin:2rem auto; padding:0 2rem; }
+    .card { background:white; padding:2.8rem; border-radius:20px; box-shadow:0 10px 40px rgba(0,0,0,0.1); margin-bottom:2.5rem; }
+    h2 { margin:0 0 2rem; color:#667eea; font-size:1.9rem; }
+
+    .ticket-item { background:#fff; padding:2rem; margin-bottom:1.8rem; border-radius:18px; border:1px solid #e2e8f0; box-shadow:0 8px 25px rgba(0,0,0,0.08); transition:0.3s; }
+    .ticket-item:hover { transform:translateY(-4px); box-shadow:0 15px 35px rgba(0,0,0,0.12); }
+    .ticket-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; font-size:1.25rem; font-weight:bold; }
+    .ticket-status { padding:0.6rem 1.4rem; border-radius:50px; font-size:0.95rem; font-weight:bold; }
+    .status-open { background:#d1fae5; color:#065f46; }
+    .status-closed { background:#fee2e2; color:#991b1b; }
+    .ticket-message { background:#f8fafc; padding:1.5rem; border-radius:14px; margin:1.2rem 0; line-height:1.6; }
+    .ticket-footer { display:flex; justify-content:space-between; align-items:center; margin-top:1.5rem; color:#666; }
+    .btn-sm { padding:10px 20px; margin:0 8px; border:none; border-radius:12px; cursor:pointer; font-weight:600; min-width:90px; }
+    .btn-success { background:#16a34a; color:white; }
+    .btn-danger { background:#dc2626; color:white; }
+    .login-item { background:#f8fafc; padding:1.2rem 1.8rem; border-radius:14px; margin-bottom:0.8rem; display:flex; justify-content:space-between; }
+  </style>
+</head>
+<body>
+
+  <div id="adminModal">
+    <div class="modal-content">
+      <h3>管理員登入</h3>
+      <input type="text" id="adminName" placeholder="帳號" autocomplete="off" />
+      <input type="password" id="adminPass" placeholder="密碼" />
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="location.href='index.html'">取消</button>
+        <button class="btn-primary" onclick="login()">登入後台</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="adminPanel" style="display:none;">
+    <nav class="navbar">
+      <div style="font-size:1.9rem;font-weight:bold;">ProGen AI • 技術支援中心</div>
+      <div>
+        <a href="cn-admin-create.html">模板建立器</a>
+        <a href="admin-clients.html">客戶管理</a>
+        <a href="#" onclick="logout()">登出</a>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="card">
+        <h2>客戶支援工單</h2>
+        <div id="tickets"></div>
+      </div>
+
+      <div class="card">
+        <h2>最近 20 筆登入紀錄</h2>
+        <div id="loginHistory"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ADMIN = { name: "admin", pass: "admin001" };
+
+    // 正確的登入函式（這行之前寫錯了！）
+    function login() {
+      const n = document.getElementById("adminName").value.trim();
+      const p = document.getElementById("adminPass").value;  // 修正重點！
+      if (n === ADMIN.name && p === ADMIN.pass) {
+        sessionStorage.setItem("adminAuth", "true");
+        document.getElementById("adminModal").style.display = "none";
+        document.getElementById("adminPanel").style.display = "block";
+        loadData();
+      } else {
+        alert("帳號或密碼錯誤！");
+      }
+    }
+
+    function logout() {
+      if (confirm("確定要登出？")) {
+        sessionStorage.removeItem("adminAuth");
+        location.reload();
+      }
+    }
+
+    // 自動檢查是否已登入
+    if (sessionStorage.getItem("adminAuth") === "true") {
+      document.getElementById("adminModal").style.display = "none";
+      document.getElementById("adminPanel").style.display = "block";
+      loadData();
+    }
+
+    function loadData() {
+      renderTickets();
+      renderLoginHistory();
+    }
+
+    function renderTickets() {
+      let tickets = [];
+      try { tickets = JSON.parse(localStorage.getItem('supportTickets') || '[]'); } catch(e) {}
+      
+      const container = document.getElementById('tickets');
+      if (tickets.length === 0) {
+        container.innerHTML = '<p style="text-align:center;color:#999;padding:4rem;font-size:1.2rem;">目前沒有任何支援工單</p>';
+        return;
+      }
+
+      tickets.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      container.innerHTML = tickets.map(t => `
+        <div class="ticket-item">
+          <div class="ticket-header">
+            <div><strong>${t.company || '未知客戶'} - ${t.subject || '無標題'}</strong></div>
+            <span class="ticket-status ${t.status === 'closed' ? 'status-closed' : 'status-open'}">
+              ${t.status === 'closed' ? '已結案' : '處理中'}
+            </span>
+          </div>
+          <div style="margin:0.8rem 0;color:#555;"><strong>聯絡 Email：</strong>${t.email}</div>
+          <div class="ticket-message">${(t.message || '').replace(/\n/g, '<br>')}</div>
+          <div class="ticket-footer">
+            <small>${new Date(t.createdAt).toLocaleString('zh-TW')}</small>
+            <div>
+              ${t.status !== 'closed' ? `<button class="btn-sm btn-success" onclick="closeTicket('${t.id}')">標記結案</button>` : ''}
+              <button class="btn-sm btn-danger" onclick="deleteTicket('${t.id}')">刪除工單</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderLoginHistory() {
+      let history = [];
+      try { history = JSON.parse(localStorage.getItem('userLoginHistory') || '[]'); } catch(e) {}
+
+      const container = document.getElementById('loginHistory');
+      if (history.length === 0) {
+        container.innerHTML = '<p style="text-align:center;color:#999;padding:3rem;">尚無登入紀錄</p>';
+        return;
+      }
+
+      history.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+      container.innerHTML = history.slice(0,20).map(h => `
+        <div class="login-item">
+          <div><strong>${h.company || '未知客戶'}</strong> (${h.email || '無Email'})</div>
+          <div style="color:#666;">${new Date(h.timestamp).toLocaleString('zh-TW')}</div>
+        </div>
+      `).join('');
+    }
+
+    window.closeTicket = function(id) {
+      let tickets = JSON.parse(localStorage.getItem('supportTickets') || '[]');
+      const ticket = tickets.find(t => t.id === id);
+      if (ticket) {
+        ticket.status = 'closed';
+        localStorage.setItem('supportTickets', JSON.stringify(tickets));
+        renderTickets();
+        alert('工單已標記為「已結案」');
+      }
+    };
+
+    window.deleteTicket = function(id) {
+      if (confirm('確定要「永久刪除」這筆工單嗎？')) {
+        let tickets = JSON.parse(localStorage.getItem('supportTickets') || '[]');
+        tickets = tickets.filter(t => t.id !== id);
+        localStorage.setItem('supportTickets', JSON.stringify(tickets));
+        renderTickets();
+      }
+    };
+  </script>
+</body>
+</html>
