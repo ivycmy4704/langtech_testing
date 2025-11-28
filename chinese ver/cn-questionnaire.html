@@ -397,7 +397,7 @@
     document.getElementById('questionnaireForm').onsubmit = function(e) {
       e.preventDefault();
       const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-      if (!user.email) { alert('請先登入！'); location.href = 'index.html'; return; }
+      if (!user.email) { alert('請先登入！'); location.href = 'cn-index.html'; return; }
 
       const data = {
         company: document.getElementById('company').value.trim(),
