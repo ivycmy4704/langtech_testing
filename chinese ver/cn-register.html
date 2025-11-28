@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>建立帳戶 - ProGen AI</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>建立您的帳戶</h1>
+      <p class="subtitle">
+        填寫您的詳細資訊 – 我們將發送驗證碼到您的電子郵件。
+      </p>
+
+      <form id="registerForm">
+        <!-- Email & Password Only -->
+        <div class="input-group">
+          <label for="email">電子郵件地址 *</label>
+          <input type="email" id="email" placeholder="you@company.com" required />
+        </div>
+
+        <!-- Password -->
+        <div class="input-group">
+          <label for="password">密碼 *</label>
+          <input type="password" id="password" placeholder="建立密碼" required minlength="6" />
+        </div>
+
+        <div class="input-group">
+          <label for="confirmPassword">確認密碼 *</label>
+          <input type="password" id="confirmPassword" placeholder="確認您的密碼" required />
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block mt-4">
+          建立帳戶並發送驗證碼
+        </button>
+      </form>
+
+      <p class="text-center mt-4"><a href="index.html">返回登入</a></p>
+    </div>
+  </div>
+
+  <!-- EmailJS -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script>
+    console.log("=== PROGEN AI 註冊頁面已載入 ===");
+
+    // Form Submit
+    document.getElementById("registerForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const email     = document.getElementById("email").value.trim().toLowerCase();
+      const password  = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      // Validation
+      if (!email || !password) {
+        alert("請填寫所有必填欄位。");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert("密碼不相符。");
+        return;
+      }
+
+      if (password.length < 6) {
+        alert("密碼必須至少6個字符。");
+        return;
+      }
+
+      // Check if email already exists
+      const users = JSON.parse(localStorage.getItem('users') || '[]');
+      const existingUser = users.find(u => u.email === email);
+      if (existingUser) {
+        if (existingUser.verified) {
+          alert("此電子郵件已經存在帳戶。請改用登入。");
+          window.location.href = "index.html";
+          return;
+        } else {
+          // User exists but isn't verified - allow re-registration (will overwrite)
+          const index = users.findIndex(u => u.email === email);
+          users.splice(index, 1);
+          localStorage.setItem('users', JSON.stringify(users));
+        }
+      }
+
+      // Generate verification code (6 digits)
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+      // Store user data temporarily with verification code
+      const tempUser = { 
+        email, 
+        password, 
+        verificationCode,
+        createdAt: new Date().toISOString(),
+        verified: false,
+        credits: 20
+      };
+
+      // Store in pending verification
+      localStorage.setItem("pendingVerification", JSON.stringify(tempUser));
+
+      const templateParams = { 
+        email, 
+        code: verificationCode 
+      };
+
+      emailjs.init("04haQDj1VizCiKBn4");
+
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      submitBtn.disabled = true;
+      submitBtn.textContent = "正在發送驗證碼...";
+
+      try {
+        await emailjs.send("service_1vi3zyz", "template_y5dzqi9", templateParams);
+        alert(`驗證碼已發送至 ${email}！請檢查您的收件匣。`);
+        window.location.href = `verify-email.html?email=${encodeURIComponent(email)}`;
+      } catch (err) {
+        console.error("EmailJS 錯誤:", err);
+        alert(`帳戶已建立，但郵件發送失敗。\n您的驗證碼：${verificationCode}\n請保存好！`);
+        window.location.href = `verify-email.html?email=${encodeURIComponent(email)}`;
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "建立帳戶並發送驗證碼";
+      }
+    });
+  </script>
+</body>
+</html>
