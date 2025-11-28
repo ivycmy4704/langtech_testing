@@ -30,6 +30,11 @@
       top: 0;
       z-index: 1000;
     }
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
     .brand {
       font-size: 2.2rem;
       font-weight: bold;
@@ -41,6 +46,22 @@
       font-size: 1.1rem;
       color: #555;
     }
+    .language-btn {
+      background: #3b82f6;
+      color: white;
+      padding: 0.7rem 1.2rem;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 4px 15px rgba(59,130,246,0.3);
+    }
+    .language-btn:hover {
+      background: #2563eb;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(59,130,246,0.4);
+    }
     .logout-btn {
       background: #ef4444;
       color: white;
@@ -49,7 +70,6 @@
       border-radius: 16px;
       font-weight: bold;
       cursor: pointer;
-      margin-left: 2rem;
       box-shadow: 0 8px 25px rgba(239,68,68,0.3);
       transition: 0.3s;
     }
@@ -195,8 +215,11 @@
 
   <!-- 頂部導覽列 -->
   <nav class="navbar">
-    <div class="brand">ProGen AI</div>
-    <div style="display:flex; align-items:center;">
+    <div class="navbar-left">
+      <div class="brand">ProGen AI</div>
+      <button class="language-btn" onclick="switchToEnglish()">English</button>
+    </div>
+    <div style="display:flex; align-items:center; gap: 1.5rem;">
       <div class="user-info">歡迎，<strong id="userDisplay">載入中...</strong></div>
       <button class="logout-btn" onclick="logout()">登出</button>
     </div>
@@ -253,6 +276,11 @@
     if (!user || !user.email) {
       alert('請先登入系統');
       location.href = 'index.html';
+    }
+
+    // 語言切換功能 - 重定向到英文版
+    function switchToEnglish() {
+      window.location.href = 'en-client-homepage.html';
     }
 
     // 顯示歡迎名稱
